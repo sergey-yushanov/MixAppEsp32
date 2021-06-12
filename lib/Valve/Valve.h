@@ -18,13 +18,13 @@ public:
     void open();
     void close();
 
-    bool getFaulty();
+    bool isFaulty();
     void resetFaulty();
     int getStatus();
 
-    bool getCommand();
-    bool getCommandOpen();
-    bool getCommandClose();
+    bool isCommand();
+    bool isCommandOpen();
+    bool isCommandClose();
 };
 
 #endif

@@ -9,8 +9,9 @@ Valve::Valve()
 }
 
 // valve faulty
-bool Valve::getFaulty()
+bool Valve::isFaulty()
 {
+
     return faulty_;
 }
 
@@ -30,7 +31,7 @@ int Valve::getStatus()
     return status_;
 }
 
-// valve open command
+// valve set open command
 void Valve::open()
 {
     command_ = true;
@@ -38,7 +39,7 @@ void Valve::open()
     commandClose_ = false;
 }
 
-// valve close command
+// valve set close command
 void Valve::close()
 {
     command_ = false;
@@ -47,18 +48,21 @@ void Valve::close()
 }
 
 // valve one-wire circuit command
-bool Valve::getCommand()
+// todo: need add faulty
+bool Valve::isCommand()
 {
     return command_;
 }
 
 // valve two-wire circuit command
-bool Valve::getCommandOpen()
+// todo: need add faulty
+bool Valve::isCommandOpen()
 {
     return commandOpen_;
 }
 
-bool Valve::getCommandClose()
+// todo: need add faulty
+bool Valve::isCommandClose()
 {
     return commandClose_;
 }
