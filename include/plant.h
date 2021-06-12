@@ -1,14 +1,14 @@
 #ifndef PLANT_h
 #define PLANT_h
 
-#include <Manifold.h>
+#include <DispenserCollector.h>
 #include <Flowmeter.h>
-#include <Valve.h>
+#include <ValveAdjustable.h>
 
-extern Manifold manifold;
+extern DispenserCollector dispenserCollector;
 extern Flowmeter m1;
-extern Valve valveControl;
-extern bool ack;
+extern ValveAdjustable valveAdjustable;
+// extern bool ack;
 
 void m1Setup();
 void IRAM_ATTR m1Pulse();

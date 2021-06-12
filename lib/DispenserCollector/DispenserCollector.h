@@ -11,9 +11,6 @@ struct DispenserCollector
     Valve valves[nValves_];
     ValveAdjustable valveAdjustable;
     Flowmeter flowmeter;
-
-    void setup();
-    void loop();
 };
 
 #endif

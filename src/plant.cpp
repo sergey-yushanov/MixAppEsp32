@@ -2,24 +2,24 @@
 #include "clock_pulses.h"
 #include <ProcessControl.h>
 
-Manifold manifold;
+DispenserCollector dispenserCollector;
 Flowmeter m1;
-Valve valveControl;
+ValveAdjustable valveAdjustable;
 
 bool ack;
 
-// manifold flowmeter
+// dispenser collector flowmeter
 void g1Setup()
 {
-    manifold.flowmeter.setPin(19);
-    manifold.flowmeter.setPulsesPerLiter(106.777);
-    pinMode(manifold.flowmeter.getPin(), INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(manifold.flowmeter.getPin()), g1Pulse, FALLING);
+    dispenserCollector.flowmeter.setPin(19);
+    dispenserCollector.flowmeter.setPulsesPerLiter(106.777);
+    pinMode(dispenserCollector.flowmeter.getPin(), INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(dispenserCollector.flowmeter.getPin()), g1Pulse, FALLING);
 }
 
 void IRAM_ATTR g1Pulse()
 {
-    manifold.flowmeter.pulseCounter();
+    dispenserCollector.flowmeter.pulseCounter();
 }
 
 // common flowmeter
