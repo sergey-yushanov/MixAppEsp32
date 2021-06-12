@@ -5,29 +5,29 @@ AnalogSensor::AnalogSensor()
     filterSize_ = defaultFilterSize();
 }
 
-AnalogSensor::AnalogSensor(int pin)
+AnalogSensor::AnalogSensor(int input)
 {
-    pin_ = pin;
+    input_ = input;
     filterSize_ = defaultFilterSize();
 }
 
-AnalogSensor::AnalogSensor(int pin, int filterSize)
+AnalogSensor::AnalogSensor(int input, int filterSize)
 {
-    pin_ = pin;
+    input_ = input;
     filterSize_ = filterSize;
 }
 
-AnalogSensor::AnalogSensor(int pin, float lowLimit, float highLimit)
+AnalogSensor::AnalogSensor(int input, float lowLimit, float highLimit)
 {
-    pin_ = pin;
+    input_ = input;
     filterSize_ = defaultFilterSize();
     lowLimit_ = lowLimit;
     highLimit_ = highLimit;
 }
 
-AnalogSensor::AnalogSensor(int pin, int filterSize, float lowLimit, float highLimit)
+AnalogSensor::AnalogSensor(int input, int filterSize, float lowLimit, float highLimit)
 {
-    pin_ = pin;
+    input_ = input;
     filterSize_ = filterSize;
     lowLimit_ = lowLimit;
     highLimit_ = highLimit;
@@ -45,7 +45,7 @@ void AnalogSensor::setFilterSize(int filterSize)
 
 float AnalogSensor::rawHighLimit()
 {
-    return 4095.0;
+    return 65536.0;
 }
 
 float AnalogSensor::rawLowLimit()
@@ -53,9 +53,9 @@ float AnalogSensor::rawLowLimit()
     return 0.0;
 }
 
-void AnalogSensor::setPin(int pin)
+void AnalogSensor::setInput(int input)
 {
-    pin_ = pin;
+    input_ = input;
 }
 
 float AnalogSensor::getHighLimit()
@@ -86,14 +86,14 @@ bool AnalogSensor::isError()
     return error_;
 }
 
-void AnalogSensor::read()
-{
-    int raw = analogRead(pin_);
-    valueRaw_ = (float)raw;
+// void AnalogSensor::read()
+// {
+//     int raw = analogRead(input_);
+//     valueRaw_ = (float)raw;
 
-    scale();
-    filter();
-}
+//     scale();
+//     filter();
+// }
 
 void AnalogSensor::scale()
 {
@@ -109,4 +109,12 @@ void AnalogSensor::filter()
 float AnalogSensor::getValue()
 {
     return valueActual_;
+}
+
+void AnalogSensor::setValueRaw(int raw)
+{
+    valueRaw_ = (float)raw;
+
+    scale();
+    filter();
 }

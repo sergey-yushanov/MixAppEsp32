@@ -6,7 +6,7 @@
 class AnalogSensor
 {
 private:
-    int pin_;
+    int input_;
     int filterSize_;
     float valueRaw_;
     float valueNew_;
@@ -22,15 +22,15 @@ private:
 
 public:
     AnalogSensor();
-    AnalogSensor(int pin);
-    AnalogSensor(int pin, int filterSize);
-    AnalogSensor(int pin, float lowLimit, float highLimit);
-    AnalogSensor(int pin, int filterSize, float lowLimit, float highLimit);
+    AnalogSensor(int input);
+    AnalogSensor(int input, int filterSize);
+    AnalogSensor(int input, float lowLimit, float highLimit);
+    AnalogSensor(int input, int filterSize, float lowLimit, float highLimit);
 
     float rawHighLimit();
     float rawLowLimit();
 
-    void setPin(int pin);
+    void setInput(int input);
 
     float getHighLimit();
     void setHighLimit(float hiLimit);
@@ -42,8 +42,10 @@ public:
     void setFilterSize(int filterSize);
 
     bool isError();
-    void read();
+    //void read();
     float getValue();
+
+    void setValueRaw(int raw);
 };
 
 #endif
