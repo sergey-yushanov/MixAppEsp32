@@ -9,6 +9,7 @@ class ValveAdjustable
 private:
     int overtime_;
     int time_;
+    int status_;
 
     float position_;
     float setpoint_;
@@ -26,55 +27,47 @@ private:
     float costClose_;
 
     bool faulty_;
-    bool healthy_;
+    bool timeout_;
+
     bool requestOpen_;
     bool requestClose_;
     bool positionOpen_;
     bool positionClose_;
     bool positionOk_;
     bool command_;
+    bool commandOpen_;
+    bool commandClose_;
 
-    bool enable_;
-    bool disable_;
-    bool fullyOpen_;
-    bool fullyClose_;
-    bool manual_;
-    bool auto_;
-
-    void calcTimeout(bool _0_1s);
-    void checkFaulty(bool ack);
-    void checkPosition();
-    void checkRequest();
-    void checkCommand();
-    void checkStatus();
-    void request();
-    void checkMode();
-    void resetRequest();
+    void setFaulty();
+    void setRequest();
+    void setCommand();
 
 public:
-    int status;
-    bool commandOpen;
-    bool commandClose;
-    bool faulty;
-    bool healthy;
-
     ValveAdjustable();
-    ValveAdjustable(int overtime, float limitClose, float limitOpen, float deadbandClose, float deadbandOpen, float deadbandPosition, float costClose, float costOpen);
-    void process(bool _0_1s, bool ack);
-    void process(float setpoint, float position, bool _0_1s, bool ack);
+
+    void incTimeout();
+    int getTime();
+
+    bool isFaulty();
+    void resetFaulty();
+    int getStatus();
+
+    bool isCommandOpen();
+    bool isCommandClose();
+
+    float getSetpoint();
     void setSetpoint(float setpoint);
+
+    float getPosition();
     void setPosition(float position);
+
     void setOvertime(int overtime);
     void setLimits(float limitClose, float limitOpen);
     void setDeadbands(float deadbandClose, float deadbandOpen, float deadbandPosition);
     void setCosts(float costClose, float costOpen);
-    void fullOpen();
-    void fullClose();
-    void enable();
-    void disable();
 
-    float getSetpoint();
-    float getPosition();
+    void fullyOpen();
+    void fullyClose();
 };
 
 #endif
