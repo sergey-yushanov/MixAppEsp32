@@ -2,40 +2,31 @@
 
 AnalogSensor::AnalogSensor()
 {
-    filterSize_ = defaultFilterSize();
+    setFilterSize();
+    setRawLowLimit();
+    setRawHighLimit();
+    setValueLowLimit();
+    setValueHighLimit();
 }
 
-AnalogSensor::AnalogSensor(int input)
+void AnalogSensor::setRawLowLimit(float rawLowLimit)
 {
-    input_ = input;
-    filterSize_ = defaultFilterSize();
+    rawLowLimit_ = rawLowLimit;
 }
 
-AnalogSensor::AnalogSensor(int input, int filterSize)
+void AnalogSensor::setRawHighLimit(float rawHighLimit)
 {
-    input_ = input;
-    filterSize_ = filterSize;
+    rawHighLimit_ = rawHighLimit;
 }
 
-AnalogSensor::AnalogSensor(int input, float lowLimit, float highLimit)
+void AnalogSensor::setValueLowLimit(float valueLowLimit)
 {
-    input_ = input;
-    filterSize_ = defaultFilterSize();
-    lowLimit_ = lowLimit;
-    highLimit_ = highLimit;
+    valueLowLimit_ = valueLowLimit;
 }
 
-AnalogSensor::AnalogSensor(int input, int filterSize, float lowLimit, float highLimit)
+void AnalogSensor::setValueHighLimit(float valueHighLimit)
 {
-    input_ = input;
-    filterSize_ = filterSize;
-    lowLimit_ = lowLimit;
-    highLimit_ = highLimit;
-}
-
-int AnalogSensor::defaultFilterSize()
-{
-    return 20;
+    valueHighLimit_ = valueHighLimit;
 }
 
 void AnalogSensor::setFilterSize(int filterSize)
@@ -43,78 +34,41 @@ void AnalogSensor::setFilterSize(int filterSize)
     filterSize_ = filterSize;
 }
 
-float AnalogSensor::rawHighLimit()
+void AnalogSensor::setRaw(float raw)
 {
-    return 65536.0;
+    raw_ = raw;
+
+    scale();
+    filter();
 }
 
-float AnalogSensor::rawLowLimit()
+void AnalogSensor::setIntRaw(int intRaw)
 {
-    return 0.0;
-}
-
-void AnalogSensor::setInput(int input)
-{
-    input_ = input;
-}
-
-float AnalogSensor::getHighLimit()
-{
-    return highLimit_;
-}
-
-void AnalogSensor::setHighLimit(float hiLimit)
-{
-    highLimit_ = hiLimit;
-}
-
-float AnalogSensor::getLowLimit()
-{
-    return lowLimit_;
-}
-
-void AnalogSensor::setLowLimit(float lowLimit)
-{
-    lowLimit_ = lowLimit;
+    setRaw((float)intRaw);
 }
 
 bool AnalogSensor::isError()
 {
-    bool errorOver = valueRaw_ > rawHighLimit();
-    bool errorBelow = valueRaw_ < rawLowLimit();
-    error_ = errorOver || errorBelow;
-    return error_;
-}
-
-// void AnalogSensor::read()
-// {
-//     int raw = analogRead(input_);
-//     valueRaw_ = (float)raw;
-
-//     scale();
-//     filter();
-// }
-
-void AnalogSensor::scale()
-{
-    valueNew_ = (valueRaw_ - rawLowLimit()) / (rawHighLimit() - rawLowLimit()) * (highLimit_ - lowLimit_) + lowLimit_;
-}
-
-void AnalogSensor::filter()
-{
-    valueActual_ = (filterSize_ * valueMemorized_ + valueNew_) / (filterSize_ + 1.0);
-    valueMemorized_ = valueActual_;
+    bool errorOver = raw_ > rawHighLimit_;
+    bool errorBelow = raw_ < rawLowLimit_;
+    return errorOver || errorBelow;
 }
 
 float AnalogSensor::getValue()
 {
-    return valueActual_;
+    return value_;
 }
 
-void AnalogSensor::setValueRaw(int raw)
+void AnalogSensor::scale()
 {
-    valueRaw_ = (float)raw;
+    if (isError())
+        valueNew_ = 0.0;
+    else
+        valueNew_ = (raw_ - rawLowLimit_) / (rawHighLimit_ - rawLowLimit_) * (valueHighLimit_ - valueLowLimit_) + valueLowLimit_;
+}
 
-    scale();
-    filter();
+void AnalogSensor::filter()
+{
+    value_ = (filterSize_ * valueMemorized_ + valueNew_) / (filterSize_ + 1.0);
+    valueMemorized_ = value_;
 }

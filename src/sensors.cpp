@@ -16,20 +16,13 @@
 //const int analogMuxS3 = 32;
 //const int analogMuxPin = 35;
 
-// multiplexer
-//CD74HC4067 analogMux(analogMuxS0, analogMuxS1, analogMuxS2, analogMuxS3);
-
 // sensors array
 const int nAnalogSensors = 6;
 AnalogSensor analogSensors[nAnalogSensors];
 
 void analogSensorsSetup()
 {
-    for (int i = 0; i < nAnalogSensors; i++)
-    {
-        analogSensors[i].setHighLimit(100.0);
-        analogSensors[i].setLowLimit(0.0);
-    }
+    // todo: load sensors limits from preferencies
 }
 
 void analogSensorsRead()

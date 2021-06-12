@@ -43,7 +43,7 @@ void setup()
   m1Setup();
   g1Setup();
 
-  valveControl.disable();
+  valveAdjustable.disable();
 
   preferences.begin("", false);
 
@@ -59,11 +59,11 @@ void loop()
 {
   if (clk._1s)
   {
-    Serial.println(valveControl.getSetpoint());
-    Serial.println(valveControl.getPosition());
-    Serial.println(valveControl.status);
-    Serial.println(valveControl.commandOpen);
-    Serial.println(valveControl.commandClose);
+    Serial.println(valveAdjustable.getSetpoint());
+    Serial.println(valveAdjustable.getPosition());
+    Serial.println(valveAdjustable.getStatus());
+    Serial.println(valveAdjustable.isCommandOpen());
+    Serial.println(valveAdjustable.isCommandClose());
 
     // Serial.println();
 

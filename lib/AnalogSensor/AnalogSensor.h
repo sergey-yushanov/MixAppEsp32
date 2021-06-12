@@ -6,46 +6,37 @@
 class AnalogSensor
 {
 private:
-    int input_;
     int filterSize_;
-    float valueRaw_;
-    float valueNew_;
-    float valueActual_;
-    float valueMemorized_;
-    float highLimit_;
-    float lowLimit_;
 
-    bool error_;
+    float raw_;
+    float rawLowLimit_;
+    float rawHighLimit_;
+
+    float value_;
+    float valueLowLimit_;
+    float valueHighLimit_;
+
+    float valueNew_;
+    float valueMemorized_;
 
     void scale();
     void filter();
 
 public:
     AnalogSensor();
-    AnalogSensor(int input);
-    AnalogSensor(int input, int filterSize);
-    AnalogSensor(int input, float lowLimit, float highLimit);
-    AnalogSensor(int input, int filterSize, float lowLimit, float highLimit);
 
-    float rawHighLimit();
-    float rawLowLimit();
+    void setRawLowLimit(float rawLowLimit = 0.0);
+    void setRawHighLimit(float rawHighLimit = 65536.0);
 
-    void setInput(int input);
+    void setValueLowLimit(float valueLowLimit = 0.0);
+    void setValueHighLimit(float valueHighLimit = 100.0);
 
-    float getHighLimit();
-    void setHighLimit(float hiLimit);
+    void setFilterSize(int filterSize = 20);
 
-    float getLowLimit();
-    void setLowLimit(float lowLimit);
-
-    int defaultFilterSize();
-    void setFilterSize(int filterSize);
-
+    void setRaw(float raw);
+    void setIntRaw(int intRaw);
     bool isError();
-    //void read();
     float getValue();
-
-    void setValueRaw(int raw);
 };
 
 #endif

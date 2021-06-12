@@ -11,7 +11,6 @@ Valve::Valve()
 // valve faulty
 bool Valve::isFaulty()
 {
-
     return faulty_;
 }
 
