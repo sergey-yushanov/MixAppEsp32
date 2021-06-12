@@ -6,8 +6,6 @@ DispenserCollector dispenserCollector;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
 
-bool ack;
-
 // dispenser collector flowmeter
 void g1Setup()
 {
@@ -34,6 +32,13 @@ void m1Setup()
 void IRAM_ATTR m1Pulse()
 {
     m1.pulseCounter();
+}
+
+// timeouts
+void incTimeouts()
+{
+    valveAdjustable.incTimeout();
+    dispenserCollector.valveAdjustable.incTimeout();
 }
 
 //

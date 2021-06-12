@@ -61,10 +61,10 @@ public:
     float getPosition();
     void setPosition(float position);
 
-    void setOvertime(int overtime);
-    void setLimits(float limitClose, float limitOpen);
-    void setDeadbands(float deadbandClose, float deadbandOpen, float deadbandPosition);
-    void setCosts(float costClose, float costOpen);
+    void setOvertime(int overtime = 150);
+    void setLimits(float limitClose = 0.0, float limitOpen = 100.0);
+    void setDeadbands(float deadbandClose = 1.0, float deadbandOpen = 1.0, float deadbandPosition = 1.0);
+    void setCosts(float costClose = 1.0, float costOpen = 1.0);
 
     void fullyOpen();
     void fullyClose();

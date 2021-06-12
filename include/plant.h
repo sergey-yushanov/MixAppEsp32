@@ -8,7 +8,6 @@
 extern DispenserCollector dispenserCollector;
 extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
-// extern bool ack;
 
 void m1Setup();
 void IRAM_ATTR m1Pulse();
@@ -16,6 +15,7 @@ void IRAM_ATTR m1Pulse();
 void g1Setup();
 void IRAM_ATTR g1Pulse();
 
-void loopPlant();
+void incTimeouts();
+// void loopPlant();
 
 #endif

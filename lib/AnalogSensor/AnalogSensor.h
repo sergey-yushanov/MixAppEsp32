@@ -31,7 +31,7 @@ public:
     void setValueLowLimit(float valueLowLimit = 0.0);
     void setValueHighLimit(float valueHighLimit = 100.0);
 
-    void setFilterSize(int filterSize = 20);
+    void setFilterSize(int filterSize = 0);
 
     void setRaw(float raw);
     void setIntRaw(int intRaw);

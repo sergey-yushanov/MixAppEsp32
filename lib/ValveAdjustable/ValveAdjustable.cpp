@@ -2,14 +2,10 @@
 
 ValveAdjustable::ValveAdjustable()
 {
-    overtime_ = 150;
-    limitClose_ = 0.0;
-    limitOpen_ = 100.0;
-    deadbandClose_ = 1.0;
-    deadbandOpen_ = 1.0;
-    deadbandPosition_ = 1.0;
-    costClose_ = 1.0;
-    costOpen_ = 1.0;
+    setOvertime();
+    setLimits();
+    setDeadbands();
+    setCosts();
 }
 
 void ValveAdjustable::incTimeout()
@@ -155,23 +151,23 @@ void ValveAdjustable::setOvertime(int overtime)
     overtime_ = overtime;
 }
 
-void ValveAdjustable::setLimits(float limitOpen, float limitClose)
+void ValveAdjustable::setLimits(float limitClose, float limitOpen)
 {
-    limitOpen_ = limitOpen;
     limitClose_ = limitClose;
+    limitOpen_ = limitOpen;
 }
 
-void ValveAdjustable::setDeadbands(float deadbandOpen, float deadbandClose, float deadbandPosition)
+void ValveAdjustable::setDeadbands(float deadbandClose, float deadbandOpen, float deadbandPosition)
 {
-    deadbandOpen_ = deadbandOpen;
     deadbandClose_ = deadbandClose;
+    deadbandOpen_ = deadbandOpen;
     deadbandPosition_ = deadbandPosition;
 }
 
-void ValveAdjustable::setCosts(float costOpen, float costClose)
+void ValveAdjustable::setCosts(float costClose, float costOpen)
 {
-    costOpen_ = costOpen;
     costClose_ = costClose;
+    costOpen_ = costOpen;
 }
 
 void ValveAdjustable::fullyOpen()

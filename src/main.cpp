@@ -43,8 +43,6 @@ void setup()
   m1Setup();
   g1Setup();
 
-  valveAdjustable.disable();
-
   preferences.begin("", false);
 
   delay(1000);
@@ -59,11 +57,23 @@ void loop()
 {
   if (clk._1s)
   {
+    incTimeouts();
+
+    Serial.print("reg kl set = ");
     Serial.println(valveAdjustable.getSetpoint());
+    Serial.print("reg kl pos = ");
     Serial.println(valveAdjustable.getPosition());
-    Serial.println(valveAdjustable.getStatus());
-    Serial.println(valveAdjustable.isCommandOpen());
-    Serial.println(valveAdjustable.isCommandClose());
+
+    Serial.print("kl 0 set = ");
+    Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
+    Serial.print("kl 0 pos = ");
+    Serial.println(dispenserCollector.valveAdjustable.getPosition());
+
+    // Serial.println(valveAdjustable.getStatus());
+    // Serial.print("command open = ");
+    // Serial.println(valveAdjustable.isCommandOpen());
+    // Serial.print("command close = ");
+    // Serial.println(valveAdjustable.isCommandClose());
 
     // Serial.println();
 
@@ -76,14 +86,16 @@ void loop()
     // Serial.println();
   }
 
-  if (clk._0_2s)
+  if (clk._0_1s)
   {
-    mbReadAnalog();
-    mbWriteDiscrete();
+    // todo : разделить по времени, иначе ересь всякая лезет
+    // mbPoll();
+    // mbReadAnalog();
+    // mbWriteDiscrete();
     //mbWriteDiscrete21();
   }
 
-  loopPlant();
+  // loopPlant();
   clockReset();
 }
 
