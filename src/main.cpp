@@ -34,9 +34,9 @@ Preferences preferences;
 // Первоначальная настройка
 void setup()
 {
-  nullifyBuffers();
-  analogSensorsSetup();
   Serial.begin(115200);
+  // nullifyBuffers();
+  analogSensorsSetup();
   clockSetup();
   mbSetup();
 
@@ -89,7 +89,7 @@ void loop()
   if (clk._0_1s)
   {
     // todo : разделить по времени, иначе ересь всякая лезет
-    // mbPoll();
+    mbPoll();
     // mbReadAnalog();
     // mbWriteDiscrete();
     //mbWriteDiscrete21();

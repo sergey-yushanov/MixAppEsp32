@@ -5,7 +5,7 @@
 ModbusClientRTU MB(Serial2);
 uint32_t mbToken = 1111;
 
-int addrConter = 0;
+int addrCounter = 0;
 
 uint8_t buffer20[2];
 uint8_t buffer21[2];
@@ -61,6 +61,7 @@ void handleError(Error error, uint32_t token)
 
 void mbSetup()
 {
+    nullifyBuffers();
     Serial2.begin(9600, SERIAL_8N1);
     MB.onDataHandler(&handleData);
     MB.onErrorHandler(&handleError);
@@ -74,7 +75,6 @@ void mbReadAnalog()
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        //Serial.print("Error creating request: ");
         Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
@@ -112,38 +112,35 @@ void mbSetDiscrete()
     // Serial.println();
 }
 
-void mbWriteDiscrete() //(uint8_t *buffer)
-{
-    mbSetDiscrete();
+// void mbWriteDiscrete(uint8_t serverID, uint16_t p1, uint16_t p2, uint8_t count, uint8_t *buffer)
+// {
+//     // mbSetDiscrete();
 
-    Error err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
-    if (err != SUCCESS)
-    {
-        ModbusError e(err);
-        //Serial.print("Error creating request: ");
-        Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-    }
+//     Error err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
+//     if (err != SUCCESS)
+//     {
+//         ModbusError e(err);
+//         Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//     }
 
-    err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
-    if (err != SUCCESS)
-    {
-        ModbusError e(err);
-        //Serial.print("Error creating request: ");
-        Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-    }
-}
+//     err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+//     if (err != SUCCESS)
+//     {
+//         ModbusError e(err);
+//         Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//     }
+// }
 
 void mbWriteDiscrete20() //(uint8_t *buffer)
 {
-    mbSetDiscrete();
+    // mbSetDiscrete();
 
     Error err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        //Serial.print("Error creating request: ");
         Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
@@ -151,28 +148,30 @@ void mbWriteDiscrete20() //(uint8_t *buffer)
 
 void mbWriteDiscrete21()
 {
-    mbSetDiscrete();
+    // mbSetDiscrete();
 
     Error err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        //Serial.print("Error creating request: ");
         Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
 }
 
+// опрос всех адресов последовательно
 void mbPoll()
 {
-    if (addrConter == 0)
+    mbSetDiscrete();
+
+    if (addrCounter == 0)
         mbReadAnalog();
-    if (addrConter == 1)
+    if (addrCounter == 1)
         mbWriteDiscrete20();
-    if (addrConter == 2)
+    if (addrCounter == 2)
         mbWriteDiscrete21();
 
-    addrConter++;
-    if (addrConter > 2)
-        addrConter = 0;
+    addrCounter++;
+    if (addrCounter > 2)
+        addrCounter = 0;
 }

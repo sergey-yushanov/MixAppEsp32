@@ -12,15 +12,14 @@
 //void handleData(ModbusMessage response, uint32_t token);
 //void handleError(Error error, uint32_t token);
 
-void nullifyBuffers();
+// void nullifyBuffers();
 void mbSetup();
-
 void mbPoll();
 
-void mbReadAnalog();
+// void mbReadAnalog();
 // void mbSetDiscrete();
-void mbWriteDiscrete();
-void mbWriteDiscrete20();
-void mbWriteDiscrete21();
+// void mbWriteDiscrete();
+// void mbWriteDiscrete20();
+// void mbWriteDiscrete21();
 
 #endif
