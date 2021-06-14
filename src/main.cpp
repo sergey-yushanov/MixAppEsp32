@@ -9,6 +9,8 @@
 //#include "i2c_hub.h"
 #include "mb_master.h"
 
+#include "access_point.h"
+
 Preferences preferences;
 
 // timer clock
@@ -43,7 +45,9 @@ void setup()
   m1Setup();
   g1Setup();
 
-  preferences.begin("", false);
+  webSetup();
+
+  // preferences.begin("", false);
 
   delay(1000);
 }
@@ -57,17 +61,25 @@ void loop()
 {
   if (clk._1s)
   {
+    // webPrintIp();
+
+    Serial.print("m1 = ");
+    Serial.print(m1.getFlow());
+
+    Serial.print("\tg1 = ");
+    Serial.println(dispenserCollector.flowmeter.getFlow());
+
     incTimeouts();
 
-    Serial.print("reg kl set = ");
-    Serial.println(valveAdjustable.getSetpoint());
-    Serial.print("reg kl pos = ");
-    Serial.println(valveAdjustable.getPosition());
+    // Serial.print("reg kl set = ");
+    // Serial.println(valveAdjustable.getSetpoint());
+    // Serial.print("reg kl pos = ");
+    // Serial.println(valveAdjustable.getPosition());
 
-    Serial.print("kl 0 set = ");
-    Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
-    Serial.print("kl 0 pos = ");
-    Serial.println(dispenserCollector.valveAdjustable.getPosition());
+    // Serial.print("kl 0 set = ");
+    // Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
+    // Serial.print("kl 0 pos = ");
+    // Serial.println(dispenserCollector.valveAdjustable.getPosition());
 
     // Serial.println(valveAdjustable.getStatus());
     // Serial.print("command open = ");
@@ -95,6 +107,7 @@ void loop()
     //mbWriteDiscrete21();
   }
 
+  // webLoop();
   // loopPlant();
   clockReset();
 }

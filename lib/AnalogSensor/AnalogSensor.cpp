@@ -34,6 +34,11 @@ void AnalogSensor::setFilterSize(int filterSize)
     filterSize_ = filterSize;
 }
 
+float AnalogSensor::getRaw()
+{
+    return raw_;
+}
+
 void AnalogSensor::setRaw(float raw)
 {
     raw_ = raw;

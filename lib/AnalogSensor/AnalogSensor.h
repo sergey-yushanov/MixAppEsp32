@@ -33,6 +33,7 @@ public:
 
     void setFilterSize(int filterSize = 0);
 
+    float getRaw();
     void setRaw(float raw);
     void setIntRaw(int intRaw);
     bool isError();
