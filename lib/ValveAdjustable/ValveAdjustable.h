@@ -40,6 +40,8 @@ private:
 
     AnalogSensor positionSensor_;
 
+    void setPosition(float position);
+
     void setFaulty();
     void setRequest();
     void setCommand();
@@ -64,7 +66,6 @@ public:
 
     float getPosition();
     void updatePosition();
-    void setPosition(float position);
 
     int getOvertime();
     void setOvertime(int overtime = 150);

@@ -10,6 +10,9 @@
 #include "sensors.h"
 #include "clock_pulses.h"
 
+#include "json_serialize.h"
+#include "json_deserialize.h"
+
 // extern const char *ssid;
 // extern const char *password;
 

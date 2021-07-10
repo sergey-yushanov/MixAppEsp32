@@ -7,6 +7,7 @@ Flowmeter m1;
 ValveAdjustable valveAdjustable;
 
 bool ack;
+bool showSettings;
 
 // dispenser collector flowmeter
 void g1Setup()
@@ -54,10 +55,16 @@ void resetFaults()
     }
 }
 
+void plantSetup()
+{
+    ack = true;
+    showSettings = true;
+    m1Setup();
+    g1Setup();
+}
+
 void plantLoop()
 {
-    incTimeouts();
-
     if (ack)
     {
         resetFaults();

@@ -1,0 +1,44 @@
+{
+    "showSettings": true,
+    "common": {
+        "valveAdjustable": {
+            "overtime": 1500,
+            "sensor": {
+                "rawLowLimit": 0,
+                "rawHighLimit": 65536,
+                "valueLowLimit": 0,
+                "valueHighLimit": 100
+            }
+        }
+    },
+    "dispenserCollectors": [
+        {
+            "number": 1,
+            "valveAdjustable": {
+                "setpoint": 0,
+                "overtime": 150,
+                "sensor": {
+                    "rawLowLimit": 0,
+                    "rawHighLimit": 65536,
+                    "valueLowLimit": 0,
+                    "valueHighLimit": 100
+                }
+            },
+            "valves": [
+                {
+                    "number": 1,
+                    "commandOpen": false,
+                    "commandClose": false
+                },
+                {
+                    "number": 3,
+                    "commandOpen": false,
+                    "commandClose": false
+                }
+            ],
+            "flowmeter": {
+                "pulsesPerLiter": 106.777
+            }
+        }
+    ]
+}

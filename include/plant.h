@@ -10,14 +10,16 @@ extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
 
 extern bool ack;
+extern bool showSettings;
 
-void m1Setup();
+// void m1Setup();
 void IRAM_ATTR m1Pulse();
 
-void g1Setup();
+// void g1Setup();
 void IRAM_ATTR g1Pulse();
 
-// void incTimeouts();
+void incTimeouts();
+void plantSetup();
 void plantLoop();
 // void loopPlant();
 

@@ -143,8 +143,11 @@ float ValveAdjustable::getSetpoint()
 
 void ValveAdjustable::setSetpoint(float setpoint)
 {
-    setpoint_ = setpoint;
-    setCommand();
+    if (setpoint >= 0 && setpoint <= 100)
+    {
+        setpoint_ = setpoint;
+        setCommand();
+    }
 }
 
 float ValveAdjustable::getPosition()
@@ -170,7 +173,8 @@ int ValveAdjustable::getOvertime()
 
 void ValveAdjustable::setOvertime(int overtime)
 {
-    overtime_ = overtime;
+    if (overtime > 0)
+        overtime_ = overtime;
 }
 
 float ValveAdjustable::getLimitClose()
@@ -185,12 +189,14 @@ float ValveAdjustable::getLimitOpen()
 
 void ValveAdjustable::setLimitClose(float limitClose)
 {
-    limitClose_ = limitClose;
+    if (limitClose >= 0 && limitClose <= 100)
+        limitClose_ = limitClose;
 }
 
 void ValveAdjustable::setLimitOpen(float limitOpen)
 {
-    limitOpen_ = limitOpen;
+    if (limitOpen >= 0 && limitOpen <= 100)
+        limitOpen_ = limitOpen;
 }
 
 float ValveAdjustable::getDeadbandClose()
