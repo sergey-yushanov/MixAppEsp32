@@ -34,19 +34,24 @@ void handleData(ModbusMessage response, uint32_t token)
     {
         uint16_t value;
         response.get(3 + 0 * 2, value);
-        analogSensors[0].setIntRaw(value);
+        valveAdjustable.getPositionSensor()->setIntRaw(value);
+        valveAdjustable.updatePosition();
+        // analogSensors[0].setIntRaw(value);
         response.get(3 + 1 * 2, value);
-        analogSensors[1].setIntRaw(value);
-        response.get(3 + 2 * 2, value);
-        analogSensors[2].setIntRaw(value);
-        response.get(3 + 3 * 2, value);
-        analogSensors[3].setIntRaw(value);
-        response.get(3 + 4 * 2, value);
-        analogSensors[4].setIntRaw(value);
-        response.get(3 + 5 * 2, value);
-        analogSensors[5].setIntRaw(value);
+        dispenserCollector.valveAdjustable.getPositionSensor()->setIntRaw(value);
+        dispenserCollector.valveAdjustable.updatePosition();
+        // analogSensors[1].setIntRaw(value);
 
-        analogSensorsRead();
+        // response.get(3 + 2 * 2, value);
+        // analogSensors[2].setIntRaw(value);
+        // response.get(3 + 3 * 2, value);
+        // analogSensors[3].setIntRaw(value);
+        // response.get(3 + 4 * 2, value);
+        // analogSensors[4].setIntRaw(value);
+        // response.get(3 + 5 * 2, value);
+        // analogSensors[5].setIntRaw(value);
+
+        // analogSensorsRead();
     }
 }
 

@@ -9,9 +9,19 @@ AnalogSensor::AnalogSensor()
     setValueHighLimit();
 }
 
+float AnalogSensor::getRawLowLimit()
+{
+    return rawLowLimit_;
+}
+
 void AnalogSensor::setRawLowLimit(float rawLowLimit)
 {
     rawLowLimit_ = rawLowLimit;
+}
+
+float AnalogSensor::getRawHighLimit()
+{
+    return rawHighLimit_;
 }
 
 void AnalogSensor::setRawHighLimit(float rawHighLimit)
@@ -19,9 +29,19 @@ void AnalogSensor::setRawHighLimit(float rawHighLimit)
     rawHighLimit_ = rawHighLimit;
 }
 
+float AnalogSensor::getValueLowLimit()
+{
+    return valueLowLimit_;
+}
+
 void AnalogSensor::setValueLowLimit(float valueLowLimit)
 {
     valueLowLimit_ = valueLowLimit;
+}
+
+float AnalogSensor::getValueHighLimit()
+{
+    return valueHighLimit_;
 }
 
 void AnalogSensor::setValueHighLimit(float valueHighLimit)

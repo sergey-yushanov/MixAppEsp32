@@ -24,12 +24,18 @@ public:
     Flowmeter(int pin, float pulsesPerLiter);
     Flowmeter(int pin, float pulsesPerLiter, long intervalMillis);
     long defaultIntervalMillis();
+
+    float getPulsesPerLiter();
     void setPulsesPerLiter(float pulsesPerLiter);
+
     void pulseCounter();
+
     int getPin();
     void setPin(int pin);
+
     float getFlow();
     double getVolume();
+
     void nullifyVolume();
 };
 

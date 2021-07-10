@@ -33,6 +33,11 @@ long Flowmeter::defaultIntervalMillis()
     return 200;
 }
 
+float Flowmeter::getPulsesPerLiter()
+{
+    return pulsesPerLiter_;
+}
+
 void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 {
     pulsesPerLiter_ = pulsesPerLiter;

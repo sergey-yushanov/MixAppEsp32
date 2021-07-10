@@ -1,44 +1,121 @@
 #include "access_point.h"
 
-float temperature, humidity, pressure, altitude;
-
-/*Put your SSID & Password*/
 const char *ssid = "ESP32-Access-Point";
 const char *password = "123456789";
 
 AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
 
-String readValveAdjustablePosition()
+String jsonToSend;
+bool showSettings = false;
+
+// Allocate the received JSON
+StaticJsonDocument<200> jsonReceived;
+
+const char index_html[] PROGMEM = R"rawliteral(
+    <html>
+        <head>
+            <script>
+                var gateway = `ws://${window.location.hostname}/ws`;
+                var websocket;
+                window.addEventListener('load', onLoad);
+                function initWebSocket() {
+                    console.log('Trying to open a WebSocket connection...');
+                    websocket = new WebSocket(gateway);
+                    websocket.onopen    = onOpen;
+                    websocket.onclose   = onClose;
+                    websocket.onmessage = onMessage;
+                    websocket.onerror   = onError;
+                }
+                function onOpen(event) {
+                    console.log('Connection opened');
+                }
+                function onClose(event) {
+                    console.log('Connection closed');
+                    setTimeout(initWebSocket, 2000);
+                }
+                function onMessage(event) {
+                    console.log(event.data);
+                }
+                function onError (event) {
+                    console.log("ERROR: " + event.data);
+                }
+                function onLoad(event) {
+                    initWebSocket();
+                }
+                function doSend(message) {
+                    console.log("SENT: " + message);
+                    websocket.send(message);
+                }
+            </script>
+        </head>
+    </html>
+)rawliteral";
+
+void notifyClients()
 {
-    return String(valveAdjustable.getPosition());
+    ws.textAll(jsonToSend.c_str(), jsonToSend.length());
 }
 
-String readDispenserValveAdjustablePosition()
+void messageContainsKeys()
 {
-    return String(dispenserCollector.valveAdjustable.getPosition());
-}
-
-String readAnalogSensorRaw0()
-{
-    return String(analogSensors[0].getRaw());
-}
-
-String readAnalogSensorRaw1()
-{
-    return String(analogSensors[1].getRaw());
-}
-
-bool parseJson(String jsonMessage)
-{
-    StaticJsonDocument<256> doc; //Memory pool
-    auto error = deserializeJson(doc, jsonMessage);
-    if (error)
+    if (jsonReceived.containsKey("showSettings"))
     {
-        Serial.print(F("deserializeJson() failed with code "));
-        Serial.println(error.c_str());
-        return false;
+        showSettings = jsonReceived["showSettings"];
     }
-    return true;
+
+    if (jsonReceived.containsKey("ack"))
+    {
+        ack = jsonReceived["ack"];
+    }
+}
+
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
+{
+    AwsFrameInfo *info = (AwsFrameInfo *)arg;
+    if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
+    {
+        data[len] = 0;
+        // Serial.println((char *)data);
+
+        // Deserialize the JSON document
+        DeserializationError error = deserializeJson(jsonReceived, data);
+        // Test if parsing succeeds.
+        if (error)
+        {
+            Serial.print(F("deserializeJson() failed: "));
+            Serial.println(error.f_str());
+            return;
+        }
+        // check message keys
+        messageContainsKeys();
+    }
+}
+
+void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
+             void *arg, uint8_t *data, size_t len)
+{
+    switch (type)
+    {
+    case WS_EVT_CONNECT:
+        Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+        break;
+    case WS_EVT_DISCONNECT:
+        Serial.printf("WebSocket client #%u disconnected\n", client->id());
+        break;
+    case WS_EVT_DATA:
+        handleWebSocketMessage(arg, data, len);
+        break;
+    case WS_EVT_PONG:
+    case WS_EVT_ERROR:
+        break;
+    }
+}
+
+void initWebSocket()
+{
+    ws.onEvent(onEvent);
+    server.addHandler(&ws);
 }
 
 void webSetup()
@@ -47,140 +124,164 @@ void webSetup()
 
     // Setting the ESP as an access point
     Serial.print("Setting AP (Access Point)…");
-    // Remove the password parameter, if you want the AP (Access Point) to be open
+
+    WiFi.mode(WIFI_AP);
     WiFi.softAP(ssid, password);
 
-    IPAddress IP = WiFi.softAPIP();
+    Serial.println("Wait 100 ms for AP_START...");
+    delay(100);
+
+    Serial.println("Set softAPConfig");
+    IPAddress Ip(192, 168, 11, 1);
+    IPAddress NMask(255, 255, 255, 0);
+    WiFi.softAPConfig(Ip, Ip, NMask);
+
+    IPAddress myIP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
-    Serial.println(IP);
+    Serial.println(myIP);
 
-    // valveAdjustable
-    server.on(
-        "/valveAdjustable/position", HTTP_GET, [](AsyncWebServerRequest *request)
-        { request->send_P(200, "text/plain", readValveAdjustablePosition().c_str()); });
-    server.on(
-        "/valveAdjustable/raw", HTTP_GET, [](AsyncWebServerRequest *request)
-        { request->send_P(200, "text/plain", readAnalogSensorRaw0().c_str()); });
-    server.on(
-        "/valveAdjustable/fullyOpen", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            valveAdjustable.fullyOpen();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/valveAdjustable/fullyClose", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            valveAdjustable.fullyClose();
-            request->send_P(200, "text/plain", "");
-        });
+    // Init WebSockets
+    initWebSocket();
 
-    // dispenserCollector valveAdjustable
-    server.on(
-        "/dispenserCollector/valveAdjustable/position", HTTP_GET, [](AsyncWebServerRequest *request)
-        { request->send_P(200, "text/plain", readDispenserValveAdjustablePosition().c_str()); });
-    server.on(
-        "/dispenserCollector/valveAdjustable/raw", HTTP_GET, [](AsyncWebServerRequest *request)
-        { request->send_P(200, "text/plain", readAnalogSensorRaw1().c_str()); });
-    server.on(
-        "/dispenserCollector/valveAdjustable/fullyOpen", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valveAdjustable.fullyOpen();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/dispenserCollector/valveAdjustable/fullyClose", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valveAdjustable.fullyClose();
-            request->send_P(200, "text/plain", "");
-        });
-
-    // dispenserCollector valves
-
-    server.on(
-        "/dispenserCollector/valves/0/open", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[0].open();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/dispenserCollector/valves/0/close", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[0].close();
-            request->send_P(200, "text/plain", "");
-        });
-
-    server.on(
-        "/dispenserCollector/valves/1/open", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[1].open();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/dispenserCollector/valves/1/close", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[1].close();
-            request->send_P(200, "text/plain", "");
-        });
-
-    server.on(
-        "/dispenserCollector/valves/2/open", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[2].open();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/dispenserCollector/valves/2/close", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[2].close();
-            request->send_P(200, "text/plain", "");
-        });
-
-    server.on(
-        "/dispenserCollector/valves/3/open", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[3].open();
-            request->send_P(200, "text/plain", "");
-        });
-    server.on(
-        "/dispenserCollector/valves/3/close", HTTP_GET, [](AsyncWebServerRequest *request)
-        {
-            dispenserCollector.valves[3].close();
-            request->send_P(200, "text/plain", "");
-        });
-    // server.on("/humidity", HTTP_GET, [](AsyncWebServerRequest *request)
-    //           { request->send_P(200, "text/plain", readHumi().c_str()); });
-    // server.on("/pressure", HTTP_GET, [](AsyncWebServerRequest *request)
-    //           { request->send_P(200, "text/plain", readPres().c_str()); });
-
-    // Example of function that holds and HTTP_POST request on 192.168.4.1:80/set_data
-    // server.on(
-    //     "/valveAdjustable/setpoint", HTTP_POST, [](AsyncWebServerRequest *request) {}, NULL,
-    //     [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
-    //     {
-    //         // Here goes the code to manage the post request
-    //         // The data is received on 'data' variable
-    //         // Parse data
-    //         Serial.println("POST RECEIVED"); // Just for debug
-    //         // Serial.print("len = ");          // Just for debug
-    //         // Serial.println(len);             // Just for debug
-    //         Serial.print("data = "); // Just for debug
-    //         Serial.println(data);    // Just for debug
-
-    //         // StaticJsonBuffer<50> JSONBuffer;                   // create a buffer that fits for you
-    //         // JsonObject &parsed = JSONBuffer.parseObject(data); //Parse message
-    //         // uint8_t received_data = parsed["setpoint"];        //Get data
-    //         // Serial.println(received_data);
-
-    //         // parseJson(data);
-
-    //         request->send(200, "text/plain", "setpoint");
-    //     });
+    // Route for root / web page
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send_P(200, "text/html", index_html); });
 
     // Start server
     server.begin();
+
+    showSettings = false;
+}
+
+String boolToString(bool value)
+{
+    return value ? "true" : "false";
+}
+
+String valveJSON(int number, Valve valve)
+{
+    String result;
+    result = "{\"number\": ";
+    result += number;
+    result += ", \"command\": ";
+    result += boolToString(valve.isCommand());
+    result += ", \"faulty\": ";
+    result += boolToString(valve.isFaulty());
+    result += "}";
+    return result;
+}
+
+String valveAdjustableJSON(ValveAdjustable valveAdjustable)
+{
+    String result;
+    result = "\"valveAdjustable\": {\"commandOpen\": ";
+    result += boolToString(valveAdjustable.isCommandOpen());
+    result += ", \"commandClose\": ";
+    result += boolToString(valveAdjustable.isCommandClose());
+    result += ", \"faulty\": ";
+    result += boolToString(valveAdjustable.isFaulty());
+    result += ", \"setpoint\": ";
+    result += valveAdjustable.getSetpoint();
+    result += ", \"position\": ";
+    result += valveAdjustable.getPosition();
+    if (showSettings)
+    {
+        result += ", \"overtime\": ";
+        result += valveAdjustable.getOvertime();
+        result += ", \"limitClose\": ";
+        result += valveAdjustable.getLimitClose();
+        result += ", \"limitOpen\": ";
+        result += valveAdjustable.getLimitOpen();
+        result += ", \"deadbandClose\": ";
+        result += valveAdjustable.getDeadbandClose();
+        result += ", \"deadbandOpen\": ";
+        result += valveAdjustable.getDeadbandOpen();
+        result += ", \"deadbandPosition\": ";
+        result += valveAdjustable.getDeadbandPosition();
+        result += ", \"costClose\": ";
+        result += valveAdjustable.getCostClose();
+        result += ", \"costOpen\": ";
+        result += valveAdjustable.getCostOpen();
+        result += ", \"sensor\": {\"raw\": ";
+        result += valveAdjustable.getPositionSensor()->getRaw();
+        result += ", \"rawLowLimit\": ";
+        result += valveAdjustable.getPositionSensor()->getRawLowLimit();
+        result += ", \"rawHighLimit\": ";
+        result += valveAdjustable.getPositionSensor()->getRawHighLimit();
+        result += ", \"valueLowLimit\": ";
+        result += valveAdjustable.getPositionSensor()->getValueLowLimit();
+        result += ", \"valueHighLimit\": ";
+        result += valveAdjustable.getPositionSensor()->getValueHighLimit();
+        result += "}";
+    }
+    result += "}";
+    return result;
+}
+
+String flowmeterJSON(Flowmeter flowmeter)
+{
+    String result;
+    result = "\"flowmeter\": {\"flow\": ";
+    result += flowmeter.getFlow();
+    result += ", \"volume\": ";
+    result += flowmeter.getVolume();
+    if (showSettings)
+    {
+        result += ", \"pulsesPerLiter\": ";
+        result += flowmeter.getPulsesPerLiter();
+    }
+    result += "}";
+    return result;
+}
+
+String dispenserCollectorJSON(int number, DispenserCollector dispenserCollector)
+{
+    String result;
+
+    result = "{\"number\": ";
+    result += number;
+    result += ", \"valves\": [";
+
+    for (int i = 0; i < dispenserCollector.nValves_; i++)
+    {
+        result += valveJSON(i + 1, dispenserCollector.valves[i]);
+        if (i < dispenserCollector.nValves_ - 1)
+        {
+            result += ",";
+        }
+    }
+    result += "], ";
+    result += valveAdjustableJSON(dispenserCollector.valveAdjustable);
+    result += ", ";
+    result += flowmeterJSON(dispenserCollector.flowmeter);
+    result += "}";
+
+    return result;
+}
+
+String commonJSON(ValveAdjustable valveAdjustable, Flowmeter flowmeter)
+{
+    String result;
+    result = valveAdjustableJSON(valveAdjustable);
+    result += ", ";
+    result += flowmeterJSON(flowmeter);
+    return result;
 }
 
 void webLoop()
 {
-    // char JSONMessage[] = "{\"SensorType\": \"Temperature\", \"Value\": 10}"; //Original message
+    ws.cleanupClients();
+
+    jsonToSend = "{\"common\": {";
+    jsonToSend += commonJSON(valveAdjustable, m1);
+    jsonToSend += "}, ";
+
+    jsonToSend += "\"dispenserCollectors\": [";
+    jsonToSend += dispenserCollectorJSON(1, dispenserCollector);
+    jsonToSend += "]";
+
+    jsonToSend += "}";
+
+    notifyClients();
+    Serial.println(jsonToSend);
 }

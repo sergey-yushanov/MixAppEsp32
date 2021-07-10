@@ -1,0 +1,53 @@
+{
+    "common": {
+        "valveAdjustable": {
+            "commandOpen": false,
+            "commandClose": true,
+            "faulty": false,
+            "setpoint": 0.00,
+            "position": 73.41
+        },
+        "flowmeter": {
+            "flow": 0.00,
+            "volume": 0.00
+        }
+    },
+    "dispenserCollectors": [
+        {
+            "number": 1,
+            "valves": [
+                {
+                    "number": 1,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 2,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 3,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 4,
+                    "command": false,
+                    "faulty": false
+                }
+            ],
+            "valveAdjustable": {
+                "commandOpen": false,
+                "commandClose": true,
+                "faulty": false,
+                "setpoint": 0.00,
+                "position": 50.68
+            },
+            "flowmeter": {
+                "flow": 0.00,
+                "volume": 0.00
+            }
+        }
+    ]
+}

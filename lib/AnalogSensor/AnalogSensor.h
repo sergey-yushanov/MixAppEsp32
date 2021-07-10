@@ -25,10 +25,16 @@ private:
 public:
     AnalogSensor();
 
+    float getRawLowLimit();
     void setRawLowLimit(float rawLowLimit = 0.0);
+
+    float getRawHighLimit();
     void setRawHighLimit(float rawHighLimit = 65536.0);
 
+    float getValueLowLimit();
     void setValueLowLimit(float valueLowLimit = 0.0);
+
+    float getValueHighLimit();
     void setValueHighLimit(float valueHighLimit = 100.0);
 
     void setFilterSize(int filterSize = 0);
@@ -36,6 +42,7 @@ public:
     float getRaw();
     void setRaw(float raw);
     void setIntRaw(int intRaw);
+
     bool isError();
     float getValue();
 };

@@ -3,9 +3,16 @@
 ValveAdjustable::ValveAdjustable()
 {
     setOvertime();
-    setLimits();
-    setDeadbands();
-    setCosts();
+    // set limits
+    setLimitClose();
+    setLimitOpen();
+    // set deadbands
+    setDeadbandClose();
+    setDeadbandOpen();
+    setDeadbandPosition();
+    // set costs
+    setCostClose();
+    setCostOpen();
 }
 
 void ValveAdjustable::incTimeout()
@@ -124,6 +131,11 @@ bool ValveAdjustable::isCommandClose()
     return commandClose_;
 }
 
+AnalogSensor *ValveAdjustable::getPositionSensor()
+{
+    return &positionSensor_;
+}
+
 float ValveAdjustable::getSetpoint()
 {
     return setpoint_;
@@ -140,10 +152,20 @@ float ValveAdjustable::getPosition()
     return position_;
 }
 
+void ValveAdjustable::updatePosition()
+{
+    setPosition(positionSensor_.getValue());
+}
+
 void ValveAdjustable::setPosition(float position)
 {
     position_ = position;
     setCommand();
+}
+
+int ValveAdjustable::getOvertime()
+{
+    return overtime_;
 }
 
 void ValveAdjustable::setOvertime(int overtime)
@@ -151,22 +173,73 @@ void ValveAdjustable::setOvertime(int overtime)
     overtime_ = overtime;
 }
 
-void ValveAdjustable::setLimits(float limitClose, float limitOpen)
+float ValveAdjustable::getLimitClose()
+{
+    return limitClose_;
+}
+
+float ValveAdjustable::getLimitOpen()
+{
+    return limitOpen_;
+}
+
+void ValveAdjustable::setLimitClose(float limitClose)
 {
     limitClose_ = limitClose;
+}
+
+void ValveAdjustable::setLimitOpen(float limitOpen)
+{
     limitOpen_ = limitOpen;
 }
 
-void ValveAdjustable::setDeadbands(float deadbandClose, float deadbandOpen, float deadbandPosition)
+float ValveAdjustable::getDeadbandClose()
+{
+    return deadbandClose_;
+}
+
+float ValveAdjustable::getDeadbandOpen()
+{
+    return deadbandOpen_;
+}
+
+float ValveAdjustable::getDeadbandPosition()
+{
+    return deadbandPosition_;
+}
+
+void ValveAdjustable::setDeadbandClose(float deadbandClose)
 {
     deadbandClose_ = deadbandClose;
+}
+
+void ValveAdjustable::setDeadbandOpen(float deadbandOpen)
+{
     deadbandOpen_ = deadbandOpen;
+}
+
+void ValveAdjustable::setDeadbandPosition(float deadbandPosition)
+{
     deadbandPosition_ = deadbandPosition;
 }
 
-void ValveAdjustable::setCosts(float costClose, float costOpen)
+float ValveAdjustable::getCostClose()
+{
+    return costClose_;
+}
+
+float ValveAdjustable::getCostOpen()
+{
+    return costOpen_;
+}
+
+void ValveAdjustable::setCostClose(float costClose)
 {
     costClose_ = costClose;
+}
+
+void ValveAdjustable::setCostOpen(float costOpen)
+{
     costOpen_ = costOpen;
 }
 

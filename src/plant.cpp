@@ -6,6 +6,8 @@ DispenserCollector dispenserCollector;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
 
+bool ack;
+
 // dispenser collector flowmeter
 void g1Setup()
 {
@@ -41,39 +43,24 @@ void incTimeouts()
     dispenserCollector.valveAdjustable.incTimeout();
 }
 
-//
-void plantProcess()
+// reset faults for all equipment
+void resetFaults()
 {
-    // РегКл
-    //valveControl.process();
+    valveAdjustable.resetFaulty();
+    dispenserCollector.valveAdjustable.resetFaulty();
+    for (int i = 0; i < dispenserCollector.nValves_; i++)
+    {
+        dispenserCollector.valves[i].resetFaulty();
+    }
+}
 
-    // пуск насоса
-    // ...
+void plantLoop()
+{
+    incTimeouts();
 
-    // открываем РегКл
-    // onTimerOpen.onTimer(!valveControl.isOpen() && !onTimerClose.status, 10000);
-    // if (onTimerOpen.status)
-    // {
-    // valveControl.open();
-    // Serial.println("РегКл - открываем");
-    // }
-
-    // закрываем РегКл
-    // onTimerClose.onTimer(!valveControl.isClose() && !onTimerOpen.status, 10000);
-    // if (onTimerClose.status)
-    // {
-    // if (valveControl.isOpen())
-    // {
-    //     valveControl.close();
-    // }
-
-    // if (valveControl.isClose())
-    // {
-    //     valveControl.open();
-    // }
-    //Serial.println("РегКл - закрываем");
-    // }
-
-    //valveControl.setSetpoint(34.0);
-    // valveControl.process(clk._0_1s, true);
+    if (ack)
+    {
+        resetFaults();
+        ack = false;
+    }
 }

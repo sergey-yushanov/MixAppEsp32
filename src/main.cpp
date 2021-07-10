@@ -36,20 +36,20 @@ Preferences preferences;
 // Первоначальная настройка
 void setup()
 {
-  Serial.begin(115200);
-  // nullifyBuffers();
-  analogSensorsSetup();
-  clockSetup();
-  mbSetup();
+    Serial.begin(115200);
+    // nullifyBuffers();
+    // analogSensorsSetup();
+    clockSetup();
+    mbSetup();
 
-  m1Setup();
-  g1Setup();
+    m1Setup();
+    g1Setup();
 
-  webSetup();
+    webSetup();
 
-  // preferences.begin("", false);
+    // preferences.begin("", false);
 
-  delay(1000);
+    delay(1000);
 }
 
 //int counter = 0;
@@ -59,57 +59,65 @@ void setup()
 // Цикл
 void loop()
 {
-  if (clk._1s)
-  {
-    // webPrintIp();
+    if (clk._1s)
+    {
+        // webPrintIp();
 
-    Serial.print("m1 = ");
-    Serial.print(m1.getFlow());
+        // Serial.print("m1 = ");
+        // Serial.print(m1.getFlow());
 
-    Serial.print("\tg1 = ");
-    Serial.println(dispenserCollector.flowmeter.getFlow());
+        // Serial.print("\tg1 = ");
+        // Serial.println(dispenserCollector.flowmeter.getFlow());
 
-    incTimeouts();
+        // incTimeouts();
+        // plantLoop();
 
-    // Serial.print("reg kl set = ");
-    // Serial.println(valveAdjustable.getSetpoint());
-    // Serial.print("reg kl pos = ");
-    // Serial.println(valveAdjustable.getPosition());
+        // webLoop();
 
-    // Serial.print("kl 0 set = ");
-    // Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
-    // Serial.print("kl 0 pos = ");
-    // Serial.println(dispenserCollector.valveAdjustable.getPosition());
+        // Serial.print("reg kl set = ");
+        // Serial.println(valveAdjustable.getSetpoint());
+        // Serial.print("reg kl pos = ");
+        // Serial.print(valveAdjustable.getPosition());
 
-    // Serial.println(valveAdjustable.getStatus());
-    // Serial.print("command open = ");
-    // Serial.println(valveAdjustable.isCommandOpen());
-    // Serial.print("command close = ");
-    // Serial.println(valveAdjustable.isCommandClose());
+        // Serial.print("kl 0 set = ");
+        // Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
+        // Serial.print("\tkl 0 pos = ");
+        // Serial.println(dispenserCollector.valveAdjustable.getPosition());
 
-    // Serial.println();
+        // Serial.println(valveAdjustable.getStatus());
+        // Serial.print("command open = ");
+        // Serial.println(valveAdjustable.isCommandOpen());
+        // Serial.print("command close = ");
+        // Serial.println(valveAdjustable.isCommandClose());
 
-    // for (int i = 0; i < nAnalogSensors; i++)
-    // {
-    //   Serial.print(i);
-    //   Serial.print('\t');
-    //   Serial.println(analogSensors[i].getValue());
-    // }
-    // Serial.println();
-  }
+        // Serial.println();
 
-  if (clk._0_1s)
-  {
-    // todo : разделить по времени, иначе ересь всякая лезет
-    mbPoll();
-    // mbReadAnalog();
-    // mbWriteDiscrete();
-    //mbWriteDiscrete21();
-  }
+        // for (int i = 0; i < nAnalogSensors; i++)
+        // {
+        //   Serial.print(i);
+        //   Serial.print('\t');
+        //   Serial.println(analogSensors[i].getValue());
+        // }
+        // Serial.println();
+    }
 
-  // webLoop();
-  // loopPlant();
-  clockReset();
+    if (clk._0_2s)
+    {
+        plantLoop();
+        webLoop();
+    }
+
+    if (clk._0_1s)
+    {
+        // todo : разделить по времени, иначе ересь всякая лезет
+        mbPoll();
+        // mbReadAnalog();
+        // mbWriteDiscrete();
+        //mbWriteDiscrete21();
+    }
+
+    // loopPlant();
+    clockReset();
 }
 
 // ==============================================================
