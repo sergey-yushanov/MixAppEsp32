@@ -13,7 +13,7 @@ bool showSettings;
 void g1Setup()
 {
     dispenserCollector.flowmeter.setPin(19);
-    dispenserCollector.flowmeter.setPulsesPerLiter(106.777);
+    // dispenserCollector.flowmeter.setPulsesPerLiter(106.777);
     pinMode(dispenserCollector.flowmeter.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(dispenserCollector.flowmeter.getPin()), g1Pulse, FALLING);
 }
@@ -27,7 +27,7 @@ void IRAM_ATTR g1Pulse()
 void m1Setup()
 {
     m1.setPin(18);
-    m1.setPulsesPerLiter(31.7); // 50.0
+    // m1.setPulsesPerLiter(31.7); // 50.0
     pinMode(m1.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(m1.getPin()), m1Pulse, FALLING);
 }
@@ -59,6 +59,9 @@ void plantSetup()
 {
     ack = true;
     showSettings = true;
+
+    dataSetup();
+
     m1Setup();
     g1Setup();
 }

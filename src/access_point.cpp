@@ -58,22 +58,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
     {
         data[len] = 0;
         jsonDeserialize(data);
-
-        // Allocate the received JSON
-        // StaticJsonDocument<200> jsonReceived;
-        // DynamicJsonDocument doc(1024);
-
-        // // Deserialize the JSON document
-        // DeserializationError error = deserializeJson(doc, data);
-        // // Test if parsing succeeds.
-        // if (error)
-        // {
-        //     Serial.print(F("deserializeJson() failed: "));
-        //     Serial.println(error.f_str());
-        //     return;
-        // }
-        // // check message keys
-        // messageContainsKeys(doc);
     }
 }
 

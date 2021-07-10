@@ -1,17 +1,10 @@
 #include <Arduino.h>
 
-#include <Preferences.h>
-
-//#include <PCF8575.h>
-#include "sensors.h"
 #include "clock_pulses.h"
 #include "plant.h"
-//#include "i2c_hub.h"
 #include "mb_master.h"
-
 #include "access_point.h"
-
-Preferences preferences;
+#include "save_data.h"
 
 // Первоначальная настройка
 void setup()
@@ -25,10 +18,9 @@ void setup()
     // m1Setup();
     // g1Setup();
     plantSetup();
+    dataSetup();
 
     webSetup();
-
-    // preferences.begin("", false);
 
     delay(1000);
 }
@@ -49,8 +41,8 @@ void loop()
 
     if (clk._0_1s)
     {
-        // todo: разделить по времени, иначе ересь всякая лезет
         mbPoll();
+        // увеличиваем таймеры для аварий по отсутствию движения
         incTimeouts();
     }
 

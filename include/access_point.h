@@ -4,12 +4,11 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include "ESPAsyncWebServer.h"
-// #include "AsyncJson.h"
 #include "ArduinoJson.h"
+
 #include "plant.h"
 #include "sensors.h"
 #include "clock_pulses.h"
-
 #include "json_serialize.h"
 #include "json_deserialize.h"
 
@@ -24,6 +23,5 @@
 
 void webSetup();
 void webLoop();
-// String webPrintIp();
 
 #endif
