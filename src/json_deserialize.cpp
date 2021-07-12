@@ -78,13 +78,13 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("valveAdjustable"))
     {
         valveAdjustableJSON(jsonReceived["valveAdjustable"], &valveAdjustable);
-        dataSave(preferences_common, &valveAdjustable);
+        // dataSave(preferences_common, &valveAdjustable);
     }
 
     if (jsonReceived.containsKey("flowmeter"))
     {
         flowmeterJSON(jsonReceived["flowmeter"], &m1);
-        dataSave(preferences_common, &m1);
+        // dataSave(preferences_common, &m1);
     }
 }
 
@@ -93,13 +93,13 @@ void dispenserCollectorJSON(DynamicJsonDocument jsonReceived, DispenserCollector
     if (jsonReceived.containsKey("valveAdjustable"))
     {
         valveAdjustableJSON(jsonReceived["valveAdjustable"], &dispenserCollector->valveAdjustable);
-        dataSave(preferences_dispenser_0, &dispenserCollector->valveAdjustable);
+        // dataSave(preferences_dispenser_0, &dispenserCollector->valveAdjustable);
     }
 
     if (jsonReceived.containsKey("flowmeter"))
     {
         flowmeterJSON(jsonReceived["flowmeter"], &dispenserCollector->flowmeter);
-        dataSave(preferences_dispenser_0, &dispenserCollector->flowmeter);
+        // dataSave(preferences_dispenser_0, &dispenserCollector->flowmeter);
     }
 
     if (jsonReceived.containsKey("valves"))
