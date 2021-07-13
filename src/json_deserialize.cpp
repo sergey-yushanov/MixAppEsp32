@@ -4,6 +4,9 @@ void flowmeterJSON(DynamicJsonDocument jsonReceived, Flowmeter *flowmeter)
 {
     if (jsonReceived.containsKey("pulsesPerLiter"))
         flowmeter->setPulsesPerLiter(jsonReceived["pulsesPerLiter"]);
+    if (jsonReceived.containsKey("nullifyVolume"))
+        if (jsonReceived["nullifyVolume"])
+            flowmeter->nullifyVolume();
 }
 
 void valveJSON(DynamicJsonDocument jsonReceived, Valve *valve)
@@ -88,18 +91,18 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     }
 }
 
-void dispenserCollectorJSON(DynamicJsonDocument jsonReceived, DispenserCollector *dispenserCollector)
+void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 {
     if (jsonReceived.containsKey("valveAdjustable"))
     {
-        valveAdjustableJSON(jsonReceived["valveAdjustable"], &dispenserCollector->valveAdjustable);
-        // dataSave(preferences_dispenser_0, &dispenserCollector->valveAdjustable);
+        valveAdjustableJSON(jsonReceived["valveAdjustable"], &collector->valveAdjustable);
+        // dataSave(preferences_dispenser_0, &collector->valveAdjustable);
     }
 
     if (jsonReceived.containsKey("flowmeter"))
     {
-        flowmeterJSON(jsonReceived["flowmeter"], &dispenserCollector->flowmeter);
-        // dataSave(preferences_dispenser_0, &dispenserCollector->flowmeter);
+        flowmeterJSON(jsonReceived["flowmeter"], &collector->flowmeter);
+        // dataSave(preferences_dispenser_0, &collector->flowmeter);
     }
 
     if (jsonReceived.containsKey("valves"))
@@ -110,7 +113,7 @@ void dispenserCollectorJSON(DynamicJsonDocument jsonReceived, DispenserCollector
             {
                 int valveNum = jsonReceived["valves"][i]["number"];
                 valveNum--;
-                valveJSON(jsonReceived["valves"][i], &dispenserCollector->valves[valveNum]);
+                valveJSON(jsonReceived["valves"][i], &collector->valves[valveNum]);
             }
         }
     }
@@ -127,16 +130,16 @@ void messageContainsKeys(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("common"))
         commonJSON(jsonReceived["common"]);
 
-    if (jsonReceived.containsKey("dispenserCollectors"))
+    if (jsonReceived.containsKey("collectors"))
     {
-        for (int i = 0; i < jsonReceived["dispenserCollectors"].size(); i++)
+        for (int i = 0; i < jsonReceived["collectors"].size(); i++)
         {
-            if (jsonReceived["dispenserCollectors"][i].containsKey("number"))
+            if (jsonReceived["collectors"][i].containsKey("number"))
             {
-                int dispenserCollectorNum = jsonReceived["dispenserCollectors"][i]["number"];
-                dispenserCollectorNum--;
-                if (dispenserCollectorNum == 0)
-                    dispenserCollectorJSON(jsonReceived["dispenserCollectors"][i], &dispenserCollector);
+                int collectorNum = jsonReceived["collectors"][i]["number"];
+                collectorNum--;
+                if (collectorNum == 0)
+                    collectorJSON(jsonReceived["collectors"][i], &collector);
             }
         }
     }

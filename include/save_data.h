@@ -6,7 +6,7 @@
 #include "plant.h"
 
 extern const char *preferences_common;
-extern const char *preferences_dispenser_0;
+extern const char *preferences_collector_0;
 
 void dataSetup();
 void dataSave(const char *key, ValveAdjustable *valveAdjustable);

@@ -125,7 +125,7 @@ void webLoop()
 {
     ws.cleanupClients();
 
-    String jsonToSend = jsonSerialize(valveAdjustable, m1, dispenserCollector, showSettings);
+    String jsonToSend = jsonSerialize(valveAdjustable, m1, collector, showSettings);
     notifyClients(jsonToSend);
     // Serial.println(jsonToSend);
 }

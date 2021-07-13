@@ -1,13 +1,13 @@
 #ifndef PLANT_h
 #define PLANT_h
 
-#include <DispenserCollector.h>
+#include <Collector.h>
 #include <Flowmeter.h>
 #include <ValveAdjustable.h>
 
 #include "save_data.h"
 
-extern DispenserCollector dispenserCollector;
+extern Collector collector;
 extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
 

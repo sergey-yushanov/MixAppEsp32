@@ -1,11 +1,11 @@
-#ifndef DISPENSER_COLLECTOR_h
-#define DISPENSER_COLLECTOR_h
+#ifndef COLLECTOR_h
+#define COLLECTOR_h
 
 #include <Valve.h>
 #include <ValveAdjustable.h>
 #include <Flowmeter.h>
 
-struct DispenserCollector
+struct Collector
 {
     static const int nValves_ = 4;
     Valve valves[nValves_];

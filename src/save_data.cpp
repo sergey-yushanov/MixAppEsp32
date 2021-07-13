@@ -3,7 +3,7 @@
 Preferences preferences;
 
 const char *preferences_common = "common";
-const char *preferences_dispenser_0 = "dispenser_0";
+const char *preferences_collector_0 = "collector_0";
 
 void valveAdjustableRead(ValveAdjustable *valveAdjustable)
 {
@@ -85,8 +85,8 @@ void dataSetup()
     preferences.end();
 
     // dispenser collector settings
-    preferences.begin(preferences_dispenser_0, false);
-    valveAdjustableRead(&dispenserCollector.valveAdjustable);
-    flowmeterRead(&dispenserCollector.flowmeter, 106.777);
+    preferences.begin(preferences_collector_0, false);
+    valveAdjustableRead(&collector.valveAdjustable);
+    flowmeterRead(&collector.flowmeter, 106.777);
     preferences.end();
 }

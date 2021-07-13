@@ -48,15 +48,15 @@ DynamicJsonDocument flowmeterJSON(Flowmeter flowmeter, bool showSettings)
     return doc;
 }
 
-DynamicJsonDocument dispenserCollectorJSON(int number, DispenserCollector dispenserCollector, bool showSettings)
+DynamicJsonDocument collectorJSON(int number, Collector collector, bool showSettings)
 {
     DynamicJsonDocument doc(1024);
     doc["number"] = number;
-    doc["valveAdjustable"] = valveAdjustableJSON(dispenserCollector.valveAdjustable, showSettings);
-    doc["flowmeter"] = flowmeterJSON(dispenserCollector.flowmeter, showSettings);
-    for (int i = 0; i < dispenserCollector.nValves_; i++)
+    doc["valveAdjustable"] = valveAdjustableJSON(collector.valveAdjustable, showSettings);
+    doc["flowmeter"] = flowmeterJSON(collector.flowmeter, showSettings);
+    for (int i = 0; i < collector.nValves_; i++)
     {
-        doc["valves"][i] = valveJSON(i + 1, dispenserCollector.valves[i]);
+        doc["valves"][i] = valveJSON(i + 1, collector.valves[i]);
     }
     return doc;
 }
@@ -69,14 +69,14 @@ DynamicJsonDocument commonJSON(ValveAdjustable valveAdjustable, Flowmeter flowme
     return doc;
 }
 
-String jsonSerialize(ValveAdjustable commonValveAdjustable, Flowmeter commonFlowmeter, DispenserCollector dispenserCollector, bool showSettings)
+String jsonSerialize(ValveAdjustable commonValveAdjustable, Flowmeter commonFlowmeter, Collector collector, bool showSettings)
 {
     // todo: создать класс, в котором содержатся все типы коллекторов с их количеством
     // todo: передать в функцию только один экземпляр этого класса
     String result;
     DynamicJsonDocument doc(2048);
-    doc["common"] = commonJSON(commonValveAdjustable, commonFlowmeter, showSettings);
-    doc["dispenserCollectors"][0] = dispenserCollectorJSON(1, dispenserCollector, showSettings);
+    // doc["common"] = commonJSON(commonValveAdjustable, commonFlowmeter, showSettings);
+    doc["collectors"][0] = collectorJSON(1, collector, showSettings);
     serializeJson(doc, result);
     return result;
 }

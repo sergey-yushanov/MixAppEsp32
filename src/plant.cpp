@@ -2,7 +2,7 @@
 #include "clock_pulses.h"
 #include <ProcessControl.h>
 
-DispenserCollector dispenserCollector;
+Collector collector;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
 
@@ -12,15 +12,15 @@ bool showSettings;
 // dispenser collector flowmeter
 void g1Setup()
 {
-    dispenserCollector.flowmeter.setPin(19);
+    collector.flowmeter.setPin(19);
     // dispenserCollector.flowmeter.setPulsesPerLiter(106.777);
-    pinMode(dispenserCollector.flowmeter.getPin(), INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(dispenserCollector.flowmeter.getPin()), g1Pulse, FALLING);
+    pinMode(collector.flowmeter.getPin(), INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(collector.flowmeter.getPin()), g1Pulse, FALLING);
 }
 
 void IRAM_ATTR g1Pulse()
 {
-    dispenserCollector.flowmeter.pulseCounter();
+    collector.flowmeter.pulseCounter();
 }
 
 // common flowmeter
@@ -41,17 +41,17 @@ void IRAM_ATTR m1Pulse()
 void incTimeouts()
 {
     valveAdjustable.incTimeout();
-    dispenserCollector.valveAdjustable.incTimeout();
+    collector.valveAdjustable.incTimeout();
 }
 
 // reset faults for all equipment
 void resetFaults()
 {
     valveAdjustable.resetFaulty();
-    dispenserCollector.valveAdjustable.resetFaulty();
-    for (int i = 0; i < dispenserCollector.nValves_; i++)
+    collector.valveAdjustable.resetFaulty();
+    for (int i = 0; i < collector.nValves_; i++)
     {
-        dispenserCollector.valves[i].resetFaulty();
+        collector.valves[i].resetFaulty();
     }
 }
 

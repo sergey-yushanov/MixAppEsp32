@@ -2,12 +2,12 @@
 #define JSON_SERIALIZE_h
 
 #include "ArduinoJson.h"
-#include <DispenserCollector.h>
+#include <Collector.h>
 #include <Flowmeter.h>
 #include <AnalogSensor.h>
 #include <Valve.h>
 #include <ValveAdjustable.h>
 
-String jsonSerialize(ValveAdjustable, Flowmeter, DispenserCollector, bool);
+String jsonSerialize(ValveAdjustable, Flowmeter, Collector, bool);
 
 #endif

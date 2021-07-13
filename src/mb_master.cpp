@@ -38,8 +38,8 @@ void handleData(ModbusMessage response, uint32_t token)
         valveAdjustable.updatePosition();
         // analogSensors[0].setIntRaw(value);
         response.get(3 + 1 * 2, value);
-        dispenserCollector.valveAdjustable.getPositionSensor()->setIntRaw(value);
-        dispenserCollector.valveAdjustable.updatePosition();
+        collector.valveAdjustable.getPositionSensor()->setIntRaw(value);
+        collector.valveAdjustable.updatePosition();
         // analogSensors[1].setIntRaw(value);
 
         // response.get(3 + 2 * 2, value);
@@ -97,18 +97,18 @@ void mbSetDiscrete()
 {
     buffer20[0] = setBufferBit(buffer20[0], valveAdjustable.isCommandOpen(), 0);
     buffer20[0] = setBufferBit(buffer20[0], valveAdjustable.isCommandClose(), 1);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valveAdjustable.isCommandOpen(), 2);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valveAdjustable.isCommandClose(), 3);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valves[0].isCommandOpen(), 4);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valves[0].isCommandClose(), 5);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valves[1].isCommandOpen(), 6);
-    buffer20[0] = setBufferBit(buffer20[0], dispenserCollector.valves[1].isCommandClose(), 7);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valveAdjustable.isCommandOpen(), 2);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valveAdjustable.isCommandClose(), 3);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valves[0].isCommandOpen(), 4);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valves[0].isCommandClose(), 5);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valves[1].isCommandOpen(), 6);
+    buffer20[0] = setBufferBit(buffer20[0], collector.valves[1].isCommandClose(), 7);
 
-    buffer20[1] = setBufferBit(buffer20[1], dispenserCollector.valves[2].isCommandOpen(), 0);
-    buffer20[1] = setBufferBit(buffer20[1], dispenserCollector.valves[2].isCommandClose(), 1);
+    buffer20[1] = setBufferBit(buffer20[1], collector.valves[2].isCommandOpen(), 0);
+    buffer20[1] = setBufferBit(buffer20[1], collector.valves[2].isCommandClose(), 1);
 
-    buffer21[0] = setBufferBit(buffer21[0], dispenserCollector.valves[3].isCommandOpen(), 0);
-    buffer21[0] = setBufferBit(buffer21[0], dispenserCollector.valves[3].isCommandClose(), 3);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandOpen(), 0);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandClose(), 3);
 
     // for (auto &byte : buffer20)
     // {
