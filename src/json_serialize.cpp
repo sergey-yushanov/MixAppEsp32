@@ -1,5 +1,11 @@
 #include "json_serialize.h"
 
+float round2Dec(float value, int decimals)
+{
+    float multFactor = pow(10, decimals);
+    return ((float)((int)(value * multFactor)) / multFactor);
+}
+
 DynamicJsonDocument valveJSON(int number, Valve valve)
 {
     DynamicJsonDocument doc(1024);
@@ -16,7 +22,7 @@ DynamicJsonDocument valveAdjustableJSON(ValveAdjustable valveAdjustable, bool sh
     doc["commandClose"] = valveAdjustable.isCommandClose();
     doc["faulty"] = valveAdjustable.isFaulty();
     doc["setpoint"] = valveAdjustable.getSetpoint();
-    doc["position"] = valveAdjustable.getPosition();
+    doc["position"] = round2Dec(valveAdjustable.getPosition(), 1);
     if (showSettings)
     {
         doc["overtime"] = valveAdjustable.getOvertime();
@@ -39,8 +45,8 @@ DynamicJsonDocument valveAdjustableJSON(ValveAdjustable valveAdjustable, bool sh
 DynamicJsonDocument flowmeterJSON(Flowmeter flowmeter, bool showSettings)
 {
     DynamicJsonDocument doc(1024);
-    doc["flow"] = flowmeter.getFlow();
-    doc["volume"] = flowmeter.getVolume();
+    doc["flow"] = round2Dec(flowmeter.getFlow(), 2);
+    doc["volume"] = round2Dec(flowmeter.getVolume(), 2);
     if (showSettings)
     {
         doc["pulsesPerLiter"] = flowmeter.getPulsesPerLiter();
@@ -75,7 +81,8 @@ String jsonSerialize(ValveAdjustable commonValveAdjustable, Flowmeter commonFlow
     // todo: передать в функцию только один экземпляр этого класса
     String result;
     DynamicJsonDocument doc(2048);
-    // doc["common"] = commonJSON(commonValveAdjustable, commonFlowmeter, showSettings);
+    doc["showSettings"] = showSettings;
+    doc["common"] = commonJSON(commonValveAdjustable, commonFlowmeter, showSettings);
     doc["collectors"][0] = collectorJSON(1, collector, showSettings);
     serializeJson(doc, result);
     return result;

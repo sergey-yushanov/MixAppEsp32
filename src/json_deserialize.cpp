@@ -119,6 +119,17 @@ void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     }
 }
 
+void pumpJSON(DynamicJsonDocument jsonReceived)
+{
+    if (jsonReceived.containsKey("commandStart"))
+        if (jsonReceived["commandStart"])
+            pumpCommand = true;
+
+    if (jsonReceived.containsKey("commandStop"))
+        if (jsonReceived["commandStop"])
+            pumpCommand = false;
+}
+
 void messageContainsKeys(DynamicJsonDocument jsonReceived)
 {
     if (jsonReceived.containsKey("showSettings"))
@@ -126,6 +137,9 @@ void messageContainsKeys(DynamicJsonDocument jsonReceived)
 
     if (jsonReceived.containsKey("ack"))
         ack = jsonReceived["ack"];
+
+    if (jsonReceived.containsKey("pump"))
+        pumpJSON(jsonReceived["pump"]);
 
     if (jsonReceived.containsKey("common"))
         commonJSON(jsonReceived["common"]);

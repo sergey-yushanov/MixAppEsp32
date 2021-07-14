@@ -57,7 +57,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
     {
         data[len] = 0;
-        // Serial.println((char *)data);
+        Serial.println((char *)data);
         jsonDeserialize(data);
     }
 }

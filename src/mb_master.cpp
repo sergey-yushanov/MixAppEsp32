@@ -61,7 +61,7 @@ void handleError(Error error, uint32_t token)
 {
     // ModbusError wraps the error code and provides a readable error message for it
     ModbusError me(error);
-    Serial.printf("Error creating request: %02X - %s\n", (int)me, (const char *)me);
+    // Serial.printf("Error creating request: %02X - %s\n", (int)me, (const char *)me);
 }
 
 void mbSetup()
@@ -80,7 +80,7 @@ void mbReadAnalog()
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
 }
@@ -146,7 +146,7 @@ void mbWriteDiscrete20() //(uint8_t *buffer)
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
 }
@@ -159,7 +159,7 @@ void mbWriteDiscrete21()
     if (err != SUCCESS)
     {
         ModbusError e(err);
-        Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
     }
 }

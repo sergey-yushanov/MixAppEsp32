@@ -8,6 +8,7 @@ ValveAdjustable valveAdjustable;
 
 bool ack;
 bool showSettings;
+bool pumpCommand;
 
 // dispenser collector flowmeter
 void g1Setup()

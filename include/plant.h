@@ -13,6 +13,7 @@ extern ValveAdjustable valveAdjustable;
 
 extern bool ack;
 extern bool showSettings;
+extern bool pumpCommand;
 
 // void m1Setup();
 void IRAM_ATTR m1Pulse();
