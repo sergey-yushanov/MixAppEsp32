@@ -14,7 +14,7 @@ bool pumpCommand;
 void g1Setup()
 {
     collector.flowmeter.setPin(19);
-    // dispenserCollector.flowmeter.setPulsesPerLiter(106.777);
+    collector.flowmeter.setPulsesPerLiter(106.777);
     pinMode(collector.flowmeter.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(collector.flowmeter.getPin()), g1Pulse, FALLING);
 }
@@ -28,7 +28,7 @@ void IRAM_ATTR g1Pulse()
 void m1Setup()
 {
     m1.setPin(18);
-    // m1.setPulsesPerLiter(31.7); // 50.0
+    m1.setPulsesPerLiter(50.0); // 50.0
     pinMode(m1.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(m1.getPin()), m1Pulse, FALLING);
 }
@@ -74,4 +74,28 @@ void plantLoop()
         resetFaults();
         ack = false;
     }
+}
+
+void flowLoop()
+{
+    collector.flowmeter.computeFlow();
+
+    // Serial.print("startMillis_: ");
+    // Serial.print(m1.startMillis_);
+    // Serial.print("\t");
+    // Serial.print("flowPulseCounter_: ");
+    // Serial.print(m1.flowPulseCounter_);
+
+    m1.computeFlow();
+
+    // Serial.print("\t");
+    // Serial.print("startMillis_: ");
+    // Serial.print(m1.startMillis_);
+    // Serial.print("\t");
+    // Serial.print("passedMillis_: ");
+    // Serial.print(m1.passedMillis_);
+
+    // Serial.print("\t");
+    // Serial.print("flow_: ");
+    // Serial.println(m1.flow_);
 }

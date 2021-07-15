@@ -31,6 +31,7 @@ void loop()
     if (clk._1s)
     {
         // todo: здесь то, что выполняем раз в секунду
+        flowLoop();
     }
 
     if (clk._0_2s)

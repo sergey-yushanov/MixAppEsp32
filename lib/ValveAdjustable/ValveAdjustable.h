@@ -68,7 +68,7 @@ public:
     void updatePosition();
 
     int getOvertime();
-    void setOvertime(int overtime = 150);
+    void setOvertime(int overtime = 300);
 
     float getLimitClose();
     float getLimitOpen();

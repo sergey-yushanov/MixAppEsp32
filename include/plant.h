@@ -24,6 +24,7 @@ void IRAM_ATTR g1Pulse();
 void incTimeouts();
 void plantSetup();
 void plantLoop();
+void flowLoop();
 // void loopPlant();
 
 #endif

@@ -86,10 +86,12 @@ float AnalogSensor::getValue()
 
 void AnalogSensor::scale()
 {
-    if (isError())
-        valueNew_ = 0.0;
-    else
-        valueNew_ = (raw_ - rawLowLimit_) / (rawHighLimit_ - rawLowLimit_) * (valueHighLimit_ - valueLowLimit_) + valueLowLimit_;
+    // if (isError())
+    //     valueNew_ = 0.0;
+    // else
+    valueNew_ = (raw_ - rawLowLimit_) / (rawHighLimit_ - rawLowLimit_) * (valueHighLimit_ - valueLowLimit_) + valueLowLimit_;
+    if (valueNew_ > valueHighLimit_)
+        valueNew_ = valueHighLimit_;
 }
 
 void AnalogSensor::filter()

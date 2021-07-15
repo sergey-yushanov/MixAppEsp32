@@ -143,8 +143,9 @@ float ValveAdjustable::getSetpoint()
 
 void ValveAdjustable::setSetpoint(float setpoint)
 {
-    if (setpoint >= 0 && setpoint <= 100)
+    if (setpoint >= 0 && setpoint <= 100 && setpoint != setpoint_)
     {
+        time_ = 0;
         setpoint_ = setpoint;
         setCommand();
     }

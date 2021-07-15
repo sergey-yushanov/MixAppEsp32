@@ -46,6 +46,7 @@ void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 void Flowmeter::computeFlow()
 {
     passedMillis_ = millis() - startMillis_;
+
     if (passedMillis_ >= intervalMillis_)
     {
         flow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0;
@@ -77,7 +78,7 @@ void Flowmeter::setPin(int pin)
 
 float Flowmeter::getFlow()
 {
-    computeFlow();
+    // computeFlow();
     return flow_;
 }
 

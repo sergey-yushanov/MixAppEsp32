@@ -25,7 +25,7 @@
         "flowmeter": {
             "flow": 0.00,
             "volume": 0.00,
-            "pulsesPerLiter": 31.70
+            "pulsesPerLiter": 50.0
         }
     },
     "dispenserCollectors": [

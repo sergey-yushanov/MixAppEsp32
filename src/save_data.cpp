@@ -81,7 +81,7 @@ void dataSetup()
     // common settings
     preferences.begin(preferences_common, false);
     valveAdjustableRead(&valveAdjustable);
-    flowmeterRead(&m1, 31.7);
+    flowmeterRead(&m1, 50.0);
     preferences.end();
 
     // dispenser collector settings
