@@ -14,6 +14,7 @@ extern ValveAdjustable valveAdjustable;
 extern bool ack;
 extern bool showSettings;
 extern bool pumpCommand;
+extern bool loopCommand;
 
 // void m1Setup();
 void IRAM_ATTR m1Pulse();
@@ -25,6 +26,6 @@ void incTimeouts();
 void plantSetup();
 void plantLoop();
 void flowLoop();
-// void loopPlant();
+void mixLoop();
 
 #endif

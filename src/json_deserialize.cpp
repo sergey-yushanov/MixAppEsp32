@@ -81,7 +81,7 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("valveAdjustable"))
     {
         valveAdjustableJSON(jsonReceived["valveAdjustable"], &valveAdjustable);
-        // dataSave(preferences_common, &valveAdjustable);
+        dataSave(preferences_common, &valveAdjustable);
     }
 
     if (jsonReceived.containsKey("flowmeter"))

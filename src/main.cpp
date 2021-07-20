@@ -10,16 +10,11 @@
 void setup()
 {
     Serial.begin(115200);
-    // nullifyBuffers();
-    // analogSensorsSetup();
+
     clockSetup();
     mbSetup();
-
-    // m1Setup();
-    // g1Setup();
     plantSetup();
-    dataSetup();
-
+    // dataSetup();
     webSetup();
 
     delay(1000);
@@ -28,24 +23,30 @@ void setup()
 // Цикл
 void loop()
 {
-    if (clk._1s)
-    {
-        // todo: здесь то, что выполняем раз в секунду
-        flowLoop();
-    }
-
-    if (clk._0_2s)
-    {
-        plantLoop();
-        webLoop();
-    }
-
     if (clk._0_1s)
     {
+        // опрос устройств Modbus
         mbPoll();
         // увеличиваем таймеры для аварий по отсутствию движения
         incTimeouts();
     }
+    if (clk._0_2s)
+    {
+        // выполняем действия с управлением установкой
+        plantLoop();
+        // обмен по Wi-Fi
+        webLoop();
+    }
+    if (clk._0_5s)
+    {
+        // считаем текущий расход
+        flowLoop();
+    }
+    if (clk._1s)
+    {
+        // todo: здесь то, что выполняем раз в секунду
+    }
 
+    mixLoop();
     clockReset();
 }

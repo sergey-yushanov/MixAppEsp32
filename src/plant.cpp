@@ -9,6 +9,7 @@ ValveAdjustable valveAdjustable;
 bool ack;
 bool showSettings;
 bool pumpCommand;
+bool loopCommand;
 
 // dispenser collector flowmeter
 void g1Setup()
@@ -61,7 +62,7 @@ void plantSetup()
     ack = true;
     showSettings = true;
 
-    dataSetup();
+    // dataSetup();
 
     m1Setup();
     g1Setup();
@@ -98,4 +99,9 @@ void flowLoop()
     // Serial.print("\t");
     // Serial.print("flow_: ");
     // Serial.println(m1.flow_);
+}
+
+void mixLoop()
+{
+    collector.loop(loopCommand);
 }

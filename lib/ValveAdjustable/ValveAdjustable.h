@@ -89,6 +89,9 @@ public:
 
     void fullyOpen();
     void fullyClose();
+
+    bool isOpened();
+    bool isClosed();
 };
 
 #endif

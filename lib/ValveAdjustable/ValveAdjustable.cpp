@@ -259,3 +259,13 @@ void ValveAdjustable::fullyClose()
 {
     setSetpoint(0.0);
 }
+
+bool ValveAdjustable::isOpened()
+{
+    return positionOpen_;
+}
+
+bool ValveAdjustable::isClosed()
+{
+    return positionClose_;
+}

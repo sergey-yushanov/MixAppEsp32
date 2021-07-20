@@ -82,7 +82,7 @@ float Flowmeter::getFlow()
     return flow_;
 }
 
-double Flowmeter::getVolume()
+float Flowmeter::getVolume()
 {
     computeVolume();
     return volume_;

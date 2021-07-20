@@ -27,7 +27,7 @@ public:
     volatile long flowPulseCounter_;
     volatile long volumePulseCounter_;
     volatile float flow_;
-    volatile double volume_;
+    volatile float volume_;
 
     Flowmeter();
     Flowmeter(int pin, float pulsesPerLiter);
@@ -44,7 +44,7 @@ public:
 
     void computeFlow();
     float getFlow();
-    double getVolume();
+    float getVolume();
 
     void nullifyVolume();
 };
