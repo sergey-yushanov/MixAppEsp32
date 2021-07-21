@@ -54,6 +54,18 @@ DynamicJsonDocument flowmeterJSON(Flowmeter flowmeter, bool showSettings)
     return doc;
 }
 
+DynamicJsonDocument collectorLoopJSON(Collector collector)
+{
+    DynamicJsonDocument doc(1024);
+    for (int i = 0; i < collector.nValves_ - 1; i++)
+    {
+        doc["valveNums"][i] = collector.valveNums[i];
+        doc["requiredVolumes"][i] = collector.requiredVolumes[i];
+        doc["dosedVolumes"][i] = collector.dosedVolumes[i];
+    }
+    return doc;
+}
+
 DynamicJsonDocument collectorJSON(int number, Collector collector, bool showSettings)
 {
     DynamicJsonDocument doc(1024);
@@ -64,6 +76,7 @@ DynamicJsonDocument collectorJSON(int number, Collector collector, bool showSett
     {
         doc["valves"][i] = valveJSON(i + 1, collector.valves[i]);
     }
+    doc["loop"] = collectorLoopJSON(collector);
     return doc;
 }
 

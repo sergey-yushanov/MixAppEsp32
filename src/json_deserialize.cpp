@@ -81,7 +81,7 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("valveAdjustable"))
     {
         valveAdjustableJSON(jsonReceived["valveAdjustable"], &valveAdjustable);
-        dataSave(preferences_common, &valveAdjustable);
+        // dataSave(preferences_common, &valveAdjustable);
     }
 
     if (jsonReceived.containsKey("flowmeter"))
@@ -117,6 +117,26 @@ void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
             }
         }
     }
+
+    if (jsonReceived.containsKey("loop"))
+    {
+        // valveNums
+        if (jsonReceived["loop"].containsKey("valveNums"))
+        {
+            for (int i = 0; i < jsonReceived["loop"]["valveNums"].size(); i++)
+            {
+                collector->valveNums[i] = jsonReceived["loop"]["valveNums"][i];
+            }
+        }
+        // requiredVolumes
+        if (jsonReceived["loop"].containsKey("requiredVolumes"))
+        {
+            for (int i = 0; i < jsonReceived["loop"]["requiredVolumes"].size(); i++)
+            {
+                collector->requiredVolumes[i] = jsonReceived["loop"]["requiredVolumes"][i];
+            }
+        }
+    }
 }
 
 void pumpJSON(DynamicJsonDocument jsonReceived)
@@ -130,8 +150,26 @@ void pumpJSON(DynamicJsonDocument jsonReceived)
             pumpCommand = false;
 }
 
+void loopJSON(DynamicJsonDocument jsonReceived)
+{
+    if (jsonReceived.containsKey("commandStart"))
+        if (jsonReceived["commandStart"])
+            loopCommand();
+
+    if (jsonReceived.containsKey("commandStop"))
+        if (jsonReceived["commandStop"])
+            loopStop();
+
+    if (jsonReceived.containsKey("commandPause"))
+        if (jsonReceived["commandPause"])
+            loopPause();
+}
+
 void messageContainsKeys(DynamicJsonDocument jsonReceived)
 {
+    if (jsonReceived.containsKey("loop"))
+        loopJSON(jsonReceived['loop']);
+
     if (jsonReceived.containsKey("showSettings"))
         showSettings = jsonReceived["showSettings"];
 

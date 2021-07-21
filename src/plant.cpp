@@ -9,7 +9,7 @@ ValveAdjustable valveAdjustable;
 bool ack;
 bool showSettings;
 bool pumpCommand;
-bool loopCommand;
+//bool loopCommand;
 
 // dispenser collector flowmeter
 void g1Setup()
@@ -103,5 +103,20 @@ void flowLoop()
 
 void mixLoop()
 {
-    collector.loop(loopCommand);
+    collector.loop();
+}
+
+void loopCommand()
+{
+    collector.loopCommand();
+}
+
+void loopPause()
+{
+    collector.loopPause();
+}
+
+void loopStop()
+{
+    collector.loopStop();
 }

@@ -62,7 +62,10 @@ struct Collector
     void wash();
     void resetWash();
 
-    void loop(bool command);
+    void loop();
+    void loopCommand();
+    void loopPause();
+    void loopStop();
 };
 
 #endif

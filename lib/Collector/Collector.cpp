@@ -150,6 +150,7 @@ void Collector::resetDose()
     dosingFinishing_ = false;
     dosingDoneDelay_ = false;
     dosingDone_ = false;
+    closeAll();
 }
 
 void Collector::wash()
@@ -204,24 +205,44 @@ void Collector::resetWash()
     washingFinishing_ = false;
 }
 
-void Collector::loop(bool command)
+void Collector::loopCommand()
+{
+    resetFill();
+    resetDose();
+    resetWash();
+
+    loopDone_ = false;
+    fillingStart_ = true;
+    order = 0;
+}
+
+void Collector::loopPause()
+{
+    loopPause_ = !loopPause_;
+
+    if (loopDone_)
+        loopPause_ = false;
+
+    if (loopPause_)
+        closeAll();
+}
+
+void Collector::loopStop()
+{
+    fillingDone_ = true;
+    dosingDone_ = true;
+    washingDone_ = true;
+    loopDone_ = true;
+
+    closeAll();
+}
+
+void Collector::loop()
 {
     // дозирование на паузе
     if (loopPause_)
     {
         return;
-    }
-
-    // ждем команду на старт дозирования
-    if (commandRise_.rising(command))
-    {
-        resetFill();
-        resetDose();
-        resetWash();
-
-        loopDone_ = false;
-        fillingStart_ = true;
-        order = 0;
     }
 
     // дозирование завершено
