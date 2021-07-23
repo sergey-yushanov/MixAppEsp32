@@ -78,14 +78,14 @@ public:
     float getDeadbandClose();
     float getDeadbandOpen();
     float getDeadbandPosition();
-    void setDeadbandClose(float deadbandClose = 1.0);
-    void setDeadbandOpen(float deadbandOpen = 1.0);
-    void setDeadbandPosition(float deadbandPosition = 1.0);
+    void setDeadbandClose(float deadbandClose = 7.0);
+    void setDeadbandOpen(float deadbandOpen = 7.0);
+    void setDeadbandPosition(float deadbandPosition = 7.0);
 
     float getCostClose();
     float getCostOpen();
-    void setCostClose(float costClose = 1.0);
-    void setCostOpen(float costOpen = 1.0);
+    void setCostClose(float costClose = 10.0);
+    void setCostOpen(float costOpen = 10.0);
 
     void fullyOpen();
     void fullyClose();

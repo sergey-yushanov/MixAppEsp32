@@ -5,9 +5,12 @@
 
 struct Clock
 {
-    volatile bool _0_1s = false;
-    volatile bool _0_2s = false;
-    volatile bool _0_5s = false;
+    volatile bool _10ms = false;
+    volatile bool _20ms = false;
+    volatile bool _50ms = false;
+    volatile bool _100ms = false;
+    volatile bool _200ms = false;
+    volatile bool _500ms = false;
     volatile bool _1s = false;
     volatile bool _2s = false;
     volatile bool _5s = false;

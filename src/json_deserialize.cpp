@@ -91,6 +91,50 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     }
 }
 
+void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
+{
+    if (jsonReceived.containsKey("volumePulseCounter"))
+    {
+        collector->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
+        // Serial.println(collector->flowmeter.getVolume());
+    }
+
+    if (jsonReceived.containsKey("commandStart"))
+        if (jsonReceived["commandStart"])
+            loopCommand();
+
+    if (jsonReceived.containsKey("commandStop"))
+        if (jsonReceived["commandStop"])
+            loopStop();
+
+    // if (jsonReceived.containsKey("commandPause"))
+    //     if (jsonReceived["commandPause"])
+    //         loopPause();
+
+    // if (jsonReceived.containsKey("doseCommandStart"))
+    //     if (jsonReceived["doseCommandStart"])
+    //         collector->doseCommand();
+
+    // valveNums
+    if (jsonReceived.containsKey("valveNums"))
+    {
+        for (int i = 0; i < jsonReceived["valveNums"].size(); i++)
+        {
+            collector->valveNums[i] = jsonReceived["valveNums"][i];
+            Serial.println(collector->valveNums[i]);
+        }
+    }
+    // requiredVolumes
+    if (jsonReceived.containsKey("requiredVolumes"))
+    {
+        for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
+        {
+            collector->requiredVolumes[i] = jsonReceived["requiredVolumes"][i];
+            Serial.println(collector->requiredVolumes[i]);
+        }
+    }
+}
+
 void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 {
     if (jsonReceived.containsKey("valveAdjustable"))
@@ -120,22 +164,7 @@ void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 
     if (jsonReceived.containsKey("loop"))
     {
-        // valveNums
-        if (jsonReceived["loop"].containsKey("valveNums"))
-        {
-            for (int i = 0; i < jsonReceived["loop"]["valveNums"].size(); i++)
-            {
-                collector->valveNums[i] = jsonReceived["loop"]["valveNums"][i];
-            }
-        }
-        // requiredVolumes
-        if (jsonReceived["loop"].containsKey("requiredVolumes"))
-        {
-            for (int i = 0; i < jsonReceived["loop"]["requiredVolumes"].size(); i++)
-            {
-                collector->requiredVolumes[i] = jsonReceived["loop"]["requiredVolumes"][i];
-            }
-        }
+        collectorLoopJSON(jsonReceived["loop"], collector);
     }
 }
 
@@ -150,25 +179,10 @@ void pumpJSON(DynamicJsonDocument jsonReceived)
             pumpCommand = false;
 }
 
-void loopJSON(DynamicJsonDocument jsonReceived)
-{
-    if (jsonReceived.containsKey("commandStart"))
-        if (jsonReceived["commandStart"])
-            loopCommand();
-
-    if (jsonReceived.containsKey("commandStop"))
-        if (jsonReceived["commandStop"])
-            loopStop();
-
-    if (jsonReceived.containsKey("commandPause"))
-        if (jsonReceived["commandPause"])
-            loopPause();
-}
-
 void messageContainsKeys(DynamicJsonDocument jsonReceived)
 {
-    if (jsonReceived.containsKey("loop"))
-        loopJSON(jsonReceived['loop']);
+    // if (jsonReceived.containsKey("loop"))
+    //     loopJSON(jsonReceived["loop"]);
 
     if (jsonReceived.containsKey("showSettings"))
         showSettings = jsonReceived["showSettings"];

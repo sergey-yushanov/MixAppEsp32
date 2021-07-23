@@ -29,7 +29,7 @@ void IRAM_ATTR g1Pulse()
 void m1Setup()
 {
     m1.setPin(18);
-    m1.setPulsesPerLiter(50.0); // 50.0
+    m1.setPulsesPerLiter(100.0); // 50.0
     pinMode(m1.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(m1.getPin()), m1Pulse, FALLING);
 }
@@ -44,6 +44,11 @@ void incTimeouts()
 {
     valveAdjustable.incTimeout();
     collector.valveAdjustable.incTimeout();
+}
+
+void incTimers()
+{
+    collector.incTimers();
 }
 
 // reset faults for all equipment
@@ -75,6 +80,8 @@ void plantLoop()
         resetFaults();
         ack = false;
     }
+
+    mixLoop();
 }
 
 void flowLoop()
@@ -98,7 +105,15 @@ void flowLoop()
 
     // Serial.print("\t");
     // Serial.print("flow_: ");
-    // Serial.println(m1.flow_);
+    // Serial.print(m1.flow_);
+
+    // Serial.print("\t");
+    // Serial.print("volumePulseCounter_: ");
+    // Serial.print(m1.volumePulseCounter_);
+
+    // Serial.print("\t");
+    // Serial.print("volume_: ");
+    // Serial.println(m1.volume_);
 }
 
 void mixLoop()
@@ -111,10 +126,10 @@ void loopCommand()
     collector.loopCommand();
 }
 
-void loopPause()
-{
-    collector.loopPause();
-}
+// void loopPause()
+// {
+//     collector.loopPause();
+// }
 
 void loopStop()
 {

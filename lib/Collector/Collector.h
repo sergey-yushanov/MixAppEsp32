@@ -17,10 +17,12 @@ struct Collector
     float requiredVolumes[nValves_ - 1];
     float dosedVolumes[nValves_ - 1];
 
+    bool applyCommand;
+
     bool filling_;
     bool fillingStart_;
-    bool fillingDone_;
     bool fillingFinishing_;
+    bool fillingDone_;
     float fillingVolume_ = 5.0;
     OnTimer fillingFinishingTimer_;
 
@@ -64,8 +66,14 @@ struct Collector
 
     void loop();
     void loopCommand();
-    void loopPause();
+    // void loopPause();
     void loopStop();
+
+    void fillCommand();
+    void doseCommand();
+    void washCommand();
+
+    void incTimers();
 };
 
 #endif
