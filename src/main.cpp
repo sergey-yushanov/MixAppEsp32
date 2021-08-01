@@ -11,33 +11,45 @@ void setup()
 {
     Serial.begin(115200);
 
+    // dataSetup();
+    webSetup();
+    delay(1000);
+
     clockSetup();
     mbSetup();
     plantSetup();
-    // dataSetup();
-    webSetup();
 
-    delay(1000);
+    delay(3000);
 }
 
 // Цикл
 void loop()
 {
-    // if (clk._20ms)
-    // {
-    //     // опрос устройств Modbus
-    //     mbPoll();
-
-    //     // // выполняем действия с управлением установкой
-    //     // plantLoop();
-    // }
     if (clk._50ms)
     {
+        // Serial.println("clock");
         // опрос устройств Modbus
         mbPoll();
 
         // выполняем действия с управлением установкой
         plantLoop();
+    }
+    // if (clk._50ms)
+    // {
+    // Serial.println("clock 50 ms");
+    // опрос устройств Modbus
+    // mbPoll();
+
+    // выполняем действия с управлением установкой
+    // plantLoop();
+    // }
+    if (clk._100ms)
+    {
+        // опрос устройств Modbus
+        // mbPoll();
+
+        // выполняем действия с управлением установкой
+        // plantLoop();
     }
 
     if (clk._100ms)
@@ -46,7 +58,7 @@ void loop()
         incTimeouts();
         // увеличиваем разные таймеры коллектора
         incTimers();
-        // // выполняем действия с управлением установкой
+        // выполняем действия с управлением установкой
         // plantLoop();
     }
     if (clk._200ms)

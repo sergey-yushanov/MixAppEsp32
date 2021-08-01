@@ -67,16 +67,17 @@ void handleError(Error error, uint32_t token)
 void mbSetup()
 {
     nullifyBuffers();
-    Serial2.begin(9600, SERIAL_8N1);
+    Serial2.begin(38400, SERIAL_8N1);
     MB.onDataHandler(&handleData);
     MB.onErrorHandler(&handleError);
-    MB.setTimeout(2000);
+    MB.setTimeout(100);
     MB.begin();
 }
 
 void mbReadAnalog()
 {
     Error err = MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
+
     if (err != SUCCESS)
     {
         ModbusError e(err);
@@ -169,12 +170,23 @@ void mbPoll()
 {
     mbSetDiscrete();
 
+    Error err = SUCCESS;
     if (addrCounter == 0)
-        mbReadAnalog();
+        // mbReadAnalog();
+        err = MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
     if (addrCounter == 1)
-        mbWriteDiscrete20();
+        // mbWriteDiscrete20();
+        err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
     if (addrCounter == 2)
-        mbWriteDiscrete21();
+        // mbWriteDiscrete21();
+        err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+
+    if (err != SUCCESS)
+    {
+        ModbusError e(err);
+        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+    }
 
     addrCounter++;
     if (addrCounter > 2)

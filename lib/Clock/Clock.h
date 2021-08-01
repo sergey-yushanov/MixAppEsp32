@@ -7,6 +7,7 @@ struct Clock
 {
     volatile bool _10ms = false;
     volatile bool _20ms = false;
+    volatile bool _40ms = false;
     volatile bool _50ms = false;
     volatile bool _100ms = false;
     volatile bool _200ms = false;
