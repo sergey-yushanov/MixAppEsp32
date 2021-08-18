@@ -13,7 +13,7 @@ void clockSetup()
 {
     clk.timer = timerBegin(0, 80, true);
     timerAttachInterrupt(clk.timer, onTime, true);
-    timerAlarmWrite(clk.timer, 50000, true); // 50ms clk
+    timerAlarmWrite(clk.timer, 10000, true); // 50ms clk
     timerAlarmEnable(clk.timer);
 }
 

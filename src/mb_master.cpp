@@ -6,6 +6,7 @@ ModbusClientRTU MB(Serial2);
 uint32_t mbToken = 1111;
 
 int addrCounter = 0;
+bool addrDone = true;
 
 uint8_t buffer20[2];
 uint8_t buffer21[2];
@@ -53,6 +54,8 @@ void handleData(ModbusMessage response, uint32_t token)
 
         // analogSensorsRead();
     }
+    // addrCounter++;
+    addrDone = true;
 }
 
 // Define an onError handler function to receive error responses
@@ -62,12 +65,14 @@ void handleError(Error error, uint32_t token)
     // ModbusError wraps the error code and provides a readable error message for it
     ModbusError me(error);
     // Serial.printf("Error creating request: %02X - %s\n", (int)me, (const char *)me);
+    // addrCounter++;
+    addrDone = true;
 }
 
 void mbSetup()
 {
     nullifyBuffers();
-    Serial2.begin(38400, SERIAL_8N1);
+    Serial2.begin(115200, SERIAL_8N1);
     MB.onDataHandler(&handleData);
     MB.onErrorHandler(&handleError);
     MB.setTimeout(100);
@@ -168,6 +173,17 @@ void mbWriteDiscrete21()
 // опрос всех адресов последовательно
 void mbPoll()
 {
+    if (addrDone)
+    {
+        addrCounter++;
+        addrDone = false;
+    }
+    else
+        return;
+
+    if (addrCounter > 2)
+        addrCounter = 0;
+
     mbSetDiscrete();
 
     Error err = SUCCESS;
@@ -181,14 +197,16 @@ void mbPoll()
         // mbWriteDiscrete21();
         err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
 
-    if (err != SUCCESS)
-    {
-        ModbusError e(err);
-        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-    }
+    // MB.
+    // if (err != SUCCESS)
+    // {
+    //     ModbusError e(err);
+    //     // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+    //     //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+    // }
 
-    addrCounter++;
-    if (addrCounter > 2)
-        addrCounter = 0;
+    // if (addrDone)
+    //     addrCounter++;
+    // if (addrCounter > 2)
+    //     addrCounter = 0;
 }

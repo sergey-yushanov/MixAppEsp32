@@ -45,13 +45,13 @@ void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 
 void Flowmeter::computeFlow()
 {
-    passedMillis_ = millis() - startMillis_;
+    passedMillis_ = micros() - startMillis_;
 
     if (passedMillis_ >= intervalMillis_)
     {
-        flow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0;
+        flow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0 * 1000.0;
         flowPulseCounter_ = 0;
-        startMillis_ = millis();
+        startMillis_ = micros();
     }
 }
 

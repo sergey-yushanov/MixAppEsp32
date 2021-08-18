@@ -2,25 +2,25 @@
 
 void Clock::set()
 {
-    // _10ms = true;
-    // counter++;
+    _10ms = true;
+    counter++;
 
     // _20ms = true;
     // counter++;
 
     // if (counter % 2 == 0)
     // _40ms = true;
-    // if (counter % 5 == 0)
-    //     _50ms = true;
+    if (counter % 5 == 0)
+        _50ms = true;
 
-    _50ms = true;
-    counter++;
+    // _50ms = true;
+    // counter++;
 
-    if (counter % 2 == 0)
-        _100ms = true;
-    if (counter % 4 == 0)
-        _200ms = true;
     if (counter % 10 == 0)
+        _100ms = true;
+    if (counter % 20 == 0)
+        _200ms = true;
+    if (counter % 50 == 0)
     {
         _500ms = true;
         counter = 0;

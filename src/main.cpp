@@ -25,14 +25,21 @@ void setup()
 // Цикл
 void loop()
 {
-    if (clk._50ms)
+    // long loop_start = micros();
+
+    mbPoll();
+    plantLoop();
+
+    if (clk._10ms)
     {
+        // mbPoll();
+        // plantLoop();
         // Serial.println("clock");
         // опрос устройств Modbus
-        mbPoll();
+        // mbPoll();
 
         // выполняем действия с управлением установкой
-        plantLoop();
+        // plantLoop();
     }
     // if (clk._50ms)
     // {
@@ -110,11 +117,14 @@ void loop()
         // Serial.print("\twDon: ");
         // Serial.println(collector.washingDone_);
     }
-    if (clk._1s)
-    {
-        // todo: здесь то, что выполняем раз в секунду
-    }
+    // if (clk._1s)
+    // {
+    //     // todo: здесь то, что выполняем раз в секунду
+    // }
 
     // mixLoop();
     clockReset();
+
+    // long loop_time = micros() - loop_start;
+    // Serial.println(loop_time);
 }
