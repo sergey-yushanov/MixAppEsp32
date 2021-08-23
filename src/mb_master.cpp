@@ -11,6 +11,15 @@ bool addrDone = true;
 uint8_t buffer20[2];
 uint8_t buffer21[2];
 
+uint8_t memBuffer20[2];
+uint8_t memBuffer21[2];
+
+uint8_t xorBuffer20[2];
+uint8_t xorBuffer21[2];
+
+bool isBuffer20;
+bool isBuffer21;
+
 void nullifyBuffers()
 {
     for (int i = 0; i < 2; i++)
@@ -121,6 +130,21 @@ void mbSetDiscrete()
     //     Serial.printf("%02X ", byte);
     // }
     // Serial.println();
+
+    for (int i = 0; i < 2; i++)
+    {
+        xorBuffer20[i] = memBuffer20[i] ^ buffer20[i];
+        xorBuffer21[i] = memBuffer21[i] ^ buffer21[i];
+
+        memBuffer20[i] = buffer20[i];
+        memBuffer21[i] = buffer21[i];
+    }
+
+    if (!isBuffer20)
+        isBuffer20 = (xorBuffer20[0] != 0 || xorBuffer20[1] != 0);
+
+    if (!isBuffer21)
+        isBuffer21 = !isBuffer21 && (xorBuffer21[0] != 0 || xorBuffer21[1] != 0);
 }
 
 // void mbWriteDiscrete(uint8_t serverID, uint16_t p1, uint16_t p2, uint8_t count, uint8_t *buffer)
@@ -181,21 +205,34 @@ void mbPoll()
     else
         return;
 
-    if (addrCounter > 2)
+    mbSetDiscrete();
+
+    if (isBuffer20)
+        addrCounter = 1;
+    else if (isBuffer21)
+        addrCounter = 2;
+    else
         addrCounter = 0;
 
-    mbSetDiscrete();
+    if (addrCounter > 2)
+        addrCounter = 0;
 
     Error err = SUCCESS;
     if (addrCounter == 0)
         // mbReadAnalog();
         err = MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
     if (addrCounter == 1)
+    {
         // mbWriteDiscrete20();
         err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
+        isBuffer20 = false;
+    }
     if (addrCounter == 2)
+    {
         // mbWriteDiscrete21();
         err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+        isBuffer21 = false;
+    }
 
     // MB.
     // if (err != SUCCESS)

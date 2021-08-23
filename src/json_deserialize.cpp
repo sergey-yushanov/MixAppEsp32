@@ -39,11 +39,19 @@ void valveAdjustableJSON(DynamicJsonDocument jsonReceived, ValveAdjustable *valv
 {
     if (jsonReceived.containsKey("commandOpen"))
         if (jsonReceived["commandOpen"])
+        {
             valveAdjustable->fullyOpen();
+            openTimeBegin = millis();
+            openTimeCalc = true;
+        }
 
     if (jsonReceived.containsKey("commandClose"))
         if (jsonReceived["commandClose"])
+        {
             valveAdjustable->fullyClose();
+            closeTimeBegin = millis();
+            closeTimeCalc = true;
+        }
 
     if (jsonReceived.containsKey("setpoint"))
         valveAdjustable->setSetpoint(jsonReceived["setpoint"]);

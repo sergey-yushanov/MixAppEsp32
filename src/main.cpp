@@ -116,6 +116,21 @@ void loop()
         // Serial.print(collector.washingFinishing_);
         // Serial.print("\twDon: ");
         // Serial.println(collector.washingDone_);
+
+        // Serial.print("Open begin: ");
+        // Serial.print(openTimeBegin);
+        // Serial.print("\tend: ");
+        // Serial.print(openTimeEnd);
+        // Serial.print("\tdelta: ");
+        // Serial.print(openTime);
+        // Serial.print("\traw: ");
+        // Serial.print(openPosition);
+        // Serial.print("\t\tClose begin: ");
+        // Serial.print(closeTimeBegin);
+        // Serial.print("\tend: ");
+        // Serial.print(closeTimeEnd);
+        // Serial.print("\tdelta: ");
+        // Serial.println(closeTime);
     }
     // if (clk._1s)
     // {

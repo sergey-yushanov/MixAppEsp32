@@ -31,6 +31,7 @@ struct Collector
     bool dosingFinishing_;
     bool dosingDoneDelay_;
     bool dosingDone_;
+    bool dosingNullify_;
     RisingEdge dosingValveOpenRise_;
     float dosingVolumeOffset_;
     OnTimer dosingValveDelay_;

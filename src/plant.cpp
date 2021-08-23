@@ -11,6 +11,17 @@ bool showSettings;
 bool pumpCommand;
 //bool loopCommand;
 
+long openTime;
+long openTimeBegin;
+long openTimeEnd;
+bool openTimeCalc;
+float openPosition;
+
+long closeTime;
+long closeTimeBegin;
+long closeTimeEnd;
+bool closeTimeCalc;
+
 // dispenser collector flowmeter
 void g1Setup()
 {
@@ -82,6 +93,22 @@ void plantLoop()
     }
 
     mixLoop();
+
+    // calculate open/close time
+    // if (collector.valveAdjustable.isOpened() && openTimeCalc)
+    // {
+    //     openTimeEnd = millis();
+    //     openTime = openTimeEnd - openTimeBegin;
+    //     openPosition = collector.valveAdjustable.getPositionSensor()->getRaw();
+    //     openTimeCalc = false;
+    // }
+
+    // if (collector.valveAdjustable.isClosed() && closeTimeCalc)
+    // {
+    //     closeTimeEnd = millis();
+    //     closeTime = closeTimeEnd - closeTimeBegin;
+    //     closeTimeCalc = false;
+    // }
 }
 
 void flowLoop()

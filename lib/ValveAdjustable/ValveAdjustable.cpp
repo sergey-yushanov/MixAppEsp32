@@ -71,6 +71,12 @@ int ValveAdjustable::getStatus()
 
 void ValveAdjustable::setRequest()
 {
+    // if (requestStop_)
+    // {
+    //     // requestStop_ = false;
+    //     setpoint_ = position_;
+    // }
+
     // position error
     error_ = setpoint_ - position_;
     errorAbs_ = abs(error_);
@@ -143,6 +149,8 @@ float ValveAdjustable::getSetpoint()
 
 void ValveAdjustable::setSetpoint(float setpoint)
 {
+    // requestStop_ = false;
+
     if (setpoint >= 0 && setpoint <= 100 && setpoint != setpoint_)
     {
         time_ = 0;
@@ -259,6 +267,11 @@ void ValveAdjustable::fullyClose()
 {
     setSetpoint(0.0);
 }
+
+// void ValveAdjustable::fullyStop()
+// {
+//     requestStop_ = true;
+// }
 
 bool ValveAdjustable::isOpened()
 {

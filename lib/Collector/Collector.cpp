@@ -83,9 +83,10 @@ void Collector::dose(int valveNum)
     // стартуем дозирование
     if (dosingStart_ && !dosing_ && !dosingFinishing_ && !dosingDoneDelay_ && !dosingDone_)
     {
-        flowmeter.nullifyVolume();
+        // flowmeter.nullifyVolume();
         dosingVolumeOffset_ = 0.0;
         dosing_ = true;
+        dosingNullify_ = true;
 
         dosedVolumes[valveNum] = 0;
 
@@ -106,18 +107,21 @@ void Collector::dose(int valveNum)
         // открываем клапаны
         valves[valveNum].open();
         if (dosingValveDelay_.status)
+        {
             valveAdjustable.fullyOpen();
+            dosingNullify_ = false;
+        }
 
         // запоминаем смещение объема для определения момента закрытия клапана
         if (dosingValveOpenRise_.rising(valveAdjustable.isOpened()))
         {
-            dosingVolumeOffset_ = flowmeter.getVolume() * 1.1;
+            dosingVolumeOffset_ = flowmeter.getVolume(); // * 1.15;
             // Serial.print("Dosing offset volume: ");
             // Serial.println(dosingVolumeOffset_);
         }
 
         // если не успели открыть клапан, а уже половина объема прошла, то заканчиваем дозацию
-        if (!valveAdjustable.isOpened() && (dosedVolumes[valveNum] >= (requiredVolumes[valveNum] / 2.0 / 1.3)))
+        if (!valveAdjustable.isOpened() && (dosedVolumes[valveNum] >= (requiredVolumes[valveNum] / 2.0))) // / 1.15)))
         {
             dosing_ = false;
             dosingFinishing_ = true;
@@ -158,6 +162,9 @@ void Collector::dose(int valveNum)
     }
 
     // сохраняем прошедший объем
+    if (dosingNullify_)
+        flowmeter.nullifyVolume();
+
     if (dosing_ || dosingFinishing_)
         dosedVolumes[valveNum] = flowmeter.getVolume();
 }
@@ -169,6 +176,7 @@ void Collector::resetDose()
     dosingFinishing_ = false;
     dosingDoneDelay_ = false;
     dosingDone_ = false;
+    dosingNullify_ = false;
 
     closeAll();
 }

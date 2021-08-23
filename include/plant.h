@@ -16,6 +16,17 @@ extern bool showSettings;
 extern bool pumpCommand;
 // extern bool loopCommand;
 
+extern long openTime;
+extern long openTimeBegin;
+extern long openTimeEnd;
+extern bool openTimeCalc;
+extern float openPosition;
+
+extern long closeTime;
+extern long closeTimeBegin;
+extern long closeTimeEnd;
+extern bool closeTimeCalc;
+
 // void m1Setup();
 void IRAM_ATTR m1Pulse();
 
