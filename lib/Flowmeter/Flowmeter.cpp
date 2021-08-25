@@ -49,7 +49,9 @@ void Flowmeter::computeFlow()
 
     if (passedMillis_ >= intervalMillis_)
     {
-        flow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0 * 1000.0;
+        measuredFlow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0 * 1000.0;
+        // flow_ = kalman_.updateEstimate(measuredFlow_);
+        flow_ = measuredFlow_;
         flowPulseCounter_ = 0;
         startMillis_ = micros();
     }

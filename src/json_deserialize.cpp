@@ -84,6 +84,16 @@ void valveAdjustableJSON(DynamicJsonDocument jsonReceived, ValveAdjustable *valv
         sensorJSON(jsonReceived["sensor"], valveAdjustable);
 }
 
+void commonLoopJSON(DynamicJsonDocument jsonReceived)
+{
+    // carrierRequiredVolume
+    if (jsonReceived.containsKey("requiredVolume"))
+    {
+        carrierRequiredVolume = jsonReceived["requiredVolume"];
+        Serial.println(carrierRequiredVolume);
+    }
+}
+
 void commonJSON(DynamicJsonDocument jsonReceived)
 {
     if (jsonReceived.containsKey("valveAdjustable"))
@@ -109,15 +119,15 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 
     if (jsonReceived.containsKey("commandStart"))
         if (jsonReceived["commandStart"])
-            loopCommand();
+            loopStart();
 
     if (jsonReceived.containsKey("commandStop"))
         if (jsonReceived["commandStop"])
             loopStop();
 
-    // if (jsonReceived.containsKey("commandPause"))
-    //     if (jsonReceived["commandPause"])
-    //         loopPause();
+    if (jsonReceived.containsKey("commandPause"))
+        if (jsonReceived["commandPause"])
+            loopPause();
 
     // if (jsonReceived.containsKey("doseCommandStart"))
     //     if (jsonReceived["doseCommandStart"])

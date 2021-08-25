@@ -1,0 +1,107 @@
+{
+    "showSettings": true,
+    "common": {
+        "valveAdjustable": {
+            "commandOpen": false,
+            "commandClose": false,
+            "faulty": true,
+            "setpoint": 0,
+            "position": 16.3,
+            "overtime": 300,
+            "limitClose": 0,
+            "limitOpen": 100,
+            "deadbandClose": 1,
+            "deadbandOpen": 1,
+            "deadbandPosition": 2,
+            "costClose": 1,
+            "costOpen": 1,
+            "sensor": {
+                "raw": 9665,
+                "rawLowLimit": 0,
+                "rawHighLimit": 59000,
+                "valueLowLimit": 0,
+                "valueHighLimit": 100
+            }
+        },
+        "flowmeter": {
+            "flow": 0,
+            "volume": 0,
+            "pulsesPerLiter": 100
+        },
+        "loop": {
+            "carrierRequiredVolume": 0,
+            "carrierDosedVolume": 0
+        }
+    },
+    "collectors": [
+        {
+            "number": 1,
+            "valveAdjustable": {
+                "commandOpen": false,
+                "commandClose": false,
+                "faulty": true,
+                "setpoint": 0,
+                "position": 100,
+                "overtime": 300,
+                "limitClose": 0,
+                "limitOpen": 100,
+                "deadbandClose": 1,
+                "deadbandOpen": 1,
+                "deadbandPosition": 2,
+                "costClose": 1,
+                "costOpen": 1,
+                "sensor": {
+                    "raw": 60304,
+                    "rawLowLimit": 0,
+                    "rawHighLimit": 59000,
+                    "valueLowLimit": 0,
+                    "valueHighLimit": 100
+                }
+            },
+            "flowmeter": {
+                "flow": 0,
+                "volume": 0,
+                "pulsesPerLiter": 106.777
+            },
+            "valves": [
+                {
+                    "number": 1,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 2,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 3,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 4,
+                    "command": false,
+                    "faulty": false
+                }
+            ],
+            "loop": {
+                "valveNums": [
+                    0,
+                    0,
+                    0
+                ],
+                "requiredVolumes": [
+                    0,
+                    0,
+                    0
+                ],
+                "dosedVolumes": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        }
+    ]
+}

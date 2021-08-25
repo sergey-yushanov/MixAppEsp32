@@ -7,6 +7,7 @@ class Flowmeter
 {
 private:
     int pin_;
+    volatile float measuredFlow_;
     // float pulsesPerLiter_;
     // long intervalMillis_;
     // long startMillis_;

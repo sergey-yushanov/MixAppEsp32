@@ -217,20 +217,23 @@ void mbPoll()
     if (addrCounter > 2)
         addrCounter = 0;
 
-    Error err = SUCCESS;
+    // Error err = SUCCESS;
     if (addrCounter == 0)
         // mbReadAnalog();
-        err = MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
+        // err = MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
+        MB.addRequest(mbToken++, 10, READ_HOLD_REGISTER, 0, 6);
     if (addrCounter == 1)
     {
         // mbWriteDiscrete20();
-        err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
+        // err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
+        MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
         isBuffer20 = false;
     }
     if (addrCounter == 2)
     {
         // mbWriteDiscrete21();
-        err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+        // err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+        MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
         isBuffer21 = false;
     }
 

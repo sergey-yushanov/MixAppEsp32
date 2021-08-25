@@ -7,6 +7,7 @@
 #include <AnalogSensor.h>
 #include <Valve.h>
 #include <ValveAdjustable.h>
+#include "plant.h"
 
 String jsonSerialize(ValveAdjustable, Flowmeter, Collector, bool);
 

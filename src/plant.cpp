@@ -1,15 +1,16 @@
 #include "plant.h"
-#include "clock_pulses.h"
-#include <ProcessControl.h>
 
 Collector collector;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
+float carrierRequiredVolume;
+float carrierDosedVolume;
 
 bool ack;
 bool showSettings;
 bool pumpCommand;
-//bool loopCommand;
+
+bool isLoopRunning;
 
 long openTime;
 long openTimeBegin;
@@ -77,6 +78,7 @@ void plantSetup()
 {
     ack = true;
     showSettings = true;
+    isLoopRunning = false;
 
     // dataSetup();
 
@@ -146,19 +148,21 @@ void flowLoop()
 void mixLoop()
 {
     collector.loop();
+    // carrierDosedVolume
 }
 
-void loopCommand()
+void loopStart()
 {
-    collector.loopCommand();
+    m1.nullifyVolume();
+    collector.loopStart();
 }
-
-// void loopPause()
-// {
-//     collector.loopPause();
-// }
 
 void loopStop()
 {
     collector.loopStop();
+}
+
+void loopPause()
+{
+    collector.loopPause();
 }

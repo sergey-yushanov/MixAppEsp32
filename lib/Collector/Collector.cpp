@@ -236,7 +236,7 @@ void Collector::resetWash()
     washingFinishing_ = false;
 }
 
-void Collector::loopCommand()
+void Collector::loopStart()
 {
     resetFill();
     resetDose();
@@ -252,17 +252,6 @@ void Collector::loopCommand()
     }
 }
 
-// void Collector::loopPause()
-// {
-//     loopPause_ = !loopPause_;
-
-//     if (loopDone_)
-//         loopPause_ = false;
-
-//     if (loopPause_)
-//         closeAll();
-// }
-
 void Collector::loopStop()
 {
     resetFill();
@@ -273,6 +262,17 @@ void Collector::loopStop()
     order = 0;
 
     closeAll();
+}
+
+void Collector::loopPause()
+{
+    // loopPause_ = !loopPause_;
+
+    // if (loopDone_)
+    //     loopPause_ = false;
+
+    // if (loopPause_)
+    //     closeAll();
 }
 
 // void Collector::doseCommand()

@@ -66,9 +66,9 @@ struct Collector
     void resetWash();
 
     void loop();
-    void loopCommand();
-    // void loopPause();
+    void loopStart();
     void loopStop();
+    void loopPause();
 
     void fillCommand();
     void doseCommand();

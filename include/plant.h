@@ -7,9 +7,14 @@
 
 #include "save_data.h"
 
+#include "clock_pulses.h"
+#include <ProcessControl.h>
+
 extern Collector collector;
 extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
+extern float carrierRequiredVolume;
+extern float carrierDosedVolume;
 
 extern bool ack;
 extern bool showSettings;
@@ -40,8 +45,8 @@ void plantLoop();
 void flowLoop();
 void mixLoop();
 
-void loopCommand();
-void loopPause();
+void loopStart();
 void loopStop();
+void loopPause();
 
 #endif

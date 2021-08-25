@@ -80,11 +80,20 @@ DynamicJsonDocument collectorJSON(int number, Collector collector, bool showSett
     return doc;
 }
 
+DynamicJsonDocument commonLoopJSON()
+{
+    DynamicJsonDocument doc(1024);
+    doc["carrierRequiredVolume"] = carrierRequiredVolume;
+    doc["carrierDosedVolume"] = carrierDosedVolume;
+    return doc;
+}
+
 DynamicJsonDocument commonJSON(ValveAdjustable valveAdjustable, Flowmeter flowmeter, bool showSettings)
 {
     DynamicJsonDocument doc(1024);
     doc["valveAdjustable"] = valveAdjustableJSON(valveAdjustable, showSettings);
     doc["flowmeter"] = flowmeterJSON(flowmeter, showSettings);
+    doc["loop"] = commonLoopJSON();
     return doc;
 }
 
