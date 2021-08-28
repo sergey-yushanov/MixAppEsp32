@@ -80,26 +80,34 @@ void loop()
         // считаем текущий расход
         flowLoop();
 
+        Serial.print("Req vol: ");
+        for (int i = 0; i < collector.nValves_; i++)
+        {
+            Serial.print("\t");
+            Serial.print(collector.requiredVolumes[i]);
+        }
+        Serial.println();
+
         // Serial.print("\tlDon: ");
         // Serial.print(collector.loopDone_);
 
-        Serial.print("\tlReq: ");
-        for (int i = 0; i < collector.nValves_ - 1; i++)
-        {
-            Serial.print(collector.requiredVolumes[i]);
-            Serial.print(", ");
-        }
+        // Serial.print("\tlReq: ");
+        // for (int i = 0; i < collector.nValves_ - 1; i++)
+        // {
+        //     Serial.print(collector.requiredVolumes[i]);
+        //     Serial.print(", ");
+        // }
 
-        Serial.print("\tlDos: ");
-        for (int i = 0; i < collector.nValves_ - 1; i++)
-        {
-            Serial.print(collector.dosedVolumes[i]);
-            Serial.print(", ");
-        }
+        // Serial.print("\tlDos: ");
+        // for (int i = 0; i < collector.nValves_ - 1; i++)
+        // {
+        //     Serial.print(collector.dosedVolumes[i]);
+        //     Serial.print(", ");
+        // }
 
-        Serial.print("\tlOffset: ");
-        Serial.print(collector.dosingVolumeOffset_);
-        Serial.println();
+        // Serial.print("\tlOffset: ");
+        // Serial.print(collector.dosingVolumeOffset_);
+        // Serial.println();
 
         // Serial.print("\tdose: ");
         // Serial.print(collector.dosing_);

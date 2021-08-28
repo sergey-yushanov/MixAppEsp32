@@ -168,6 +168,11 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     // valveNums
     if (jsonReceived.containsKey("valveNums"))
     {
+        // for (int i = 0; i < collector->nValves_; i++)
+        // {
+        //     collector->valveNums[i] = 0;
+        // }
+
         for (int i = 0; i < jsonReceived["valveNums"].size(); i++)
         {
             collector->valveNums[i] = jsonReceived["valveNums"][i];
@@ -177,6 +182,11 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     // requiredVolumes
     if (jsonReceived.containsKey("requiredVolumes"))
     {
+        // for (int i = 0; i < collector->nValves_; i++)
+        // {
+        //     collector->requiredVolumes[i] = 0;
+        // }
+
         for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
         {
             collector->requiredVolumes[i] = jsonReceived["requiredVolumes"][i];

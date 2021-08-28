@@ -90,11 +90,14 @@ void Collector::dose(int valveNum)
 
         dosedVolumes[valveNum] = 0;
 
-        // Serial.print("Dosing start volume: ");
-        // Serial.println(flowmeter.getVolume());
+        Serial.print("ValveNum: ");
+        Serial.println(valveNum);
 
-        // Serial.print("Dosing required volume: ");
-        // Serial.println(requiredVolumes[valveNum]);
+        Serial.print("Dosing start volume: ");
+        Serial.println(flowmeter.getVolume());
+
+        Serial.print("Dosing required volume: ");
+        Serial.println(requiredVolumes[valveNum]);
     }
     dosingStart_ = false;
 
@@ -116,8 +119,8 @@ void Collector::dose(int valveNum)
         if (dosingValveOpenRise_.rising(valveAdjustable.isOpened()))
         {
             dosingVolumeOffset_ = flowmeter.getVolume(); // * 1.15;
-            // Serial.print("Dosing offset volume: ");
-            // Serial.println(dosingVolumeOffset_);
+            Serial.print("Dosing offset volume: ");
+            Serial.println(dosingVolumeOffset_);
         }
 
         // если не успели открыть клапан, а уже половина объема прошла, то заканчиваем дозацию
@@ -126,8 +129,8 @@ void Collector::dose(int valveNum)
             dosing_ = false;
             dosingFinishing_ = true;
 
-            // Serial.print("Dosing volume: ");
-            // Serial.println(dosedVolumes[valveNum]);
+            Serial.print("Dosing volume: ");
+            Serial.println(dosedVolumes[valveNum]);
         }
 
         // если подходим к завершению дозирования нужного объема
@@ -136,8 +139,8 @@ void Collector::dose(int valveNum)
             dosing_ = false;
             dosingFinishing_ = true;
 
-            // Serial.print("Dosing volume: ");
-            // Serial.println(dosedVolumes[valveNum]);
+            Serial.print("Dosing volume: ");
+            Serial.println(dosedVolumes[valveNum]);
         }
     }
 

@@ -34,13 +34,13 @@ void nullifyBuffers()
 // plus a user-supplied token to identify the causing request
 void handleData(ModbusMessage response, uint32_t token)
 {
-    Serial.print(micros());
-    Serial.print("\t");
-    for (auto &byte : response)
-    {
-        Serial.printf("%02X ", byte);
-    }
-    Serial.println();
+    // Serial.print(micros());
+    // Serial.print("\t");
+    // for (auto &byte : response)
+    // {
+    //     Serial.printf("%02X ", byte);
+    // }
+    // Serial.println();
 
     if (response.getServerID() == 10)
     {

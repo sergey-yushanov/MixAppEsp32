@@ -111,6 +111,12 @@ void plantSetup()
 
     // pinMode(pumpPin, OUTPUT);
     pumpCommand = false;
+
+    valveAdjustable.setDeadbandClose(5.0);
+    valveAdjustable.setDeadbandOpen(5.0);
+    valveAdjustable.setDeadbandPosition(5.0);
+    valveAdjustable.setCostClose(5.0);
+    valveAdjustable.setCostOpen(5.0);
 }
 
 void plantLoop()
@@ -181,12 +187,14 @@ void mixLoop()
     {
         loopStart_ = false;
         valveAdjustable.setSetpoint(valveSetpoint);
+        return;
     }
 
     // 2. wait valve setpoint
     if (loopRunning_ && !loopValveOk_)
     {
         loopValveOk_ = valveAdjustable.isPositionOk();
+        return;
     }
 
     // 3. start pump and collector
@@ -196,6 +204,7 @@ void mixLoop()
         pumpCommand = true;
         collector.loopStart();
         loopCollector_ = true;
+        return;
     }
 
     // 4. dosing done
@@ -203,6 +212,7 @@ void mixLoop()
     {
         carrierDosedVolume = m1.getVolume();
         loopDone_ = collector.loopDone_ || (carrierDosedVolume > carrierRequiredVolume);
+        return;
     }
 
     // 5. loop done
