@@ -282,3 +282,8 @@ bool ValveAdjustable::isClosed()
 {
     return positionClose_;
 }
+
+bool ValveAdjustable::isPositionOk()
+{
+    return positionOk_;
+}

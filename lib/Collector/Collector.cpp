@@ -341,3 +341,13 @@ void Collector::incTimers()
     washingTimer_.inc100msTimer();
     washingFinishingTimer_.inc100msTimer();
 }
+
+void Collector::setRatioVolume(float ratioVolume)
+{
+    ratioVolume_ = ratioVolume;
+}
+
+void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+{
+    ratioVolumeMicro_ = ratioVolumeMicro;
+}

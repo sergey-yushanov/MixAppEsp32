@@ -1,6 +1,8 @@
 #ifndef PLANT_h
 #define PLANT_h
 
+#include "esp_adc_cal.h"
+
 #include <Collector.h>
 #include <Flowmeter.h>
 #include <ValveAdjustable.h>
@@ -9,6 +11,8 @@
 
 #include "clock_pulses.h"
 #include <ProcessControl.h>
+
+#include <SimpleKalmanFilter.h>
 
 extern Collector collector;
 extern Flowmeter m1;
@@ -32,6 +36,12 @@ extern long closeTimeBegin;
 extern long closeTimeEnd;
 extern bool closeTimeCalc;
 
+// loop parameters
+extern float ratioVolume;
+extern float ratioVolumeMicro;
+extern float valveSetpoint;
+extern float carrierReserve;
+
 // void m1Setup();
 void IRAM_ATTR m1Pulse();
 
@@ -48,5 +58,8 @@ void mixLoop();
 void loopStart();
 void loopStop();
 void loopPause();
+
+void pumpStart();
+void pumpStop();
 
 #endif

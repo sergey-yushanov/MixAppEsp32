@@ -87,11 +87,26 @@ void valveAdjustableJSON(DynamicJsonDocument jsonReceived, ValveAdjustable *valv
 void commonLoopJSON(DynamicJsonDocument jsonReceived)
 {
     // carrierRequiredVolume
-    if (jsonReceived.containsKey("requiredVolume"))
+    if (jsonReceived.containsKey("carrierRequiredVolume"))
     {
-        carrierRequiredVolume = jsonReceived["requiredVolume"];
+        carrierRequiredVolume = jsonReceived["carrierRequiredVolume"];
         Serial.println(carrierRequiredVolume);
     }
+
+    if (jsonReceived.containsKey("commandStart"))
+        if (jsonReceived["commandStart"])
+            loopStart();
+
+    if (jsonReceived.containsKey("commandStop"))
+        if (jsonReceived["commandStop"])
+            loopStop();
+
+    if (jsonReceived.containsKey("commandPause"))
+        if (jsonReceived["commandPause"])
+            loopPause();
+
+    if (jsonReceived.containsKey("valveSetpoint"))
+        valveSetpoint = jsonReceived["valveSetpoint"];
 }
 
 void commonJSON(DynamicJsonDocument jsonReceived)
@@ -107,6 +122,11 @@ void commonJSON(DynamicJsonDocument jsonReceived)
         flowmeterJSON(jsonReceived["flowmeter"], &m1);
         // dataSave(preferences_common, &m1);
     }
+
+    if (jsonReceived.containsKey("loop"))
+    {
+        commonLoopJSON(jsonReceived["loop"]);
+    }
 }
 
 void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
@@ -117,17 +137,29 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         // Serial.println(collector->flowmeter.getVolume());
     }
 
-    if (jsonReceived.containsKey("commandStart"))
-        if (jsonReceived["commandStart"])
-            loopStart();
+    if (jsonReceived.containsKey("ratioVolume"))
+    {
+        collector->setRatioVolume(jsonReceived["ratioVolume"]);
+        ratioVolumeMicro = jsonReceived["ratioVolume"];
+    }
 
-    if (jsonReceived.containsKey("commandStop"))
-        if (jsonReceived["commandStop"])
-            loopStop();
+    if (jsonReceived.containsKey("ratioVolumeMicro"))
+    {
+        collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
+        ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    }
 
-    if (jsonReceived.containsKey("commandPause"))
-        if (jsonReceived["commandPause"])
-            loopPause();
+    // if (jsonReceived.containsKey("commandStart"))
+    //     if (jsonReceived["commandStart"])
+    //         loopStart();
+
+    // if (jsonReceived.containsKey("commandStop"))
+    //     if (jsonReceived["commandStop"])
+    //         loopStop();
+
+    // if (jsonReceived.containsKey("commandPause"))
+    //     if (jsonReceived["commandPause"])
+    //         loopPause();
 
     // if (jsonReceived.containsKey("doseCommandStart"))
     //     if (jsonReceived["doseCommandStart"])
@@ -188,13 +220,13 @@ void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 
 void pumpJSON(DynamicJsonDocument jsonReceived)
 {
-    if (jsonReceived.containsKey("commandStart"))
-        if (jsonReceived["commandStart"])
-            pumpCommand = true;
+    // if (jsonReceived.containsKey("pumpStart"))
+    //     if (jsonReceived["pumpStart"])
+    //         pumpStart();
 
-    if (jsonReceived.containsKey("commandStop"))
-        if (jsonReceived["commandStop"])
-            pumpCommand = false;
+    // if (jsonReceived.containsKey("pumpStop"))
+    //     if (jsonReceived["pumpStop"])
+    //         pumpStop();
 }
 
 void messageContainsKeys(DynamicJsonDocument jsonReceived)
@@ -208,8 +240,16 @@ void messageContainsKeys(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("ack"))
         ack = jsonReceived["ack"];
 
-    if (jsonReceived.containsKey("pump"))
-        pumpJSON(jsonReceived["pump"]);
+    if (jsonReceived.containsKey("pumpStart"))
+        if (jsonReceived["pumpStart"])
+            pumpStart();
+
+    if (jsonReceived.containsKey("pumpStop"))
+        if (jsonReceived["pumpStop"])
+            pumpStop();
+
+    // if (jsonReceived.containsKey("pump"))
+    //     pumpJSON(jsonReceived["pump"]);
 
     if (jsonReceived.containsKey("common"))
         commonJSON(jsonReceived["common"]);

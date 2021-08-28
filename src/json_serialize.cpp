@@ -61,7 +61,8 @@ DynamicJsonDocument collectorLoopJSON(Collector collector)
     {
         doc["valveNums"][i] = collector.valveNums[i];
         doc["requiredVolumes"][i] = collector.requiredVolumes[i];
-        doc["dosedVolumes"][i] = collector.dosedVolumes[i];
+        // doc["dosedVolumes"][i] = collector.dosedVolumes[i];
+        doc["dosedVolumes"][i] = random(1000);
     }
     return doc;
 }
@@ -84,7 +85,9 @@ DynamicJsonDocument commonLoopJSON()
 {
     DynamicJsonDocument doc(1024);
     doc["carrierRequiredVolume"] = carrierRequiredVolume;
-    doc["carrierDosedVolume"] = carrierDosedVolume;
+    // doc["carrierDosedVolume"] = carrierDosedVolume;
+    doc["carrierDosedVolume"] = random(1000);
+    doc["carrierReserve"] = carrierReserve;
     return doc;
 }
 

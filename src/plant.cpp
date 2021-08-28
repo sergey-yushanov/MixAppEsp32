@@ -1,5 +1,9 @@
 #include "plant.h"
 
+// #define ADC_PIN_34 34
+// #define ADC_PIN_35 35
+// #define voltage_divider_offset 2.174 // Should be a value of 2.000, but ADC input impedance loads the voltage divider, requiring a correction
+
 Collector collector;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
@@ -8,7 +12,9 @@ float carrierDosedVolume;
 
 bool ack;
 bool showSettings;
+
 bool pumpCommand;
+const int pumpPin = 5;
 
 bool isLoopRunning;
 
@@ -22,6 +28,21 @@ long closeTime;
 long closeTimeBegin;
 long closeTimeEnd;
 bool closeTimeCalc;
+
+// loop parameters
+float ratioVolume = 1.1;
+float ratioVolumeMicro = 1.1;
+float valveSetpoint = 60.0;
+float carrierReserve = 20.0;
+
+bool loopStart_;
+bool loopValveOk_;
+bool loopCollector_;
+bool loopRunning_;
+bool loopDone_;
+
+// SimpleKalmanFilter kalman34(2, 2, 0.01);
+// SimpleKalmanFilter kalman35(2, 2, 0.01);
 
 // dispenser collector flowmeter
 void g1Setup()
@@ -84,6 +105,12 @@ void plantSetup()
 
     m1Setup();
     g1Setup();
+
+    // analogSetClockDiv(20);
+    // analogSetWidth(11);
+
+    // pinMode(pumpPin, OUTPUT);
+    pumpCommand = false;
 }
 
 void plantLoop()
@@ -95,6 +122,18 @@ void plantLoop()
     }
 
     mixLoop();
+
+    // float measured_value34 = (float)analogRead(ADC_PIN_34);
+    // float estimated_value34 = kalman34.updateEstimate(measured_value34);
+
+    // valveAdjustable.getPositionSensor()->setIntRaw(value);
+
+    // valveAdjustable.getPositionSensor()->setRaw(measured_value34);
+    // valveAdjustable.updatePosition();
+
+    // value = analogRead(35);
+    // collector.valveAdjustable.getPositionSensor()->setIntRaw(value);
+    // collector.valveAdjustable.updatePosition();
 
     // calculate open/close time
     // if (collector.valveAdjustable.isOpened() && openTimeCalc)
@@ -116,53 +155,100 @@ void plantLoop()
 void flowLoop()
 {
     collector.flowmeter.computeFlow();
-
-    // Serial.print("startMillis_: ");
-    // Serial.print(m1.startMillis_);
-    // Serial.print("\t");
-    // Serial.print("flowPulseCounter_: ");
-    // Serial.print(m1.flowPulseCounter_);
-
     m1.computeFlow();
+}
 
-    // Serial.print("\t");
-    // Serial.print("startMillis_: ");
-    // Serial.print(m1.startMillis_);
-    // Serial.print("\t");
-    // Serial.print("passedMillis_: ");
-    // Serial.print(m1.passedMillis_);
-
-    // Serial.print("\t");
-    // Serial.print("flow_: ");
-    // Serial.print(m1.flow_);
-
-    // Serial.print("\t");
-    // Serial.print("volumePulseCounter_: ");
-    // Serial.print(m1.volumePulseCounter_);
-
-    // Serial.print("\t");
-    // Serial.print("volume_: ");
-    // Serial.println(m1.volume_);
+void commonLoop()
+{
+    // pump command set/reset pin
+    // if (pumpCommand)
+    // {
+    //     digitalWrite(pumpPin, HIGH);
+    // }
+    // else
+    // {
+    //     digitalWrite(pumpPin, LOW);
+    // }
 }
 
 void mixLoop()
 {
     collector.loop();
-    // carrierDosedVolume
+    commonLoop();
+
+    // 1. command to open valve to setpoint
+    if (loopStart_)
+    {
+        loopStart_ = false;
+        valveAdjustable.setSetpoint(valveSetpoint);
+    }
+
+    // 2. wait valve setpoint
+    if (loopRunning_ && !loopValveOk_)
+    {
+        loopValveOk_ = valveAdjustable.isPositionOk();
+    }
+
+    // 3. start pump and collector
+    if (loopRunning_ && loopValveOk_ && !loopCollector_)
+    {
+        m1.nullifyVolume();
+        pumpCommand = true;
+        collector.loopStart();
+        loopCollector_ = true;
+    }
+
+    // 4. dosing done
+    if (loopRunning_ && loopValveOk_ && loopCollector_)
+    {
+        carrierDosedVolume = m1.getVolume();
+        loopDone_ = collector.loopDone_ || (carrierDosedVolume > carrierRequiredVolume);
+    }
+
+    // 5. loop done
+    if (loopDone_)
+    {
+        loopStop();
+    }
 }
 
 void loopStart()
 {
-    m1.nullifyVolume();
-    collector.loopStart();
+    loopStart_ = true;
+    loopValveOk_ = false;
+    loopCollector_ = false;
+    loopRunning_ = true;
+    loopDone_ = false;
+
+    // m1.nullifyVolume();
+    // collector.loopStart();
 }
 
 void loopStop()
 {
     collector.loopStop();
+
+    pumpCommand = false;
+    valveAdjustable.fullyClose();
+
+    loopStart_ = false;
+    loopValveOk_ = false;
+    loopCollector_ = false;
+    loopRunning_ = false;
+    loopDone_ = false;
 }
 
 void loopPause()
 {
     collector.loopPause();
+}
+
+void pumpStart()
+{
+    pumpCommand = true;
+}
+
+void pumpStop()
+{
+    pumpCommand = false;
 }

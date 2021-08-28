@@ -34,11 +34,13 @@ void nullifyBuffers()
 // plus a user-supplied token to identify the causing request
 void handleData(ModbusMessage response, uint32_t token)
 {
-    // for (auto &byte : response)
-    // {
-    //     Serial.printf("%02X ", byte);
-    // }
-    // Serial.println();
+    Serial.print(micros());
+    Serial.print("\t");
+    for (auto &byte : response)
+    {
+        Serial.printf("%02X ", byte);
+    }
+    Serial.println();
 
     if (response.getServerID() == 10)
     {
@@ -125,6 +127,8 @@ void mbSetDiscrete()
     buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandOpen(), 0);
     buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandClose(), 3);
 
+    buffer21[0] = setBufferBit(buffer21[0], pumpCommand, 6);
+
     // for (auto &byte : buffer20)
     // {
     //     Serial.printf("%02X ", byte);
@@ -197,25 +201,32 @@ void mbWriteDiscrete21()
 // опрос всех адресов последовательно
 void mbPoll()
 {
+    // if (addrDone)
+    // {
+    //     addrCounter++;
+    //     addrDone = false;
+    // }
+    // else
+    //     return;
+
+    // mbSetDiscrete();
+
     if (addrDone)
     {
-        addrCounter++;
         addrDone = false;
+        mbSetDiscrete();
+        if (isBuffer20)
+            addrCounter = 1;
+        else if (isBuffer21)
+            addrCounter = 2;
+        else
+            addrCounter = 0;
+
+        // if (addrCounter > 2)
+        //     addrCounter = 0;
     }
     else
         return;
-
-    mbSetDiscrete();
-
-    if (isBuffer20)
-        addrCounter = 1;
-    else if (isBuffer21)
-        addrCounter = 2;
-    else
-        addrCounter = 0;
-
-    if (addrCounter > 2)
-        addrCounter = 0;
 
     // Error err = SUCCESS;
     if (addrCounter == 0)

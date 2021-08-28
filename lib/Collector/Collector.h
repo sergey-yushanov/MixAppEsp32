@@ -51,6 +51,10 @@ struct Collector
     bool loopDone_;
     bool loopPause_;
 
+    // loop parameters
+    float ratioVolume_;
+    float ratioVolumeMicro_;
+
     void closeAll();
     // void stopFill();
     // void openToFill();
@@ -75,6 +79,9 @@ struct Collector
     void washCommand();
 
     void incTimers();
+
+    void setRatioVolume(float ratioVolume);
+    void setRatioVolumeMicro(float ratioVolumeMicro);
 };
 
 #endif
