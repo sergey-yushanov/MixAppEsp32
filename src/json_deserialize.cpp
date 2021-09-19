@@ -176,7 +176,7 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         for (int i = 0; i < jsonReceived["valveNums"].size(); i++)
         {
             collector->valveNums[i] = jsonReceived["valveNums"][i];
-            Serial.println(collector->valveNums[i]);
+            // Serial.println(collector->valveNums[i]);
         }
     }
     // requiredVolumes
@@ -190,8 +190,36 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
         {
             collector->requiredVolumes[i] = jsonReceived["requiredVolumes"][i];
-            Serial.println(collector->requiredVolumes[i]);
+            // Serial.println(collector->requiredVolumes[i]);
         }
+    }
+}
+
+void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
+{
+    if (jsonReceived.containsKey("volumePulseCounter"))
+    {
+        singleDos->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
+        // Serial.println(collector->flowmeter.getVolume());
+    }
+
+    if (jsonReceived.containsKey("ratioVolume"))
+    {
+        singleDos->setRatioVolume(jsonReceived["ratioVolume"]);
+        // ratioVolumeMicro = jsonReceived["ratioVolume"];
+    }
+
+    if (jsonReceived.containsKey("ratioVolumeMicro"))
+    {
+        singleDos->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
+        // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    }
+
+    // requiredVolume
+    if (jsonReceived.containsKey("requiredVolume"))
+    {
+        singleDos->requiredVolume = jsonReceived["requiredVolume"];
+        // Serial.println(singleDos->requiredVolume);
     }
 }
 
@@ -225,6 +253,26 @@ void collectorJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("loop"))
     {
         collectorLoopJSON(jsonReceived["loop"], collector);
+    }
+}
+
+void singleDosJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
+{
+    if (jsonReceived.containsKey("valveAdjustable"))
+    {
+        valveAdjustableJSON(jsonReceived["valveAdjustable"], &singleDos->valveAdjustable);
+        // dataSave(preferences_dispenser_0, &collector->valveAdjustable);
+    }
+
+    if (jsonReceived.containsKey("flowmeter"))
+    {
+        flowmeterJSON(jsonReceived["flowmeter"], &singleDos->flowmeter);
+        // dataSave(preferences_dispenser_0, &collector->flowmeter);
+    }
+
+    if (jsonReceived.containsKey("loop"))
+    {
+        singleDosLoopJSON(jsonReceived["loop"], singleDos);
     }
 }
 
@@ -274,6 +322,20 @@ void messageContainsKeys(DynamicJsonDocument jsonReceived)
                 collectorNum--;
                 if (collectorNum == 0)
                     collectorJSON(jsonReceived["collectors"][i], &collector);
+            }
+        }
+    }
+
+    if (jsonReceived.containsKey("singles"))
+    {
+        for (int i = 0; i < jsonReceived["singles"].size(); i++)
+        {
+            if (jsonReceived["singles"][i].containsKey("number"))
+            {
+                int singleDosNum = jsonReceived["singles"][i]["number"];
+                singleDosNum--;
+                if (singleDosNum == 0)
+                    singleDosJSON(jsonReceived["singles"][i], &singleDos);
             }
         }
     }

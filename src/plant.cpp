@@ -5,6 +5,7 @@
 // #define voltage_divider_offset 2.174 // Should be a value of 2.000, but ADC input impedance loads the voltage divider, requiring a correction
 
 Collector collector;
+SingleDos singleDos;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
 float carrierRequiredVolume;

@@ -6,6 +6,7 @@
 #include <Collector.h>
 #include <Flowmeter.h>
 #include <ValveAdjustable.h>
+#include "SingleDos.h"
 
 #include "save_data.h"
 
@@ -17,6 +18,8 @@
 extern Collector collector;
 extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
+extern SingleDos singleDos;
+
 extern float carrierRequiredVolume;
 extern float carrierDosedVolume;
 
