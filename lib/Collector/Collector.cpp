@@ -7,27 +7,6 @@ void Collector::closeAll()
     valveAdjustable.fullyClose();
 }
 
-// void Collector::openToFill()
-// {
-//     valves[nValves_ - 1].open();
-//     if (valves[nValves_ - 1].isCommand())
-//         valveAdjustable.fullyOpen();
-// }
-
-// void Collector::closeAfterFilling()
-// {
-//     valveAdjustable.fullyClose();
-//     if (valveAdjustable.isClosed())
-//         valves[nValves_ - 1].close();
-// }
-
-// void Collector::closeAfterDosing(int valveNum)
-// {
-//     valveAdjustable.fullyClose();
-//     if (valveAdjustable.isClosed())
-//         valves[valveNum].close();
-// }
-
 // наполнение коллектора носителем
 void Collector::fill()
 {
