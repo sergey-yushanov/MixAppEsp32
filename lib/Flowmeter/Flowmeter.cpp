@@ -33,6 +33,11 @@ long Flowmeter::defaultIntervalMillis()
     return 200;
 }
 
+float Flowmeter::getPulsesPerLiter()
+{
+    return pulsesPerLiter_;
+}
+
 void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 {
     pulsesPerLiter_ = pulsesPerLiter;
@@ -40,12 +45,15 @@ void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 
 void Flowmeter::computeFlow()
 {
-    passedMillis_ = millis() - startMillis_;
+    passedMillis_ = micros() - startMillis_;
+
     if (passedMillis_ >= intervalMillis_)
     {
-        flow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0;
+        measuredFlow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0 * 1000.0;
+        // flow_ = kalman_.updateEstimate(measuredFlow_);
+        flow_ = measuredFlow_;
         flowPulseCounter_ = 0;
-        startMillis_ = millis();
+        startMillis_ = micros();
     }
 }
 
@@ -72,11 +80,11 @@ void Flowmeter::setPin(int pin)
 
 float Flowmeter::getFlow()
 {
-    computeFlow();
+    // computeFlow();
     return flow_;
 }
 
-double Flowmeter::getVolume()
+float Flowmeter::getVolume()
 {
     computeVolume();
     return volume_;

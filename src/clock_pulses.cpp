@@ -13,13 +13,13 @@ void clockSetup()
 {
     clk.timer = timerBegin(0, 80, true);
     timerAttachInterrupt(clk.timer, onTime, true);
-    timerAlarmWrite(clk.timer, 100000, true); // 100ms clk
+    timerAlarmWrite(clk.timer, 10000, true); // 50ms clk
     timerAlarmEnable(clk.timer);
 }
 
 void clockReset()
 {
-    portENTER_CRITICAL(&clk.timerMux);
+    portENTER_CRITICAL_ISR(&clk.timerMux);
     clk.reset();
-    portEXIT_CRITICAL(&clk.timerMux);
+    portEXIT_CRITICAL_ISR(&clk.timerMux);
 }

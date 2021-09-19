@@ -1,227 +1,153 @@
 #include <Arduino.h>
 
-#include <Preferences.h>
-
-//#include <PCF8575.h>
-#include "sensors.h"
 #include "clock_pulses.h"
 #include "plant.h"
-//#include "i2c_hub.h"
 #include "mb_master.h"
-
-Preferences preferences;
-
-// timer clock
-
-//long currentMillis = 0;
-//long previousMillis = 0;
-//long flowCalcMillis = 200;
-
-// bool opn = true;
-// bool cls = false;
-//int address = 0x20;
-
-// Обработка прерываний по входам с расходомеров
-
-// void i2c_write(uint16_t data)
-// {
-//   Wire.beginTransmission(address);
-//   Wire.write(lowByte(data));
-//   Wire.write(highByte(data));
-//   Wire.endTransmission();
-// }
+#include "access_point.h"
+#include "save_data.h"
 
 // Первоначальная настройка
 void setup()
 {
-  Serial.begin(115200);
-  // nullifyBuffers();
-  analogSensorsSetup();
-  clockSetup();
-  mbSetup();
+    Serial.begin(115200);
 
-  m1Setup();
-  g1Setup();
+    // dataSetup();
+    webSetup();
+    delay(1000);
 
-  preferences.begin("", false);
+    clockSetup();
+    mbSetup();
+    plantSetup();
 
-  delay(1000);
+    delay(3000);
 }
-
-//int counter = 0;
-// RisingEdge t1pulse;
-// FallingEdge t2pulse;
 
 // Цикл
 void loop()
 {
-  if (clk._1s)
-  {
-    incTimeouts();
+    // long loop_start = micros();
 
-    Serial.print("reg kl set = ");
-    Serial.println(valveAdjustable.getSetpoint());
-    Serial.print("reg kl pos = ");
-    Serial.println(valveAdjustable.getPosition());
-
-    Serial.print("kl 0 set = ");
-    Serial.println(dispenserCollector.valveAdjustable.getSetpoint());
-    Serial.print("kl 0 pos = ");
-    Serial.println(dispenserCollector.valveAdjustable.getPosition());
-
-    // Serial.println(valveAdjustable.getStatus());
-    // Serial.print("command open = ");
-    // Serial.println(valveAdjustable.isCommandOpen());
-    // Serial.print("command close = ");
-    // Serial.println(valveAdjustable.isCommandClose());
-
-    // Serial.println();
-
-    // for (int i = 0; i < nAnalogSensors; i++)
-    // {
-    //   Serial.print(i);
-    //   Serial.print('\t');
-    //   Serial.println(analogSensors[i].getValue());
-    // }
-    // Serial.println();
-  }
-
-  if (clk._0_1s)
-  {
-    // todo : разделить по времени, иначе ересь всякая лезет
     mbPoll();
-    // mbReadAnalog();
-    // mbWriteDiscrete();
-    //mbWriteDiscrete21();
-  }
+    plantLoop();
 
-  // loopPlant();
-  clockReset();
+    if (clk._10ms)
+    {
+        // mbPoll();
+        // plantLoop();
+        // Serial.println("clock");
+        // опрос устройств Modbus
+        // mbPoll();
+
+        // выполняем действия с управлением установкой
+        // plantLoop();
+    }
+    // if (clk._50ms)
+    // {
+    // Serial.println("clock 50 ms");
+    // опрос устройств Modbus
+    // mbPoll();
+
+    // выполняем действия с управлением установкой
+    // plantLoop();
+    // }
+    if (clk._100ms)
+    {
+        // опрос устройств Modbus
+        // mbPoll();
+
+        // выполняем действия с управлением установкой
+        // plantLoop();
+    }
+
+    if (clk._100ms)
+    {
+        // увеличиваем таймеры для аварий по отсутствию движения
+        incTimeouts();
+        // увеличиваем разные таймеры коллектора
+        incTimers();
+        // выполняем действия с управлением установкой
+        // plantLoop();
+    }
+    if (clk._200ms)
+    {
+        // // выполняем действия с управлением установкой
+        // plantLoop();
+        // обмен по Wi-Fi
+        webLoop();
+    }
+    if (clk._500ms)
+    {
+        // считаем текущий расход
+        flowLoop();
+
+        Serial.print("Req vol: ");
+        for (int i = 0; i < collector.nValves_; i++)
+        {
+            Serial.print("\t");
+            Serial.print(collector.requiredVolumes[i]);
+        }
+        Serial.println();
+
+        // Serial.print("\tlDon: ");
+        // Serial.print(collector.loopDone_);
+
+        // Serial.print("\tlReq: ");
+        // for (int i = 0; i < collector.nValves_ - 1; i++)
+        // {
+        //     Serial.print(collector.requiredVolumes[i]);
+        //     Serial.print(", ");
+        // }
+
+        // Serial.print("\tlDos: ");
+        // for (int i = 0; i < collector.nValves_ - 1; i++)
+        // {
+        //     Serial.print(collector.dosedVolumes[i]);
+        //     Serial.print(", ");
+        // }
+
+        // Serial.print("\tlOffset: ");
+        // Serial.print(collector.dosingVolumeOffset_);
+        // Serial.println();
+
+        // Serial.print("\tdose: ");
+        // Serial.print(collector.dosing_);
+        // Serial.print("\tdFin: ");
+        // Serial.print(collector.dosingFinishing_);
+        // Serial.print("\tdDel: ");
+        // Serial.print(collector.dosingDoneDelay_);
+        // Serial.print("\tdDon: ");
+        // Serial.print(collector.dosingDone_);
+
+        // Serial.print("\twash: ");
+        // Serial.print(collector.washing_);
+        // Serial.print("\twFin: ");
+        // Serial.print(collector.washingFinishing_);
+        // Serial.print("\twDon: ");
+        // Serial.println(collector.washingDone_);
+
+        // Serial.print("Open begin: ");
+        // Serial.print(openTimeBegin);
+        // Serial.print("\tend: ");
+        // Serial.print(openTimeEnd);
+        // Serial.print("\tdelta: ");
+        // Serial.print(openTime);
+        // Serial.print("\traw: ");
+        // Serial.print(openPosition);
+        // Serial.print("\t\tClose begin: ");
+        // Serial.print(closeTimeBegin);
+        // Serial.print("\tend: ");
+        // Serial.print(closeTimeEnd);
+        // Serial.print("\tdelta: ");
+        // Serial.println(closeTime);
+    }
+    // if (clk._1s)
+    // {
+    //     // todo: здесь то, что выполняем раз в секунду
+    // }
+
+    // mixLoop();
+    clockReset();
+
+    // long loop_time = micros() - loop_start;
+    // Serial.println(loop_time);
 }
-
-// ==============================================================
-// ==============================================================
-// ==============================================================
-// ==============================================================
-// ==============================================================
-// ==============================================================
-// ==============================================================
-
-//if (t1pulse.posEdge(t1.status))
-// if (t1.status)
-// {
-//   Serial.print(millis());
-//   Serial.println("\t400 ms");
-// }
-
-// if (t2pulse.falling(t2.status))
-// {
-//   Serial.print(millis());
-//   Serial.println("\t600 ms");
-//   //Serial.println(manifold.getFlowmeter()->getPin());
-//   Serial.println(manifold.flowmeter.getPin());
-// }
-// //}
-
-// t1.onTimer(!t2.status, 400);
-// t2.offTimer(t1.status, 600);
-
-//m1.calcVolume();
-
-//currentMillis = millis();
-//long intervalMillis = currentMillis - previousMillis;
-
-//if (intervalMillis > flowCalcMillis)
-//{
-//flowCalc(&m1, intervalMillis);
-//flowCalc(&g1, intervalMillis);
-//}
-// if ((currentMillis - startTime1 > 10000) && !timer1)
-// {
-//   timer1 = true;
-//   startTime1 = currentMillis;
-//   startTime2 = currentMillis;
-
-//   set_pause = true;
-//   set_open = false;
-//   set_close = false;
-
-// Serial.print("Opn: ");
-// Serial.print(set_open, DEC);
-// Serial.print("\tCls: ");
-// Serial.print(set_close, DEC);
-// Serial.print("\tPau: ");
-// Serial.println(set_pause, DEC);
-
-// if (set_pause)
-// {
-//   i2c_write(word(B11111111, B11111111));
-
-//i2cHub2.digitalWrite(P8, HIGH);
-//i2cHub2.digitalWrite(P9, HIGH);
-//i2cHub2.digitalWrite(P10, HIGH);
-//i2cHub2.digitalWrite(P11, HIGH);
-//   }
-// }
-
-// if ((currentMillis - startTime2 > 2000) && timer1)
-// {
-//   timer1 = false;
-//   startTime1 = currentMillis;
-//   startTime2 = currentMillis;
-
-//   set_pause = false;
-//   to_open = !to_open;
-//   set_open = to_open;
-//   set_close = !to_open;
-
-// Serial.print("Opn: ");
-// Serial.print(set_open, DEC);
-// Serial.print("\tCls: ");
-// Serial.print(set_close, DEC);
-// Serial.print("\tPau: ");
-// Serial.println(set_pause, DEC);
-
-// if (clk._10s)
-// {
-//   opn = !opn;
-//   cls = !cls;
-// }
-
-// if (clk._10s && opn)
-// {
-//   Serial.println("Open");
-
-//   for (int i = 0; i < 1; i += 2)
-//   {
-//     i2cHub1.digitalWrite(i, HIGH);
-//     //i2cHub2.digitalWrite(i, HIGH);
-//   }
-
-//   for (int i = 1; i < 2; i += 2)
-//   {
-//     i2cHub1.digitalWrite(i, LOW);
-//     //i2cHub2.digitalWrite(i, LOW);
-//   }
-// }
-
-// if (clk._10s && cls)
-// {
-//   Serial.println("Close");
-
-//   for (int i = 0; i < 1; i += 2)
-//   {
-//     i2cHub1.digitalWrite(i, LOW);
-//     //i2cHub2.digitalWrite(i, LOW);
-//   }
-
-//   for (int i = 1; i < 2; i += 2)
-//   {
-//     i2cHub1.digitalWrite(i, HIGH);
-//     //i2cHub2.digitalWrite(i, HIGH);
-//   }
-// }
-// //}
-
-//  clockReset();
-//}

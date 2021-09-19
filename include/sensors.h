@@ -6,7 +6,7 @@
 extern const int nAnalogSensors;
 extern AnalogSensor analogSensors[];
 
-void analogSensorsSetup();
-void analogSensorsRead();
+// void analogSensorsSetup();
+// void analogSensorsRead();
 
 #endif

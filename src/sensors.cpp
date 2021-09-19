@@ -12,8 +12,8 @@ void analogSensorsSetup()
 
 void analogSensorsRead()
 {
-    valveAdjustable.setPosition(analogSensors[0].getValue());
-    dispenserCollector.valveAdjustable.setPosition(analogSensors[1].getValue());
+    // valveAdjustable.setPosition(analogSensors[0].getValue());
+    // dispenserCollector.valveAdjustable.setPosition(analogSensors[1].getValue());
 
     // valveControl.setPosition(analogSensors[0].getValue());
     // manifold.valves[0].setPosition(analogSensors[1].getValue());

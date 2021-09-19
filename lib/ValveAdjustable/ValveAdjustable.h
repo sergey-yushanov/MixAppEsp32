@@ -38,6 +38,12 @@ private:
     bool commandOpen_;
     bool commandClose_;
 
+    // bool requestStop_;
+
+    AnalogSensor positionSensor_;
+
+    void setPosition(float position);
+
     void setFaulty();
     void setRequest();
     void setCommand();
@@ -55,19 +61,43 @@ public:
     bool isCommandOpen();
     bool isCommandClose();
 
+    AnalogSensor *getPositionSensor();
+
     float getSetpoint();
     void setSetpoint(float setpoint);
 
     float getPosition();
-    void setPosition(float position);
+    void updatePosition();
 
-    void setOvertime(int overtime = 150);
-    void setLimits(float limitClose = 0.0, float limitOpen = 100.0);
-    void setDeadbands(float deadbandClose = 1.0, float deadbandOpen = 1.0, float deadbandPosition = 1.0);
-    void setCosts(float costClose = 1.0, float costOpen = 1.0);
+    int getOvertime();
+    void setOvertime(int overtime = 300);
+
+    float getLimitClose();
+    float getLimitOpen();
+    void setLimitClose(float limitClose = 0.0);
+    void setLimitOpen(float limitOpen = 100.0);
+
+    float getDeadbandClose();
+    float getDeadbandOpen();
+    float getDeadbandPosition();
+    void setDeadbandClose(float deadbandClose = 1.0);
+    void setDeadbandOpen(float deadbandOpen = 1.0);
+    void setDeadbandPosition(float deadbandPosition = 3.0);
+
+    float getCostClose();
+    float getCostOpen();
+    void setCostClose(float costClose = 2.0);
+    void setCostOpen(float costOpen = 2.0);
 
     void fullyOpen();
     void fullyClose();
+
+    // void fullyStop();
+
+    bool isOpened();
+    bool isClosed();
+
+    bool isPositionOk();
 };
 
 #endif

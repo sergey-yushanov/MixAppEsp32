@@ -7,6 +7,20 @@ class Flowmeter
 {
 private:
     int pin_;
+    volatile float measuredFlow_;
+    // float pulsesPerLiter_;
+    // long intervalMillis_;
+    // long startMillis_;
+    // long passedMillis_;
+    // volatile long flowPulseCounter_;
+    // volatile long volumePulseCounter_;
+    // volatile float flow_;
+    // volatile double volume_;
+
+    // void computeFlow();
+    void computeVolume();
+
+public:
     float pulsesPerLiter_;
     long intervalMillis_;
     long startMillis_;
@@ -14,22 +28,25 @@ private:
     volatile long flowPulseCounter_;
     volatile long volumePulseCounter_;
     volatile float flow_;
-    volatile double volume_;
+    volatile float volume_;
 
-    void computeFlow();
-    void computeVolume();
-
-public:
     Flowmeter();
     Flowmeter(int pin, float pulsesPerLiter);
     Flowmeter(int pin, float pulsesPerLiter, long intervalMillis);
     long defaultIntervalMillis();
+
+    float getPulsesPerLiter();
     void setPulsesPerLiter(float pulsesPerLiter);
+
     void pulseCounter();
+
     int getPin();
     void setPin(int pin);
+
+    void computeFlow();
     float getFlow();
-    double getVolume();
+    float getVolume();
+
     void nullifyVolume();
 };
 
