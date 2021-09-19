@@ -9,6 +9,6 @@
 #include <ValveAdjustable.h>
 #include "plant.h"
 
-String jsonSerialize(ValveAdjustable, Flowmeter, Collector, bool);
+String jsonSerialize(ValveAdjustable, Flowmeter, Collector, SingleDos, bool);
 
 #endif
