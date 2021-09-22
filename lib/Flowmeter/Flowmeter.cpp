@@ -2,8 +2,8 @@
 
 Flowmeter::Flowmeter()
 {
-    intervalMillis_ = defaultIntervalMillis();
-    startMillis_ = millis();
+    intervalMicros_ = defaultIntervalMicros();
+    startMicros_ = micros();
     flowPulseCounter_ = 0;
     volumePulseCounter_ = 0;
 }
@@ -12,8 +12,8 @@ Flowmeter::Flowmeter(int pin, float pulsesPerLiter)
 {
     pin_ = pin;
     pulsesPerLiter_ = pulsesPerLiter;
-    intervalMillis_ = defaultIntervalMillis();
-    startMillis_ = millis();
+    intervalMicros_ = defaultIntervalMicros();
+    startMicros_ = micros();
     flowPulseCounter_ = 0;
     volumePulseCounter_ = 0;
 }
@@ -22,13 +22,13 @@ Flowmeter::Flowmeter(int pin, float pulsesPerLiter, long intervalMillis)
 {
     pin_ = pin;
     pulsesPerLiter_ = pulsesPerLiter;
-    intervalMillis_ = intervalMillis;
-    startMillis_ = millis();
+    intervalMicros_ = intervalMillis;
+    startMicros_ = micros();
     flowPulseCounter_ = 0;
     volumePulseCounter_ = 0;
 }
 
-long Flowmeter::defaultIntervalMillis()
+long Flowmeter::defaultIntervalMicros()
 {
     return 200;
 }
@@ -45,15 +45,18 @@ void Flowmeter::setPulsesPerLiter(float pulsesPerLiter)
 
 void Flowmeter::computeFlow()
 {
-    passedMillis_ = micros() - startMillis_;
+    passedMicros_ = micros() - startMicros_;
 
-    if (passedMillis_ >= intervalMillis_)
+    if (passedMicros_ >= intervalMicros_)
     {
-        measuredFlow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMillis_ * 60000.0 * 1000.0;
-        // flow_ = kalman_.updateEstimate(measuredFlow_);
-        flow_ = measuredFlow_;
+        measuredFlow_ = (float)flowPulseCounter_ / (float)pulsesPerLiter_ / (float)passedMicros_ * 60000.0 * 1000.0;
+
+        // filter for flow
+        flow_ = (measuredFlow_ + (filterSize_ - 1) * memoryFlow_) / filterSize_;
+        memoryFlow_ = flow_;
+
         flowPulseCounter_ = 0;
-        startMillis_ = micros();
+        startMicros_ = micros();
     }
 }
 
@@ -64,8 +67,12 @@ void Flowmeter::computeVolume()
 
 void Flowmeter::pulseCounter()
 {
-    flowPulseCounter_++;
-    volumePulseCounter_++;
+    if ((micros() - risingStartMicros) >= risingIntervalMicros)
+    {
+        flowPulseCounter_++;
+        volumePulseCounter_++;
+        risingStartMicros = micros();
+    }
 }
 
 int Flowmeter::getPin()
@@ -93,4 +100,14 @@ float Flowmeter::getVolume()
 void Flowmeter::nullifyVolume()
 {
     volumePulseCounter_ = 0;
+}
+
+void Flowmeter::setLimitFlow(float limitFlow)
+{
+    limitFlow_ = limitFlow;
+}
+
+float Flowmeter::getLimitFlow()
+{
+    return limitFlow_;
 }

@@ -13,39 +13,25 @@ struct SingleDos
     float requiredVolume;
     float dosedVolume;
 
-    bool applyCommand;
-
-    bool filling_;
-    bool fillingStart_;
-    bool fillingFinishing_;
-    bool fillingDone_;
-    float fillingVolume_ = 5.0;
-    OnTimer fillingFinishingTimer_;
+    // bool applyCommand;
 
     bool dosing_;
     bool dosingStart_;
     bool dosingFinishing_;
-    bool dosingDoneDelay_;
     bool dosingDone_;
     bool dosingNullify_;
     RisingEdge dosingValveOpenRise_;
     float dosingVolumeOffset_;
-    OnTimer dosingValveDelay_;
-    OnTimer dosingDoneDelayTimer_;
 
-    bool washing_;
-    bool washingStart_;
-    bool washingDone_;
-    bool washingFinishing_;
-    // float washingVolume_;
-    OnTimer washingTimer_;
-    OnTimer washingFinishingTimer_;
+    float dosingVolumeOffsetRatio_ = 1.15;
 
     RisingEdge commandRise_;
 
-    int order;
     bool loopDone_;
     bool loopPause_;
+
+    OnTimer correctFlowTimer_;
+    bool correctFlow_;
 
     // loop parameters
     float ratioVolume_;
@@ -58,21 +44,15 @@ struct SingleDos
     // void closeAfterDosing(int valveNum);
     // void openToWash();
 
-    void fill();
-    void resetFill();
     void dose();
     void resetDose();
-    void wash();
-    void resetWash();
 
     void loop();
     void loopStart();
     void loopStop();
     void loopPause();
 
-    void fillCommand();
     void doseCommand();
-    void washCommand();
 
     void incTimers();
 

@@ -90,7 +90,8 @@ void commonLoopJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("carrierRequiredVolume"))
     {
         carrierRequiredVolume = jsonReceived["carrierRequiredVolume"];
-        Serial.println(carrierRequiredVolume);
+        carrierDosedVolume = 0;
+        // Serial.println(carrierRequiredVolume);
     }
 
     if (jsonReceived.containsKey("commandStart"))
@@ -107,6 +108,9 @@ void commonLoopJSON(DynamicJsonDocument jsonReceived)
 
     if (jsonReceived.containsKey("valveSetpoint"))
         valveSetpoint = jsonReceived["valveSetpoint"];
+
+    if (jsonReceived.containsKey("carrierReserve"))
+        carrierReserve = jsonReceived["carrierReserve"];
 }
 
 void commonJSON(DynamicJsonDocument jsonReceived)
@@ -140,13 +144,23 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("ratioVolume"))
     {
         collector->setRatioVolume(jsonReceived["ratioVolume"]);
-        ratioVolumeMicro = jsonReceived["ratioVolume"];
+        // ratioVolume = jsonReceived["ratioVolume"];
     }
 
     if (jsonReceived.containsKey("ratioVolumeMicro"))
     {
         collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
-        ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+        // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    }
+
+    if (jsonReceived.containsKey("microVolume"))
+    {
+        collector->setMicroVolume(jsonReceived["microVolume"]);
+    }
+
+    if (jsonReceived.containsKey("microSetpoint"))
+    {
+        collector->setMicroSetpoint(jsonReceived["microSetpoint"]);
     }
 
     // if (jsonReceived.containsKey("commandStart"))
@@ -173,6 +187,11 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         //     collector->valveNums[i] = 0;
         // }
 
+        for (int i = 0; i < collector->nValves_ - 1; i++)
+        {
+            collector->valveNums[i] = 0;
+        }
+
         for (int i = 0; i < jsonReceived["valveNums"].size(); i++)
         {
             collector->valveNums[i] = jsonReceived["valveNums"][i];
@@ -182,10 +201,11 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     // requiredVolumes
     if (jsonReceived.containsKey("requiredVolumes"))
     {
-        // for (int i = 0; i < collector->nValves_; i++)
-        // {
-        //     collector->requiredVolumes[i] = 0;
-        // }
+        for (int i = 0; i < collector->nValves_ - 1; i++)
+        {
+            collector->requiredVolumes[i] = 0;
+            collector->dosedVolumes[i] = 0;
+        }
 
         for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
         {
@@ -219,6 +239,7 @@ void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
     if (jsonReceived.containsKey("requiredVolume"))
     {
         singleDos->requiredVolume = jsonReceived["requiredVolume"];
+        singleDos->dosedVolume = 0;
         // Serial.println(singleDos->requiredVolume);
     }
 }

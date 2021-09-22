@@ -62,6 +62,8 @@ void loopStart();
 void loopStop();
 void loopPause();
 
+void loopDevicesStop();
+
 void pumpStart();
 void pumpStop();
 

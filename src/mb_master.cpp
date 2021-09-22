@@ -8,23 +8,23 @@ uint32_t mbToken = 1111;
 int addrCounter = 0;
 bool addrDone = true;
 
-uint8_t buffer20[2];
+// uint8_t buffer20[2];
 uint8_t buffer21[2];
 
-uint8_t memBuffer20[2];
+// uint8_t memBuffer20[2];
 uint8_t memBuffer21[2];
 
-uint8_t xorBuffer20[2];
+// uint8_t xorBuffer20[2];
 uint8_t xorBuffer21[2];
 
-bool isBuffer20;
+// bool isBuffer20;
 bool isBuffer21;
 
 void nullifyBuffers()
 {
     for (int i = 0; i < 2; i++)
     {
-        buffer20[i] = 0;
+        // buffer20[i] = 0;
         buffer21[i] = 0;
     }
 }
@@ -52,6 +52,10 @@ void handleData(ModbusMessage response, uint32_t token)
         response.get(3 + 1 * 2, value);
         collector.valveAdjustable.getPositionSensor()->setIntRaw(value);
         collector.valveAdjustable.updatePosition();
+        response.get(3 + 2 * 2, value);
+        singleDos.valveAdjustable.getPositionSensor()->setIntRaw(value);
+        singleDos.valveAdjustable.updatePosition();
+
         // analogSensors[1].setIntRaw(value);
 
         // response.get(3 + 2 * 2, value);
@@ -112,22 +116,17 @@ uint8_t setBufferBit(uint8_t number, int xBit, int nBit)
 // устанавливаем значения для записи по Modbus
 void mbSetDiscrete()
 {
-    buffer20[0] = setBufferBit(buffer20[0], valveAdjustable.isCommandOpen(), 0);
-    buffer20[0] = setBufferBit(buffer20[0], valveAdjustable.isCommandClose(), 1);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valveAdjustable.isCommandOpen(), 2);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valveAdjustable.isCommandClose(), 3);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valves[0].isCommandOpen(), 4);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valves[0].isCommandClose(), 5);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valves[1].isCommandOpen(), 6);
-    buffer20[0] = setBufferBit(buffer20[0], collector.valves[1].isCommandClose(), 7);
-
-    buffer20[1] = setBufferBit(buffer20[1], collector.valves[2].isCommandOpen(), 0);
-    buffer20[1] = setBufferBit(buffer20[1], collector.valves[2].isCommandClose(), 1);
-
-    buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandOpen(), 0);
-    buffer21[0] = setBufferBit(buffer21[0], collector.valves[3].isCommandClose(), 3);
-
-    buffer21[0] = setBufferBit(buffer21[0], pumpCommand, 6);
+    buffer21[0] = setBufferBit(buffer21[0], valveAdjustable.isCommandOpen(), 0);
+    buffer21[0] = setBufferBit(buffer21[0], valveAdjustable.isCommandClose(), 1);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valveAdjustable.isCommandOpen(), 2);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valveAdjustable.isCommandClose(), 3);
+    buffer21[0] = setBufferBit(buffer21[0], singleDos.valveAdjustable.isCommandOpen(), 4);
+    buffer21[0] = setBufferBit(buffer21[0], singleDos.valveAdjustable.isCommandClose(), 5);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valves[0].isCommand(), 6);
+    buffer21[0] = setBufferBit(buffer21[0], collector.valves[1].isCommand(), 7);
+    buffer21[1] = setBufferBit(buffer21[1], collector.valves[2].isCommand(), 0);
+    buffer21[1] = setBufferBit(buffer21[1], collector.valves[3].isCommand(), 1);
+    buffer21[1] = setBufferBit(buffer21[1], pumpCommand, 2);
 
     // for (auto &byte : buffer20)
     // {
@@ -137,18 +136,18 @@ void mbSetDiscrete()
 
     for (int i = 0; i < 2; i++)
     {
-        xorBuffer20[i] = memBuffer20[i] ^ buffer20[i];
+        // xorBuffer20[i] = memBuffer20[i] ^ buffer20[i];
         xorBuffer21[i] = memBuffer21[i] ^ buffer21[i];
 
-        memBuffer20[i] = buffer20[i];
+        // memBuffer20[i] = buffer20[i];
         memBuffer21[i] = buffer21[i];
     }
 
-    if (!isBuffer20)
-        isBuffer20 = (xorBuffer20[0] != 0 || xorBuffer20[1] != 0);
+    // if (!isBuffer20)
+    //     isBuffer20 = (xorBuffer20[0] != 0 || xorBuffer20[1] != 0);
 
     if (!isBuffer21)
-        isBuffer21 = !isBuffer21 && (xorBuffer21[0] != 0 || xorBuffer21[1] != 0);
+        isBuffer21 = (xorBuffer21[0] != 0 || xorBuffer21[1] != 0);
 }
 
 // void mbWriteDiscrete(uint8_t serverID, uint16_t p1, uint16_t p2, uint8_t count, uint8_t *buffer)
@@ -172,31 +171,31 @@ void mbSetDiscrete()
 //     }
 // }
 
-void mbWriteDiscrete20() //(uint8_t *buffer)
-{
-    // mbSetDiscrete();
+// void mbWriteDiscrete20() //(uint8_t *buffer)
+// {
+//     // mbSetDiscrete();
 
-    Error err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
-    if (err != SUCCESS)
-    {
-        ModbusError e(err);
-        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-    }
-}
+//     Error err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
+//     if (err != SUCCESS)
+//     {
+//         ModbusError e(err);
+//         // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//     }
+// }
 
-void mbWriteDiscrete21()
-{
-    // mbSetDiscrete();
+// void mbWriteDiscrete21()
+// {
+//     // mbSetDiscrete();
 
-    Error err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
-    if (err != SUCCESS)
-    {
-        ModbusError e(err);
-        // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-        //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
-    }
-}
+//     Error err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+//     if (err != SUCCESS)
+//     {
+//         ModbusError e(err);
+//         // Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//         //LOG_E("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+//     }
+// }
 
 // опрос всех адресов последовательно
 void mbPoll()
@@ -215,10 +214,10 @@ void mbPoll()
     {
         addrDone = false;
         mbSetDiscrete();
-        if (isBuffer20)
+        if (isBuffer21)
             addrCounter = 1;
-        else if (isBuffer21)
-            addrCounter = 2;
+        // else if (isBuffer21)
+        //     addrCounter = 2;
         else
             addrCounter = 0;
 
@@ -237,16 +236,16 @@ void mbPoll()
     {
         // mbWriteDiscrete20();
         // err = MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
-        MB.addRequest(mbToken++, 20, WRITE_MULT_COILS, 0, 12, 2, buffer20);
-        isBuffer20 = false;
-    }
-    if (addrCounter == 2)
-    {
-        // mbWriteDiscrete21();
-        // err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
         MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
         isBuffer21 = false;
     }
+    // if (addrCounter == 2)
+    // {
+    //     // mbWriteDiscrete21();
+    //     // err = MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+    //     MB.addRequest(mbToken++, 21, WRITE_MULT_COILS, 0, 12, 2, buffer21);
+    //     isBuffer21 = false;
+    // }
 
     // MB.
     // if (err != SUCCESS)

@@ -6,6 +6,8 @@
 #include <Flowmeter.h>
 #include <ProcessControl.h>
 
+// #include "clock_pulses.h"
+
 struct Collector
 {
     static const int nValves_ = 4;
@@ -19,6 +21,7 @@ struct Collector
 
     bool applyCommand;
 
+    // наполнение
     bool filling_;
     bool fillingStart_;
     bool fillingFinishing_;
@@ -26,6 +29,7 @@ struct Collector
     float fillingVolume_ = 5.0;
     OnTimer fillingFinishingTimer_;
 
+    // дозирование
     bool dosing_;
     bool dosingStart_;
     bool dosingFinishing_;
@@ -37,6 +41,20 @@ struct Collector
     OnTimer dosingValveDelay_;
     OnTimer dosingDoneDelayTimer_;
 
+    // коэффициент для умножения значения объема при открытии клапана
+    // float dosingVolumeOffsetRatio_ = 1.15;
+
+    // микродозация
+    bool dosingMicro_;
+    float microVolume_ = 12.0;
+    float microSetpoint_ = 50.0;
+
+    // прикрываем клапан для точной дозации
+    bool dosingAccuracy_;
+    float dosingAccuracyVolume_;
+    float dosingAccuracyPosition_;
+
+    // промывка
     bool washing_;
     bool washingStart_;
     bool washingDone_;
@@ -48,12 +66,15 @@ struct Collector
     RisingEdge commandRise_;
 
     int order;
+    int valveNum;
+
     bool loopDone_;
     bool loopPause_;
 
     // loop parameters
-    float ratioVolume_;
-    float ratioVolumeMicro_;
+    float ratioVolume_ = 1.0;
+    float ratioVolumeMicro_ = 1.0;
+    float dosedVolumeWithRatio_;
 
     void closeAll();
     // void stopFill();
@@ -64,7 +85,7 @@ struct Collector
 
     void fill();
     void resetFill();
-    void dose(int valveNum);
+    void dose(); //int valveNum);
     void resetDose();
     void wash();
     void resetWash();
@@ -82,6 +103,11 @@ struct Collector
 
     void setRatioVolume(float ratioVolume);
     void setRatioVolumeMicro(float ratioVolumeMicro);
+
+    void setMicroVolume(float microVolume);
+    void setMicroSetpoint(float microSetpoint);
+
+    float getDosedVolume();
 };
 
 #endif
