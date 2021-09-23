@@ -310,7 +310,7 @@ void Collector::loop()
     //     return;
     // }
 
-    if (loopDone_ && washingCarrierReserve_)
+    if (washingCarrierReserve_) // && (order == -1))
     {
         // washingStart_ = true;
         wash();
@@ -348,7 +348,10 @@ void Collector::loop()
 
         // дозирование завершено
         if (order >= nValves_ - 1)
+        {
             loopDone_ = true;
+            order = -1;
+        }
         else
             dosingStart_ = true;
 

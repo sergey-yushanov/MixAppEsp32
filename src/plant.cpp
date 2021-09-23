@@ -318,7 +318,7 @@ void mixLoop()
     }
 
     // 4. need washing
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_) // && !loopWashing_)
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_ && !loopWashing_)
     {
         // carrierDosedVolume = m1.getVolume();
 
