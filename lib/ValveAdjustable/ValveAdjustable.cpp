@@ -85,33 +85,68 @@ void ValveAdjustable::setRequest()
     positionOpen_ = position_ >= limitOpen_ - deadbandOpen_;
     positionClose_ = position_ <= limitClose_ + deadbandClose_;
 
-    // position Ok
-    positionOk_ = errorAbs_ <= deadbandPosition_;
+    // positionOk_ = false;
 
     // request open
-    if ((errorAbs_ > deadbandPosition_) && (setpoint_ > position_))
+    if (setpoint_ > 0 && !positionOk_)
     {
-        requestOpen_ = true;
         requestClose_ = false;
+        requestOpen_ = true;
+
+        if ((position_ >= setpoint_ - costOpen_) || positionOpen_)
+        {
+            positionOk_ = true;
+            requestOpen_ = false;
+        }
     }
-    if ((position_ >= setpoint_ - costOpen_) || positionOpen_)
+    // request close
+    if (setpoint_ == 0 && !positionOk_)
     {
         requestOpen_ = false;
+        requestClose_ = true;
+
+        if ((position_ <= setpoint_ + costClose_) || positionClose_)
+        {
+            positionOk_ = true;
+            requestClose_ = false;
+        }
     }
+    // if (setpoint_ > position_)
+    // {
+    //     requestOpen_ = true;
+    // }
+
+    // position Ok
+    // positionOk_ = errorAbs_ <= deadbandPosition_;
+    // if (errorAbs_ <= deadbandPosition_)
+    //     positionOk_ = true;
+
+    // request open
+    // if ((errorAbs_ > deadbandPosition_) && (setpoint_ > position_))
+    // {
+    //     requestOpen_ = true;
+    //     requestClose_ = false;
+    // }
 
     // request close
-    if ((errorAbs_ > deadbandPosition_) && (setpoint_ < position_))
-    {
-        requestClose_ = true;
-        requestOpen_ = false;
-    }
-    if ((position_ <= setpoint_ + costClose_) || positionClose_)
-    {
-        requestClose_ = false;
-    }
+    // if ((errorAbs_ > deadbandPosition_) && (setpoint_ < position_))
+    // {
+    //     requestClose_ = true;
+    //     requestOpen_ = false;
+    // }
+    // if ((position_ <= setpoint_ + costClose_) || positionClose_)
+    // {
+    //     requestClose_ = false;
+    // }
 
     // requests reset with faulty
     if (faulty_)
+    {
+        requestOpen_ = false;
+        requestClose_ = false;
+    }
+
+    if (positionOk_)
     {
         requestOpen_ = false;
         requestClose_ = false;
@@ -155,6 +190,9 @@ void ValveAdjustable::setSetpoint(float setpoint)
     {
         time_ = 0;
         setpoint_ = setpoint;
+
+        positionOk_ = false;
+
         setCommand();
     }
 }

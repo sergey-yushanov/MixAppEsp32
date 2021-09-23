@@ -55,6 +55,12 @@ void loop()
     // }
     if (clk._100ms)
     {
+        Serial.print(collector.valveAdjustable.getSetpoint());
+        Serial.print("\t");
+        Serial.print(collector.valveAdjustable.getPosition());
+        Serial.print("\t");
+        Serial.println(collector.valveAdjustable.isPositionOk());
+
         // опрос устройств Modbus
         // mbPoll();
 

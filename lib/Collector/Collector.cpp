@@ -78,7 +78,8 @@ void Collector::dose() //int valveNum)
         Serial.print("Dosing required volume: ");
         Serial.println(requiredVolumes[order]);
 
-        dosingMicro_ = requiredVolumes[order] <= microVolume_;
+        dosingVolume2_ = requiredVolumes[order] <= volume2_;
+        dosingVolume1_ = !dosingVolume2_ && (requiredVolumes[order] <= volume1_);
     }
     dosingStart_ = false;
 
@@ -92,14 +93,12 @@ void Collector::dose() //int valveNum)
         valves[valveNum].open();
         if (dosingValveDelay_.status)
         {
-            if (dosingMicro_)
-            {
-                valveAdjustable.setSetpoint(microSetpoint_);
-            }
-            else
-            {
-                valveAdjustable.fullyOpen();
-            }
+            valveAdjustable.fullyOpen();
+            if (dosingVolume1_)
+                valveAdjustable.setSetpoint(setpoint1_);
+            if (dosingVolume2_)
+                valveAdjustable.setSetpoint(setpoint2_);
+
             dosingNullify_ = false;
         }
 
@@ -169,10 +168,11 @@ void Collector::dose() //int valveNum)
     if (dosing_ || dosingFinishing_)
         dosedVolumes[order] = flowmeter.getVolume();
 
-    if (dosingMicro_)
-        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolumeMicro_;
-    else
-        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume_;
+    dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume0_;
+    if (dosingVolume1_)
+        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume1_;
+    if (dosingVolume2_)
+        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume2_;
 }
 
 void Collector::resetDose()
@@ -310,7 +310,7 @@ void Collector::loop()
     //     return;
     // }
 
-    if (washingCarrierReserve_)
+    if (loopDone_ && washingCarrierReserve_)
     {
         // washingStart_ = true;
         wash();
@@ -377,25 +377,55 @@ void Collector::incTimers()
     washingFinishingTimer_.inc100msTimer();
 }
 
-void Collector::setRatioVolume(float ratioVolume)
+void Collector::setRatioVolume0(float ratioVolume)
 {
-    ratioVolume_ = ratioVolume;
+    ratioVolume0_ = ratioVolume;
 }
 
-void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+void Collector::setRatioVolume1(float ratioVolume)
 {
-    ratioVolumeMicro_ = ratioVolumeMicro;
+    ratioVolume1_ = ratioVolume;
 }
 
-void Collector::setMicroVolume(float microVolume)
+void Collector::setRatioVolume2(float ratioVolume)
 {
-    microVolume_ = microVolume;
+    ratioVolume2_ = ratioVolume;
 }
 
-void Collector::setMicroSetpoint(float microSetpoint)
+// void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+// {
+//     ratioVolumeMicro_ = ratioVolumeMicro;
+// }
+
+void Collector::setVolume1(float volume)
 {
-    microSetpoint_ = microSetpoint;
+    volume1_ = volume;
 }
+
+void Collector::setVolume2(float volume)
+{
+    volume2_ = volume;
+}
+
+// void Collector::setMicroVolume(float microVolume)
+// {
+//     microVolume_ = microVolume;
+// }
+
+void Collector::setSetpoint1(float setpoint)
+{
+    setpoint1_ = setpoint;
+}
+
+void Collector::setSetpoint2(float setpoint)
+{
+    setpoint2_ = setpoint;
+}
+
+// void Collector::setMicroSetpoint(float microSetpoint)
+// {
+//     microSetpoint_ = microSetpoint;
+// }
 
 float Collector::getDosedVolume()
 {

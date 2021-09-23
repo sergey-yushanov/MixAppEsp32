@@ -318,7 +318,7 @@ void mixLoop()
     }
 
     // 4. need washing
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_ && !loopWashing_)
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_) // && !loopWashing_)
     {
         // carrierDosedVolume = m1.getVolume();
 
@@ -346,8 +346,12 @@ void mixLoop()
     // 6. loop done
     if (loopDone_)
     {
+        loopCollectorWashingStop();
+        // if (collector.valveAdjustable.isClosed())
+        // {
         Serial.println("Loop Done!");
         loopStop();
+        // }
     }
 }
 
@@ -360,6 +364,8 @@ void loopStart()
     loopSingleDos_ = false;
     loopRunning_ = true;
     loopDone_ = false;
+
+    loopCollectorWashingStop();
 
     // m1.nullifyVolume();
     // collector.loopStart();
@@ -382,6 +388,7 @@ void loopCollectorWashingStop()
 {
     collector.washingCarrierReserve_ = false;
     collector.resetWash();
+    collector.closeAll();
 }
 
 void loopStop()

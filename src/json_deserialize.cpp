@@ -141,27 +141,62 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         // Serial.println(collector->flowmeter.getVolume());
     }
 
-    if (jsonReceived.containsKey("ratioVolume"))
+    if (jsonReceived.containsKey("ratioVolume0"))
     {
-        collector->setRatioVolume(jsonReceived["ratioVolume"]);
-        // ratioVolume = jsonReceived["ratioVolume"];
+        collector->setRatioVolume0(jsonReceived["ratioVolume0"]);
     }
 
-    if (jsonReceived.containsKey("ratioVolumeMicro"))
+    if (jsonReceived.containsKey("ratioVolume1"))
     {
-        collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
-        // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+        collector->setRatioVolume1(jsonReceived["ratioVolume1"]);
     }
 
-    if (jsonReceived.containsKey("microVolume"))
+    if (jsonReceived.containsKey("ratioVolume2"))
     {
-        collector->setMicroVolume(jsonReceived["microVolume"]);
+        collector->setRatioVolume2(jsonReceived["ratioVolume2"]);
     }
 
-    if (jsonReceived.containsKey("microSetpoint"))
+    // if (jsonReceived.containsKey("ratioVolume"))
+    // {
+    //     collector->setRatioVolume(jsonReceived["ratioVolume"]);
+    //     // ratioVolume = jsonReceived["ratioVolume"];
+    // }
+
+    // if (jsonReceived.containsKey("ratioVolumeMicro"))
+    // {
+    //     collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
+    //     // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    // }
+
+    if (jsonReceived.containsKey("volume1"))
     {
-        collector->setMicroSetpoint(jsonReceived["microSetpoint"]);
+        collector->setVolume1(jsonReceived["volume1"]);
     }
+
+    if (jsonReceived.containsKey("volume2"))
+    {
+        collector->setVolume2(jsonReceived["volume2"]);
+    }
+
+    // if (jsonReceived.containsKey("microVolume"))
+    // {
+    //     collector->setMicroVolume(jsonReceived["microVolume"]);
+    // }
+
+    if (jsonReceived.containsKey("setpoint1"))
+    {
+        collector->setSetpoint1(jsonReceived["setpoint1"]);
+    }
+
+    if (jsonReceived.containsKey("setpoint2"))
+    {
+        collector->setSetpoint2(jsonReceived["setpoint2"]);
+    }
+
+    // if (jsonReceived.containsKey("microSetpoint"))
+    // {
+    //     collector->setMicroSetpoint(jsonReceived["microSetpoint"]);
+    // }
 
     // if (jsonReceived.containsKey("commandStart"))
     //     if (jsonReceived["commandStart"])
