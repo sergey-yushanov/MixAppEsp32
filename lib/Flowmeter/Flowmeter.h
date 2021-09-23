@@ -36,6 +36,9 @@ public:
 
     long risingIntervalMicros;
     long risingStartMicros;
+    // bool risingAccess = true;
+    bool risingReady = true;
+    int risingLowCount = 0;
 
     Flowmeter();
     Flowmeter(int pin, float pulsesPerLiter);

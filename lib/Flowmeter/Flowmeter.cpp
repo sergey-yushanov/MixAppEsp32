@@ -67,8 +67,9 @@ void Flowmeter::computeVolume()
 
 void Flowmeter::pulseCounter()
 {
-    if ((micros() - risingStartMicros) >= risingIntervalMicros)
+    if (risingReady && (micros() - risingStartMicros) >= risingIntervalMicros)
     {
+        risingReady = false;
         flowPulseCounter_++;
         volumePulseCounter_++;
         risingStartMicros = micros();

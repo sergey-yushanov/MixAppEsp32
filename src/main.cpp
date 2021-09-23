@@ -30,6 +30,9 @@ void loop()
     mbPoll();
     plantLoop();
 
+    // разрешение считать импульсы
+    flowReady();
+
     if (clk._10ms)
     {
         // mbPoll();

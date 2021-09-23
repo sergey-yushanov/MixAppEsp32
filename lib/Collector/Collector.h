@@ -46,7 +46,7 @@ struct Collector
 
     // микродозация
     bool dosingMicro_;
-    float microVolume_ = 12.0;
+    float microVolume_ = 11.0;
     float microSetpoint_ = 50.0;
 
     // прикрываем клапан для точной дозации
@@ -59,6 +59,8 @@ struct Collector
     bool washingStart_;
     bool washingDone_;
     bool washingFinishing_;
+
+    bool washingCarrierReserve_ = false;
     // float washingVolume_;
     OnTimer washingTimer_;
     OnTimer washingFinishingTimer_;

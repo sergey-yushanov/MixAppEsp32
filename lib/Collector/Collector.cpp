@@ -207,10 +207,11 @@ void Collector::wash()
     }
 
     // процесс промывки
-    washingTimer_.on100msTimer(washing_ && valveAdjustable.isOpened(), 30);
+    washingTimer_.on100msTimer(washing_ && valveAdjustable.isOpened(), 10);
 
     // если заполнили нужный объем
-    if (washingTimer_.status)
+    if (washingTimer_.status && !washingCarrierReserve_)
+    // if (washing_ && valveAdjustable.isOpened() && !washingCarrierReserve_)
     {
         washing_ = false;
         washingFinishing_ = true;
@@ -240,6 +241,8 @@ void Collector::resetWash()
     washingStart_ = false;
     washingDone_ = false;
     washingFinishing_ = false;
+
+    washingCarrierReserve_ = false;
 }
 
 void Collector::loopStart()
@@ -306,6 +309,13 @@ void Collector::loop()
     // {
     //     return;
     // }
+
+    if (washingCarrierReserve_)
+    {
+        // washingStart_ = true;
+        wash();
+        return;
+    }
 
     if (loopDone_)
     {

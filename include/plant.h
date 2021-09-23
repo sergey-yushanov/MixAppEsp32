@@ -56,6 +56,7 @@ void incTimers();
 void plantSetup();
 void plantLoop();
 void flowLoop();
+void flowReady();
 void mixLoop();
 
 void loopStart();
@@ -63,6 +64,8 @@ void loopStop();
 void loopPause();
 
 void loopDevicesStop();
+void loopCollectorWashingStart();
+void loopCollectorWashingStop();
 
 void pumpStart();
 void pumpStop();

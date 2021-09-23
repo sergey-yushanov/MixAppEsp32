@@ -63,13 +63,13 @@ DynamicJsonDocument collectorLoopJSON(Collector collector)
         doc["valveNums"][i] = collector.valveNums[i];
         doc["requiredVolumes"][i] = collector.requiredVolumes[i];
         doc["dosedVolumes"][i] = collector.dosedVolumes[i];
-
-        // doc["dosingVolumeOffsetRatio"][i] = collector.dosingVolumeOffsetRatio_;
-        // doc["dosingMicroVolume"][i] = collector.dosingMicroVolume_;
-        // doc["dosingMicroPosition"][i] = collector.dosingMicroPosition_;
-
         // doc["dosedVolumes"][i] = random(1000);
     }
+
+    doc["ratioVolume"] = collector.ratioVolume_;
+    doc["microVolume"] = collector.microVolume_;
+    doc["microSetpoint"] = collector.microSetpoint_;
+    doc["ratioVolumeMicro"] = collector.ratioVolumeMicro_;
     return doc;
 }
 

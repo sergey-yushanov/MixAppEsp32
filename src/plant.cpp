@@ -47,6 +47,7 @@ bool loopCollector_;
 bool loopSingleDos_;
 bool loopRunning_;
 bool loopDone_;
+bool loopWashing_;
 
 // SimpleKalmanFilter kalman34(2, 2, 0.01);
 // SimpleKalmanFilter kalman35(2, 2, 0.01);
@@ -62,7 +63,8 @@ void m1Setup()
     m1.setPin(18);
     m1.setPulsesPerLiter(50); //(100.0); // 50.0
     m1.risingStartMicros = micros();
-    m1.risingIntervalMicros = 700;
+    m1.risingIntervalMicros = 800;
+    m1.risingReady = true;
     pinMode(m1.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(m1.getPin()), m1Pulse, RISING);
 }
@@ -76,9 +78,10 @@ void IRAM_ATTR g1Pulse()
 void g1Setup()
 {
     collector.flowmeter.setPin(19);
-    collector.flowmeter.setPulsesPerLiter(107); //(106.777);
+    collector.flowmeter.setPulsesPerLiter(106.777); //(106.777);
     collector.flowmeter.risingStartMicros = micros();
-    collector.flowmeter.risingIntervalMicros = 3000;
+    collector.flowmeter.risingIntervalMicros = 3700;
+    collector.flowmeter.risingReady = true;
     pinMode(collector.flowmeter.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(collector.flowmeter.getPin()), g1Pulse, RISING);
 }
@@ -86,16 +89,16 @@ void g1Setup()
 // dispenser single flowmeter
 void IRAM_ATTR g2Pulse()
 {
-
     singleDos.flowmeter.pulseCounter();
 }
 
 void g2Setup()
 {
     singleDos.flowmeter.setPin(21);
-    singleDos.flowmeter.setPulsesPerLiter(107); //(106.777);
+    singleDos.flowmeter.setPulsesPerLiter(106.585); //(106.777);
     singleDos.flowmeter.risingStartMicros = micros();
-    singleDos.flowmeter.risingIntervalMicros = 3000;
+    singleDos.flowmeter.risingIntervalMicros = 3700;
+    singleDos.flowmeter.risingReady = true;
     pinMode(singleDos.flowmeter.getPin(), INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(singleDos.flowmeter.getPin()), g2Pulse, RISING);
 }
@@ -204,6 +207,41 @@ void flowLoop()
     m1.computeFlow();
 }
 
+void flowReady()
+{
+    // m1.risingReady = true;
+
+    if (!digitalRead(m1.getPin()))
+    {
+        m1.risingLowCount++;
+        if (m1.risingLowCount > 1)
+        {
+            m1.risingLowCount = 0;
+            m1.risingReady = true;
+        }
+    }
+
+    if (!digitalRead(collector.flowmeter.getPin()))
+    {
+        collector.flowmeter.risingLowCount++;
+        if (collector.flowmeter.risingLowCount > 4)
+        {
+            collector.flowmeter.risingLowCount = 0;
+            collector.flowmeter.risingReady = true;
+        }
+    }
+
+    if (!digitalRead(singleDos.flowmeter.getPin()))
+    {
+        singleDos.flowmeter.risingLowCount++;
+        if (singleDos.flowmeter.risingLowCount > 4)
+        {
+            singleDos.flowmeter.risingLowCount = 0;
+            singleDos.flowmeter.risingReady = true;
+        }
+    }
+}
+
 void commonLoop()
 {
     // pump command set/reset pin
@@ -225,6 +263,13 @@ void mixLoop()
 
     pumpStartDelay_.on100msTimer(loopValveOk_, 30);
 
+    if (loopRunning_)
+    {
+        carrierDosedVolume = m1.getVolume();
+        // прекращаем дозацию компонентов, если осталось 20% носителя, продолжает дозироваться носитель
+        carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
+    }
+
     // 1. command to open valve to setpoint
     if (loopStart_)
     {
@@ -237,7 +282,8 @@ void mixLoop()
     // 2. wait valve setpoint
     if (loopRunning_ && !loopValveOk_)
     {
-        loopValveOk_ = valveAdjustable.isPositionOk();
+        // loopValveOk_ = valveAdjustable.isPositionOk();
+        loopValveOk_ = true;
         return;
     }
 
@@ -271,25 +317,33 @@ void mixLoop()
         Serial.println("Loop single dos Start!");
     }
 
-    // 4. dosing done
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_)
+    // 4. need washing
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_ && !loopWashing_)
     {
-        carrierDosedVolume = m1.getVolume();
+        // carrierDosedVolume = m1.getVolume();
 
         // todo: прибавить отдозированные компоненты!!!
-        loopDone_ = carrierDosedVolume > carrierRequiredVolume;
+        // loopDone_ = carrierDosedVolume > carrierRequiredVolume;
 
         // прекращаем дозацию компонентов, если осталось 20% носителя, продолжает дозироваться носитель
-        carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
+        // carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
         if (abs(carrierDosedPercent) < carrierReserve)
         {
-            loopDevicesStop();
+            loopWashing_ = true;
+            loopCollectorWashingStart();
+            // return;
         }
+    }
 
+    // 5. dosing done
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_)
+    {
+        // todo: прибавить отдозированные компоненты!!!
+        loopDone_ = carrierDosedVolume > carrierRequiredVolume;
         return;
     }
 
-    // 5. loop done
+    // 6. loop done
     if (loopDone_)
     {
         Serial.println("Loop Done!");
@@ -317,8 +371,22 @@ void loopDevicesStop()
     singleDos.loopStop();
 }
 
+void loopCollectorWashingStart()
+{
+    collector.loopStop();
+    collector.washingCarrierReserve_ = true;
+    collector.washingStart_ = true;
+}
+
+void loopCollectorWashingStop()
+{
+    collector.washingCarrierReserve_ = false;
+    collector.resetWash();
+}
+
 void loopStop()
 {
+    loopCollectorWashingStop();
     loopDevicesStop();
 
     pumpCommand = false;
