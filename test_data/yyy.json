@@ -1,0 +1,144 @@
+{
+    "showSettings": true,
+    "common": {
+        "valveAdjustable": {
+            "commandOpen": false,
+            "commandClose": false,
+            "faulty": false,
+            "setpoint": 0,
+            "position": 0,
+            "overtime": 300,
+            "limitClose": 0,
+            "limitOpen": 100,
+            "deadbandClose": 5,
+            "deadbandOpen": 5,
+            "deadbandPosition": 5,
+            "costClose": 5,
+            "costOpen": 5,
+            "sensor": {
+                "raw": 0,
+                "rawLowLimit": 0,
+                "rawHighLimit": 59000,
+                "valueLowLimit": 0,
+                "valueHighLimit": 100
+            }
+        },
+        "flowmeter": {
+            "flow": 0,
+            "volume": 0,
+            "pulsesPerLiter": 100
+        },
+        "loop": {
+            "carrierRequiredVolume": 0,
+            "carrierDosedVolume": 0,
+            "carrierReserve": 20
+        }
+    },
+    "collectors": [
+        {
+            "number": 1,
+            "valveAdjustable": {
+                "commandOpen": false,
+                "commandClose": false,
+                "faulty": false,
+                "setpoint": 0,
+                "position": 0,
+                "overtime": 300,
+                "limitClose": 0,
+                "limitOpen": 100,
+                "deadbandClose": 1,
+                "deadbandOpen": 1,
+                "deadbandPosition": 3,
+                "costClose": 2,
+                "costOpen": 2,
+                "sensor": {
+                    "raw": 0,
+                    "rawLowLimit": 0,
+                    "rawHighLimit": 59000,
+                    "valueLowLimit": 0,
+                    "valueHighLimit": 100
+                }
+            },
+            "flowmeter": {
+                "flow": 0,
+                "volume": 0,
+                "pulsesPerLiter": 106.777
+            },
+            "valves": [
+                {
+                    "number": 1,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 2,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 3,
+                    "command": false,
+                    "faulty": false
+                },
+                {
+                    "number": 4,
+                    "command": false,
+                    "faulty": false
+                }
+            ],
+            "loop": {
+                "valveNums": [
+                    0,
+                    0,
+                    0
+                ],
+                "requiredVolumes": [
+                    0,
+                    0,
+                    0
+                ],
+                "dosedVolumes": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        }
+    ],
+    "singles": [
+        {
+            "number": 1,
+            "valveAdjustable": {
+                "commandOpen": false,
+                "commandClose": false,
+                "faulty": false,
+                "setpoint": 0,
+                "position": 0,
+                "overtime": 300,
+                "limitClose": 0,
+                "limitOpen": 100,
+                "deadbandClose": 1,
+                "deadbandOpen": 1,
+                "deadbandPosition": 3,
+                "costClose": 2,
+                "costOpen": 2,
+                "sensor": {
+                    "raw": 0,
+                    "rawLowLimit": 0,
+                    "rawHighLimit": 59000,
+                    "valueLowLimit": 0,
+                    "valueHighLimit": 100
+                }
+            },
+            "flowmeter": {
+                "flow": 0,
+                "volume": 2.147484e7,
+                "pulsesPerLiter": 0
+            },
+            "loop": {
+                "requiredVolume": 0,
+                "dosedVolume": 0
+            }
+        }
+    ]
+}

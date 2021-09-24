@@ -30,6 +30,9 @@ void loop()
     mbPoll();
     plantLoop();
 
+    // разрешение считать импульсы
+    flowReady();
+
     if (clk._10ms)
     {
         // mbPoll();
@@ -52,6 +55,12 @@ void loop()
     // }
     if (clk._100ms)
     {
+        Serial.print(collector.valveAdjustable.getSetpoint());
+        Serial.print("\t");
+        Serial.print(collector.valveAdjustable.getPosition());
+        Serial.print("\t");
+        Serial.println(collector.valveAdjustable.isPositionOk());
+
         // опрос устройств Modbus
         // mbPoll();
 
@@ -67,6 +76,9 @@ void loop()
         incTimers();
         // выполняем действия с управлением установкой
         // plantLoop();
+
+        // считаем текущий расход
+        flowLoop();
     }
     if (clk._200ms)
     {
@@ -78,15 +90,15 @@ void loop()
     if (clk._500ms)
     {
         // считаем текущий расход
-        flowLoop();
+        // flowLoop();
 
-        Serial.print("Req vol: ");
-        for (int i = 0; i < collector.nValves_; i++)
-        {
-            Serial.print("\t");
-            Serial.print(collector.requiredVolumes[i]);
-        }
-        Serial.println();
+        // Serial.print("Req vol: ");
+        // for (int i = 0; i < collector.nValves_; i++)
+        // {
+        //     Serial.print("\t");
+        //     Serial.print(collector.requiredVolumes[i]);
+        // }
+        // Serial.println();
 
         // Serial.print("\tlDon: ");
         // Serial.print(collector.loopDone_);

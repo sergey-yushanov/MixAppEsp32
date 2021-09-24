@@ -90,7 +90,8 @@ void commonLoopJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("carrierRequiredVolume"))
     {
         carrierRequiredVolume = jsonReceived["carrierRequiredVolume"];
-        Serial.println(carrierRequiredVolume);
+        carrierDosedVolume = 0;
+        // Serial.println(carrierRequiredVolume);
     }
 
     if (jsonReceived.containsKey("commandStart"))
@@ -107,6 +108,9 @@ void commonLoopJSON(DynamicJsonDocument jsonReceived)
 
     if (jsonReceived.containsKey("valveSetpoint"))
         valveSetpoint = jsonReceived["valveSetpoint"];
+
+    if (jsonReceived.containsKey("carrierReserve"))
+        carrierReserve = jsonReceived["carrierReserve"];
 }
 
 void commonJSON(DynamicJsonDocument jsonReceived)
@@ -131,23 +135,70 @@ void commonJSON(DynamicJsonDocument jsonReceived)
 
 void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 {
+    collector->loopStop();
+
     if (jsonReceived.containsKey("volumePulseCounter"))
     {
         collector->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
         // Serial.println(collector->flowmeter.getVolume());
     }
 
-    if (jsonReceived.containsKey("ratioVolume"))
+    if (jsonReceived.containsKey("ratioVolume0"))
     {
-        collector->setRatioVolume(jsonReceived["ratioVolume"]);
-        ratioVolumeMicro = jsonReceived["ratioVolume"];
+        collector->setRatioVolume0(jsonReceived["ratioVolume0"]);
     }
 
-    if (jsonReceived.containsKey("ratioVolumeMicro"))
+    if (jsonReceived.containsKey("ratioVolume1"))
     {
-        collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
-        ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+        collector->setRatioVolume1(jsonReceived["ratioVolume1"]);
     }
+
+    if (jsonReceived.containsKey("ratioVolume2"))
+    {
+        collector->setRatioVolume2(jsonReceived["ratioVolume2"]);
+    }
+
+    // if (jsonReceived.containsKey("ratioVolume"))
+    // {
+    //     collector->setRatioVolume(jsonReceived["ratioVolume"]);
+    //     // ratioVolume = jsonReceived["ratioVolume"];
+    // }
+
+    // if (jsonReceived.containsKey("ratioVolumeMicro"))
+    // {
+    //     collector->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
+    //     // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    // }
+
+    if (jsonReceived.containsKey("volume1"))
+    {
+        collector->setVolume1(jsonReceived["volume1"]);
+    }
+
+    if (jsonReceived.containsKey("volume2"))
+    {
+        collector->setVolume2(jsonReceived["volume2"]);
+    }
+
+    // if (jsonReceived.containsKey("microVolume"))
+    // {
+    //     collector->setMicroVolume(jsonReceived["microVolume"]);
+    // }
+
+    if (jsonReceived.containsKey("setpoint1"))
+    {
+        collector->setSetpoint1(jsonReceived["setpoint1"]);
+    }
+
+    if (jsonReceived.containsKey("setpoint2"))
+    {
+        collector->setSetpoint2(jsonReceived["setpoint2"]);
+    }
+
+    // if (jsonReceived.containsKey("microSetpoint"))
+    // {
+    //     collector->setMicroSetpoint(jsonReceived["microSetpoint"]);
+    // }
 
     // if (jsonReceived.containsKey("commandStart"))
     //     if (jsonReceived["commandStart"])
@@ -173,6 +224,11 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         //     collector->valveNums[i] = 0;
         // }
 
+        for (int i = 0; i < collector->nValves_ - 1; i++)
+        {
+            collector->valveNums[i] = 0;
+        }
+
         for (int i = 0; i < jsonReceived["valveNums"].size(); i++)
         {
             collector->valveNums[i] = jsonReceived["valveNums"][i];
@@ -180,16 +236,21 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         }
     }
     // requiredVolumes
+    collector->loopUsing_ = false;
     if (jsonReceived.containsKey("requiredVolumes"))
     {
-        // for (int i = 0; i < collector->nValves_; i++)
-        // {
-        //     collector->requiredVolumes[i] = 0;
-        // }
+        for (int i = 0; i < collector->nValves_ - 1; i++)
+        {
+            collector->requiredVolumes[i] = 0;
+            collector->dosedVolumes[i] = 0;
+        }
 
         for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
         {
             collector->requiredVolumes[i] = jsonReceived["requiredVolumes"][i];
+
+            if (collector->requiredVolumes[i] > 0)
+                collector->loopUsing_ = true;
             // Serial.println(collector->requiredVolumes[i]);
         }
     }
@@ -197,6 +258,8 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 
 void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
 {
+    singleDos->loopStop();
+
     if (jsonReceived.containsKey("volumePulseCounter"))
     {
         singleDos->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
@@ -216,9 +279,14 @@ void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
     }
 
     // requiredVolume
+    singleDos->loopUsing_ = false;
     if (jsonReceived.containsKey("requiredVolume"))
     {
         singleDos->requiredVolume = jsonReceived["requiredVolume"];
+        singleDos->dosedVolume = 0;
+
+        if (singleDos->requiredVolume > 0)
+            singleDos->loopUsing_ = true;
         // Serial.println(singleDos->requiredVolume);
     }
 }

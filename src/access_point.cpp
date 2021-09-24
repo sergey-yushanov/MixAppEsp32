@@ -93,7 +93,7 @@ void webSetup()
     Serial.println();
 
     // Setting the ESP as an access point
-    Serial.print("Setting AP (Access Point)…");
+    Serial.println("Setting AP (Access Point)…");
 
     WiFi.mode(WIFI_AP);
     WiFi.softAP(ssid, password);

@@ -40,7 +40,7 @@ void Collector::fill()
     }
 
     // ждем несколько секунд для выставления статуса завершения заполнения
-    fillingFinishingTimer_.on100msTimer(fillingFinishing_, 100);
+    fillingFinishingTimer_.on100msTimer(fillingFinishing_, 20);
     if (fillingFinishingTimer_.status)
     {
         fillingFinishing_ = false;
@@ -57,7 +57,7 @@ void Collector::resetFill()
 }
 
 // дозирование препарата через заданный клапан
-void Collector::dose(int valveNum)
+void Collector::dose() //int valveNum)
 {
     // стартуем дозирование
     if (dosingStart_ && !dosing_ && !dosingFinishing_ && !dosingDoneDelay_ && !dosingDone_)
@@ -67,21 +67,24 @@ void Collector::dose(int valveNum)
         dosing_ = true;
         dosingNullify_ = true;
 
-        dosedVolumes[valveNum] = 0;
+        dosedVolumes[order] = 0;
 
         Serial.print("ValveNum: ");
         Serial.println(valveNum);
 
-        Serial.print("Dosing start volume: ");
-        Serial.println(flowmeter.getVolume());
+        // Serial.print("Dosing start volume: ");
+        // Serial.println(flowmeter.getVolume());
 
         Serial.print("Dosing required volume: ");
-        Serial.println(requiredVolumes[valveNum]);
+        Serial.println(requiredVolumes[order]);
+
+        dosingVolume2_ = requiredVolumes[order] <= volume2_;
+        dosingVolume1_ = !dosingVolume2_ && (requiredVolumes[order] <= volume1_);
     }
     dosingStart_ = false;
 
     // ждем открытия клапана препарата
-    dosingValveDelay_.on100msTimer(dosing_, 100);
+    dosingValveDelay_.on100msTimer(dosing_, 20);
 
     // сам процесс дозирования
     if (dosing_)
@@ -91,35 +94,50 @@ void Collector::dose(int valveNum)
         if (dosingValveDelay_.status)
         {
             valveAdjustable.fullyOpen();
+            if (dosingVolume1_)
+                valveAdjustable.setSetpoint(setpoint1_);
+            if (dosingVolume2_)
+                valveAdjustable.setSetpoint(setpoint2_);
+
             dosingNullify_ = false;
         }
 
         // запоминаем смещение объема для определения момента закрытия клапана
-        if (dosingValveOpenRise_.rising(valveAdjustable.isOpened()))
+        // if (dosingValveOpenRise_.rising(valveAdjustable.isOpened()))
+        if ((dosingVolumeOffset_ == 0) && dosingValveOpenRise_.rising(valveAdjustable.isPositionOk()))
         {
-            dosingVolumeOffset_ = flowmeter.getVolume(); // * 1.15;
+            // if (dosingMicro_)
+            // {
+            //     dosingVolumeOffset_ = flowmeter.getVolume() * ratioVolumeMicro_;
+            // }
+            // else
+            // {
+            //     dosingVolumeOffset_ = flowmeter.getVolume() * ratioVolume_;
+            // }
+            dosingVolumeOffset_ = dosedVolumeWithRatio_;
             Serial.print("Dosing offset volume: ");
             Serial.println(dosingVolumeOffset_);
         }
 
         // если не успели открыть клапан, а уже половина объема прошла, то заканчиваем дозацию
-        if (!valveAdjustable.isOpened() && (dosedVolumes[valveNum] >= (requiredVolumes[valveNum] / 2.0))) // / 1.15)))
+        // if (!valveAdjustable.isOpened() && (dosedVolumes[order] >= (requiredVolumes[order] / 2.0))) // / 1.15)))
+        if (!valveAdjustable.isPositionOk() && (dosedVolumeWithRatio_ >= (requiredVolumes[order] / 2.0)))
         {
             dosing_ = false;
             dosingFinishing_ = true;
 
             Serial.print("Dosing volume: ");
-            Serial.println(dosedVolumes[valveNum]);
+            Serial.println(dosedVolumes[order]);
         }
 
         // если подходим к завершению дозирования нужного объема
-        if (dosedVolumes[valveNum] >= (requiredVolumes[valveNum] - dosingVolumeOffset_))
+        if (dosedVolumes[order] >= (requiredVolumes[order] - dosingVolumeOffset_))
         {
             dosing_ = false;
             dosingFinishing_ = true;
 
             Serial.print("Dosing volume: ");
-            Serial.println(dosedVolumes[valveNum]);
+            Serial.println(dosedVolumes[order]);
         }
     }
 
@@ -136,7 +154,7 @@ void Collector::dose(int valveNum)
     }
 
     // ждем немного после закрытия клапанов
-    dosingDoneDelayTimer_.on100msTimer(dosingDoneDelay_, 100);
+    dosingDoneDelayTimer_.on100msTimer(dosingDoneDelay_, 20);
     if (dosingDoneDelayTimer_.status)
     {
         dosingDoneDelay_ = false;
@@ -148,7 +166,13 @@ void Collector::dose(int valveNum)
         flowmeter.nullifyVolume();
 
     if (dosing_ || dosingFinishing_)
-        dosedVolumes[valveNum] = flowmeter.getVolume();
+        dosedVolumes[order] = flowmeter.getVolume();
+
+    dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume0_;
+    if (dosingVolume1_)
+        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume1_;
+    if (dosingVolume2_)
+        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume2_;
 }
 
 void Collector::resetDose()
@@ -183,10 +207,11 @@ void Collector::wash()
     }
 
     // процесс промывки
-    washingTimer_.on100msTimer(washing_ && valveAdjustable.isOpened(), 30);
+    washingTimer_.on100msTimer(washing_ && valveAdjustable.isOpened(), 10);
 
     // если заполнили нужный объем
-    if (washingTimer_.status)
+    if (washingTimer_.status && !washingCarrierReserve_)
+    // if (washing_ && valveAdjustable.isOpened() && !washingCarrierReserve_)
     {
         washing_ = false;
         washingFinishing_ = true;
@@ -202,7 +227,7 @@ void Collector::wash()
     }
 
     // ждем несколько секунд для выставления статуса завершения промывки
-    washingFinishingTimer_.on100msTimer(washingFinishing_ && valveAdjustable.isClosed(), 100);
+    washingFinishingTimer_.on100msTimer(washingFinishing_ && valveAdjustable.isClosed(), 20);
     if (washingFinishingTimer_.status)
     {
         washingFinishing_ = false;
@@ -216,6 +241,8 @@ void Collector::resetWash()
     washingStart_ = false;
     washingDone_ = false;
     washingFinishing_ = false;
+
+    washingCarrierReserve_ = false;
 }
 
 void Collector::loopStart()
@@ -224,10 +251,11 @@ void Collector::loopStart()
     resetDose();
     resetWash();
 
-    loopDone_ = false;
     fillingStart_ = true;
+    loopDone_ = false;
     order = 0;
 
+    // обнуляем объемы
     for (int i = 0; i < nValves_ - 1; i++)
     {
         dosedVolumes[i] = 0;
@@ -241,7 +269,7 @@ void Collector::loopStop()
     resetWash();
 
     loopDone_ = false;
-    order = 0;
+    order = -1;
 
     closeAll();
 }
@@ -269,24 +297,49 @@ void Collector::loopPause()
 
 void Collector::loop()
 {
+    // if (clk._100ms)
+    // {
+    // Serial.print("Order: ");
+    // Serial.print(order);
+    // Serial.print("\tvalveNum: ");
+    // Serial.println(valveNum);
+    // }
     // дозирование на паузе
     // if (loopPause_)
     // {
     //     return;
     // }
 
+    if (washingCarrierReserve_) // && (order == -1))
+    {
+        // washingStart_ = true;
+        wash();
+        return;
+    }
+
     if (loopDone_)
+    {
+        Serial.println("Loop collector Done!");
+        loopStop();
+        return;
+    }
+
+    if (order == -1)
     {
         return;
     }
 
+    // активный клапан для дозации
+    valveNum = valveNums[order] - 1;
+    if (valveNum == -1)
+    {
+        loopDone_ = true;
+    }
+
     // выполняем дозирование
     fill();
-    if (valveNums[order] - 1 != -1)
-    {
-        dose(valveNums[order] - 1);
-        wash();
-    }
+    dose(); //valveNums[order] - 1);
+    wash();
 
     if (fillingDone_ || washingDone_)
     {
@@ -295,7 +348,10 @@ void Collector::loop()
 
         // дозирование завершено
         if (order >= nValves_ - 1)
+        {
             loopDone_ = true;
+            order = -1;
+        }
         else
             dosingStart_ = true;
 
@@ -324,12 +380,60 @@ void Collector::incTimers()
     washingFinishingTimer_.inc100msTimer();
 }
 
-void Collector::setRatioVolume(float ratioVolume)
+void Collector::setRatioVolume0(float ratioVolume)
 {
-    ratioVolume_ = ratioVolume;
+    ratioVolume0_ = ratioVolume;
 }
 
-void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+void Collector::setRatioVolume1(float ratioVolume)
 {
-    ratioVolumeMicro_ = ratioVolumeMicro;
+    ratioVolume1_ = ratioVolume;
+}
+
+void Collector::setRatioVolume2(float ratioVolume)
+{
+    ratioVolume2_ = ratioVolume;
+}
+
+// void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+// {
+//     ratioVolumeMicro_ = ratioVolumeMicro;
+// }
+
+void Collector::setVolume1(float volume)
+{
+    volume1_ = volume;
+}
+
+void Collector::setVolume2(float volume)
+{
+    volume2_ = volume;
+}
+
+// void Collector::setMicroVolume(float microVolume)
+// {
+//     microVolume_ = microVolume;
+// }
+
+void Collector::setSetpoint1(float setpoint)
+{
+    setpoint1_ = setpoint;
+}
+
+void Collector::setSetpoint2(float setpoint)
+{
+    setpoint2_ = setpoint;
+}
+
+// void Collector::setMicroSetpoint(float microSetpoint)
+// {
+//     microSetpoint_ = microSetpoint;
+// }
+
+float Collector::getDosedVolume()
+{
+    float sum = 0;
+    for (int i = 0; i <= nValves_; i++)
+        sum += dosedVolumes[i];
+    return sum;
 }

@@ -59,11 +59,27 @@ DynamicJsonDocument collectorLoopJSON(Collector collector)
     DynamicJsonDocument doc(1024);
     for (int i = 0; i < collector.nValves_ - 1; i++)
     {
+        // int valveNum = collector.valveNums[i] - 1;
         doc["valveNums"][i] = collector.valveNums[i];
         doc["requiredVolumes"][i] = collector.requiredVolumes[i];
         doc["dosedVolumes"][i] = collector.dosedVolumes[i];
         // doc["dosedVolumes"][i] = random(1000);
     }
+
+    doc["ratioVolume0"] = collector.ratioVolume0_;
+    doc["ratioVolume1"] = collector.ratioVolume1_;
+    doc["ratioVolume2"] = collector.ratioVolume2_;
+
+    doc["volume1"] = collector.volume1_;
+    doc["volume2"] = collector.volume2_;
+
+    doc["setpoint1"] = collector.setpoint1_;
+    doc["setpoint2"] = collector.setpoint2_;
+
+    // doc["ratioVolume"] = collector.ratioVolume_;
+    // doc["microVolume"] = collector.microVolume_;
+    // doc["microSetpoint"] = collector.microSetpoint_;
+    // doc["ratioVolumeMicro"] = collector.ratioVolumeMicro_;
     return doc;
 }
 
