@@ -302,7 +302,7 @@ void mixLoop()
     }
 
     // 3.1 start collector
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopCollector_)
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopCollector_ && collector.loopUsing_)
     {
         collector.loopStart();
         loopCollector_ = true;
@@ -310,7 +310,7 @@ void mixLoop()
     }
 
     // 3.2 start single dos
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopSingleDos_)
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopSingleDos_ && singleDos.loopUsing_)
     {
         singleDos.loopStart();
         loopSingleDos_ = true;
@@ -327,7 +327,7 @@ void mixLoop()
 
         // прекращаем дозацию компонентов, если осталось 20% носителя, продолжает дозироваться носитель
         // carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
-        if (abs(carrierDosedPercent) < carrierReserve)
+        if (collector.loopUsing_ && (abs(carrierDosedPercent) < carrierReserve))
         {
             loopWashing_ = true;
             loopCollectorWashingStart();
@@ -346,7 +346,8 @@ void mixLoop()
     // 6. loop done
     if (loopDone_)
     {
-        loopCollectorWashingStop();
+        if (collector.loopUsing_)
+            loopCollectorWashingStop();
         // if (collector.valveAdjustable.isClosed())
         // {
         Serial.println("Loop Done!");

@@ -135,6 +135,8 @@ void commonJSON(DynamicJsonDocument jsonReceived)
 
 void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 {
+    collector->loopStop();
+
     if (jsonReceived.containsKey("volumePulseCounter"))
     {
         collector->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
@@ -234,6 +236,7 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         }
     }
     // requiredVolumes
+    collector->loopUsing_ = false;
     if (jsonReceived.containsKey("requiredVolumes"))
     {
         for (int i = 0; i < collector->nValves_ - 1; i++)
@@ -245,6 +248,9 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
         for (int i = 0; i < jsonReceived["requiredVolumes"].size(); i++)
         {
             collector->requiredVolumes[i] = jsonReceived["requiredVolumes"][i];
+
+            if (collector->requiredVolumes[i] > 0)
+                collector->loopUsing_ = true;
             // Serial.println(collector->requiredVolumes[i]);
         }
     }
@@ -252,6 +258,8 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
 
 void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
 {
+    singleDos->loopStop();
+
     if (jsonReceived.containsKey("volumePulseCounter"))
     {
         singleDos->flowmeter.volumePulseCounter_ = jsonReceived["volumePulseCounter"];
@@ -271,10 +279,14 @@ void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
     }
 
     // requiredVolume
+    singleDos->loopUsing_ = false;
     if (jsonReceived.containsKey("requiredVolume"))
     {
         singleDos->requiredVolume = jsonReceived["requiredVolume"];
         singleDos->dosedVolume = 0;
+
+        if (singleDos->requiredVolume > 0)
+            singleDos->loopUsing_ = true;
         // Serial.println(singleDos->requiredVolume);
     }
 }

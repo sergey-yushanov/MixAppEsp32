@@ -30,6 +30,8 @@ struct SingleDos
     bool loopDone_;
     bool loopPause_;
 
+    bool loopUsing_;
+
     OnTimer correctFlowTimer_;
     bool correctFlow_;
 

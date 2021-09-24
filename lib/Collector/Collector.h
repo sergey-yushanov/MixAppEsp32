@@ -78,6 +78,8 @@ struct Collector
     bool loopDone_;
     bool loopPause_;
 
+    bool loopUsing_;
+
     // loop parameters
     float ratioVolume0_ = 1.0;
     float ratioVolume1_ = 1.0;
