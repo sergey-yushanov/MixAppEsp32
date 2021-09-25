@@ -19,6 +19,9 @@ void SingleDos::dose()
 
         Serial.print("Dosing required volume: ");
         Serial.println(requiredVolume);
+
+        dosingVolume2_ = requiredVolume <= volume2_;
+        dosingVolume1_ = (requiredVolume > volume2_) && (requiredVolume <= volume1_);
     }
     dosingStart_ = false;
 
@@ -34,18 +37,24 @@ void SingleDos::dose()
     {
         // открываем клапаны
         valveAdjustable.fullyOpen();
+
+        if (dosingVolume1_)
+            valveAdjustable.setSetpoint(setpoint1_);
+        if (dosingVolume2_)
+            valveAdjustable.setSetpoint(setpoint2_);
+
         dosingNullify_ = false;
 
         // запоминаем смещение объема для определения момента закрытия клапана
-        if (dosingValveOpenRise_.rising(valveAdjustable.isOpened()))
+        if ((dosingVolumeOffset_ == 0) && dosingValveOpenRise_.rising(valveAdjustable.isPositionOk()))
         {
-            dosingVolumeOffset_ = flowmeter.getVolume() * dosingVolumeOffsetRatio_;
+            dosingVolumeOffset_ = dosedVolumeWithRatio_;
             Serial.print("Single dos Dosing offset volume: ");
             Serial.println(dosingVolumeOffset_);
         }
 
         // если не успели открыть клапан, а уже половина объема прошла, то заканчиваем дозацию
-        if (!valveAdjustable.isOpened() && ((dosedVolume * dosingVolumeOffsetRatio_) >= (requiredVolume / 2.0)))
+        if (!valveAdjustable.isPositionOk() && (dosedVolumeWithRatio_ >= (requiredVolume / 2.0)))
         {
             dosing_ = false;
             dosingFinishing_ = true;
@@ -92,6 +101,12 @@ void SingleDos::dose()
 
     if (dosing_ || dosingFinishing_)
         dosedVolume = flowmeter.getVolume();
+
+    dosedVolumeWithRatio_ = dosedVolume * ratioVolume0_;
+    if (dosingVolume1_)
+        dosedVolumeWithRatio_ = dosedVolume * ratioVolume1_;
+    if (dosingVolume2_)
+        dosedVolumeWithRatio_ = dosedVolume * ratioVolume2_;
 }
 
 void SingleDos::resetDose()
@@ -112,6 +127,7 @@ void SingleDos::loopStart()
     dosingStart_ = true;
     loopDone_ = false;
     dosedVolume = 0;
+    flowmeter.nullifyVolume();
 }
 
 void SingleDos::loopStop()
@@ -174,12 +190,47 @@ void SingleDos::loop()
     }
 }
 
-void SingleDos::setRatioVolume(float ratioVolume)
+void SingleDos::setRatioVolume0(float ratioVolume)
 {
-    ratioVolume_ = ratioVolume;
+    ratioVolume0_ = ratioVolume;
 }
 
-void SingleDos::setRatioVolumeMicro(float ratioVolumeMicro)
+void SingleDos::setRatioVolume1(float ratioVolume)
 {
-    ratioVolumeMicro_ = ratioVolumeMicro;
+    ratioVolume1_ = ratioVolume;
+}
+
+void SingleDos::setRatioVolume2(float ratioVolume)
+{
+    ratioVolume2_ = ratioVolume;
+}
+
+// void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
+// {
+//     ratioVolumeMicro_ = ratioVolumeMicro;
+// }
+
+void SingleDos::setVolume1(float volume)
+{
+    volume1_ = volume;
+}
+
+void SingleDos::setVolume2(float volume)
+{
+    volume2_ = volume;
+}
+
+// void Collector::setMicroVolume(float microVolume)
+// {
+//     microVolume_ = microVolume;
+// }
+
+void SingleDos::setSetpoint1(float setpoint)
+{
+    setpoint1_ = setpoint;
+}
+
+void SingleDos::setSetpoint2(float setpoint)
+{
+    setpoint2_ = setpoint;
 }

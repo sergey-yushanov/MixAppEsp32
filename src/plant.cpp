@@ -55,7 +55,9 @@ bool loopWashing_;
 // common flowmeter
 void IRAM_ATTR m1Pulse()
 {
+    portENTER_CRITICAL_ISR(&m1.flowMux);
     m1.pulseCounter();
+    portEXIT_CRITICAL_ISR(&m1.flowMux);
 }
 
 void m1Setup()
@@ -72,7 +74,9 @@ void m1Setup()
 // dispenser collector flowmeter
 void IRAM_ATTR g1Pulse()
 {
+    portENTER_CRITICAL_ISR(&collector.flowmeter.flowMux);
     collector.flowmeter.pulseCounter();
+    portEXIT_CRITICAL_ISR(&collector.flowmeter.flowMux);
 }
 
 void g1Setup()
@@ -89,7 +93,9 @@ void g1Setup()
 // dispenser single flowmeter
 void IRAM_ATTR g2Pulse()
 {
+    portENTER_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
     singleDos.flowmeter.pulseCounter();
+    portEXIT_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
 }
 
 void g2Setup()
@@ -106,9 +112,9 @@ void g2Setup()
 // timeouts
 void incTimeouts()
 {
-    valveAdjustable.incTimeout();
-    collector.valveAdjustable.incTimeout();
-    singleDos.valveAdjustable.incTimeout();
+    // valveAdjustable.incTimeout();
+    // collector.valveAdjustable.incTimeout();
+    // singleDos.valveAdjustable.incTimeout();
 }
 
 void incTimers()
@@ -263,9 +269,11 @@ void mixLoop()
 
     pumpStartDelay_.on100msTimer(loopValveOk_, 30);
 
+    carrierDosedVolume = m1.getVolume();
+
     if (loopRunning_)
     {
-        carrierDosedVolume = m1.getVolume();
+        // carrierDosedVolume = m1.getVolume();
         // прекращаем дозацию компонентов, если осталось 20% носителя, продолжает дозироваться носитель
         carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
     }
@@ -320,15 +328,9 @@ void mixLoop()
     // 4. need washing
     if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_ && !loopWashing_)
     {
-        // carrierDosedVolume = m1.getVolume();
-
-        // todo: прибавить отдозированные компоненты!!!
-        // loopDone_ = carrierDosedVolume > carrierRequiredVolume;
-
-        // прекращаем дозацию компонентов, если осталось 20% носителя, продолжает дозироваться носитель
-        // carrierDosedPercent = (carrierRequiredVolume - carrierDosedVolume) / carrierRequiredVolume * 100;
         if (collector.loopUsing_ && (abs(carrierDosedPercent) < carrierReserve))
         {
+            Serial.println("abs(carrierDosedPercent) < carrierReserve");
             loopWashing_ = true;
             loopCollectorWashingStart();
             // return;
@@ -336,12 +338,12 @@ void mixLoop()
     }
 
     // 5. dosing done
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_)
-    {
-        // todo: прибавить отдозированные компоненты!!!
-        loopDone_ = carrierDosedVolume > carrierRequiredVolume;
-        return;
-    }
+    // if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_)
+    // {
+    // todo: прибавить отдозированные компоненты!!!
+    loopDone_ = loopRunning_ && (carrierDosedVolume >= carrierRequiredVolume);
+    //     return;
+    // }
 
     // 6. loop done
     if (loopDone_)
@@ -366,6 +368,7 @@ void loopStart()
     loopRunning_ = true;
     loopDone_ = false;
 
+    loopWashing_ = false;
     loopCollectorWashingStop();
 
     // m1.nullifyVolume();
@@ -407,6 +410,8 @@ void loopStop()
     loopSingleDos_ = false;
     loopRunning_ = false;
     loopDone_ = false;
+
+    loopWashing_ = false;
 }
 
 void loopPause()

@@ -25,9 +25,12 @@ void setup()
 // Цикл
 void loop()
 {
+    // todo: 1. Вызывать Modbus по таймеру 10 мс
+    // todo: 2. Реализовать сброс watchdog, как описано здесь https://iotassistant.io/esp32/enable-hardware-watchdog-timer-esp32-arduino-ide/
+
     // long loop_start = micros();
 
-    mbPoll();
+    // mbPoll();
     plantLoop();
 
     // разрешение считать импульсы
@@ -35,7 +38,7 @@ void loop()
 
     if (clk._10ms)
     {
-        // mbPoll();
+        mbPoll();
         // plantLoop();
         // Serial.println("clock");
         // опрос устройств Modbus
@@ -55,11 +58,11 @@ void loop()
     // }
     if (clk._100ms)
     {
-        Serial.print(collector.valveAdjustable.getSetpoint());
-        Serial.print("\t");
-        Serial.print(collector.valveAdjustable.getPosition());
-        Serial.print("\t");
-        Serial.println(collector.valveAdjustable.isPositionOk());
+        // Serial.print(collector.valveAdjustable.getSetpoint());
+        // Serial.print("\t");
+        // Serial.print(collector.valveAdjustable.getPosition());
+        // Serial.print("\t");
+        // Serial.println(collector.valveAdjustable.isPositionOk());
 
         // опрос устройств Modbus
         // mbPoll();
@@ -71,7 +74,7 @@ void loop()
     if (clk._100ms)
     {
         // увеличиваем таймеры для аварий по отсутствию движения
-        incTimeouts();
+        // incTimeouts();
         // увеличиваем разные таймеры коллектора
         incTimers();
         // выполняем действия с управлением установкой

@@ -91,6 +91,7 @@ void commonLoopJSON(DynamicJsonDocument jsonReceived)
     {
         carrierRequiredVolume = jsonReceived["carrierRequiredVolume"];
         carrierDosedVolume = 0;
+        m1.nullifyVolume();
         // Serial.println(carrierRequiredVolume);
     }
 
@@ -146,16 +147,19 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("ratioVolume0"))
     {
         collector->setRatioVolume0(jsonReceived["ratioVolume0"]);
+        singleDos.setRatioVolume0(jsonReceived["ratioVolume0"]);
     }
 
     if (jsonReceived.containsKey("ratioVolume1"))
     {
         collector->setRatioVolume1(jsonReceived["ratioVolume1"]);
+        singleDos.setRatioVolume1(jsonReceived["ratioVolume1"]);
     }
 
     if (jsonReceived.containsKey("ratioVolume2"))
     {
         collector->setRatioVolume2(jsonReceived["ratioVolume2"]);
+        singleDos.setRatioVolume2(jsonReceived["ratioVolume2"]);
     }
 
     // if (jsonReceived.containsKey("ratioVolume"))
@@ -173,11 +177,13 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("volume1"))
     {
         collector->setVolume1(jsonReceived["volume1"]);
+        singleDos.setVolume1(jsonReceived["volume1"]);
     }
 
     if (jsonReceived.containsKey("volume2"))
     {
         collector->setVolume2(jsonReceived["volume2"]);
+        singleDos.setVolume2(jsonReceived["volume2"]);
     }
 
     // if (jsonReceived.containsKey("microVolume"))
@@ -188,11 +194,13 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("setpoint1"))
     {
         collector->setSetpoint1(jsonReceived["setpoint1"]);
+        singleDos.setSetpoint1(jsonReceived["setpoint1"]);
     }
 
     if (jsonReceived.containsKey("setpoint2"))
     {
         collector->setSetpoint2(jsonReceived["setpoint2"]);
+        singleDos.setSetpoint2(jsonReceived["setpoint2"]);
     }
 
     // if (jsonReceived.containsKey("microSetpoint"))
@@ -266,17 +274,17 @@ void singleDosLoopJSON(DynamicJsonDocument jsonReceived, SingleDos *singleDos)
         // Serial.println(collector->flowmeter.getVolume());
     }
 
-    if (jsonReceived.containsKey("ratioVolume"))
-    {
-        singleDos->setRatioVolume(jsonReceived["ratioVolume"]);
-        // ratioVolumeMicro = jsonReceived["ratioVolume"];
-    }
+    // if (jsonReceived.containsKey("ratioVolume"))
+    // {
+    //     singleDos->setRatioVolume(jsonReceived["ratioVolume"]);
+    //     // ratioVolumeMicro = jsonReceived["ratioVolume"];
+    // }
 
-    if (jsonReceived.containsKey("ratioVolumeMicro"))
-    {
-        singleDos->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
-        // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
-    }
+    // if (jsonReceived.containsKey("ratioVolumeMicro"))
+    // {
+    //     singleDos->setRatioVolumeMicro(jsonReceived["ratioVolumeMicro"]);
+    //     // ratioVolumeMicro = jsonReceived["ratioVolumeMicro"];
+    // }
 
     // requiredVolume
     singleDos->loopUsing_ = false;

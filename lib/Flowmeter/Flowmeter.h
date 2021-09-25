@@ -40,6 +40,8 @@ public:
     bool risingReady = true;
     int risingLowCount = 0;
 
+    portMUX_TYPE flowMux = portMUX_INITIALIZER_UNLOCKED;
+
     Flowmeter();
     Flowmeter(int pin, float pulsesPerLiter);
     Flowmeter(int pin, float pulsesPerLiter, long intervalMillis);

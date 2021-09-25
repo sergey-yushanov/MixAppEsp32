@@ -79,7 +79,8 @@ void Collector::dose() //int valveNum)
         Serial.println(requiredVolumes[order]);
 
         dosingVolume2_ = requiredVolumes[order] <= volume2_;
-        dosingVolume1_ = !dosingVolume2_ && (requiredVolumes[order] <= volume1_);
+        // dosingVolume1_ = !dosingVolume2_ && (requiredVolumes[order] <= volume1_);
+        dosingVolume1_ = (requiredVolumes[order] > volume2_) && (requiredVolumes[order] <= volume1_);
     }
     dosingStart_ = false;
 
@@ -256,7 +257,7 @@ void Collector::loopStart()
     order = 0;
 
     // обнуляем объемы
-    for (int i = 0; i < nValves_ - 1; i++)
+    for (int i = 0; i < nValves_ - 2; i++)
     {
         dosedVolumes[i] = 0;
     }
@@ -334,6 +335,7 @@ void Collector::loop()
     if (valveNum == -1)
     {
         loopDone_ = true;
+        return;
     }
 
     // выполняем дозирование
@@ -341,31 +343,35 @@ void Collector::loop()
     dose(); //valveNums[order] - 1);
     wash();
 
-    if (fillingDone_ || washingDone_)
+    if (fillingDone_)
     {
         resetFill();
+        dosingStart_ = true;
+    }
+
+    if (washingDone_)
+    {
         resetWash();
 
         // дозирование завершено
-        if (order >= nValves_ - 1)
+        if (order >= nValves_ - 2)
         {
             loopDone_ = true;
-            order = -1;
+            return;
+            // order = -1;
         }
         else
+        {
             dosingStart_ = true;
-
-        // Serial.print("order: ");
-        // Serial.print(order);
-        // Serial.print("\tvalveNum: ");
-        // Serial.println(valveNums[order]);
+            order++;
+        }
     }
 
     if (dosingDone_)
     {
         resetDose();
         washingStart_ = true;
-        order++;
+        // order++;
     }
 }
 
@@ -433,7 +439,7 @@ void Collector::setSetpoint2(float setpoint)
 float Collector::getDosedVolume()
 {
     float sum = 0;
-    for (int i = 0; i <= nValves_; i++)
+    for (int i = 0; i < nValves_ - 1; i++)
         sum += dosedVolumes[i];
     return sum;
 }
