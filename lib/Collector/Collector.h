@@ -48,10 +48,10 @@ struct Collector
     bool dosingVolume1_;
     bool dosingVolume2_;
 
-    float volume1_ = 25.0;
-    float volume2_ = 15.0;
+    float volume1_ = 15.0;
+    float volume2_ = 2.5;
 
-    float setpoint1_ = 100.0;
+    float setpoint1_ = 50.0;
     float setpoint2_ = 25.0;
 
     // прикрываем клапан для точной дозации
@@ -82,8 +82,8 @@ struct Collector
 
     // loop parameters
     float ratioVolume0_ = 1.0;
-    float ratioVolume1_ = 1.0;
-    float ratioVolume2_ = 2.0;
+    float ratioVolume1_ = 1.56;
+    float ratioVolume2_ = 2.2;
     float dosedVolumeWithRatio_;
 
     void closeAll();
