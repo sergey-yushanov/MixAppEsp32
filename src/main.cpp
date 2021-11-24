@@ -38,7 +38,7 @@ void loop()
 
     if (clk._10ms)
     {
-        mbPoll();
+        // mbPoll();
         // plantLoop();
         // Serial.println("clock");
         // опрос устройств Modbus
