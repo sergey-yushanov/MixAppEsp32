@@ -8,8 +8,8 @@ const int chipSelectDrv2 = 33;
 const int chipSelectAdc1 = 22;
 const int chipSelectAdc2 = 25;
 
-DRV89xx motorDriver1(chipSelectDrv1, 0, 0);
-DRV89xx motorDriver2(chipSelectDrv2, 0, 0);
+DRV89xxDevice motorDevice1(chipSelectDrv1, 0, 0);
+DRV89xxDevice motorDevice2(chipSelectDrv2, 0, 0);
 
 // AD779X adc1(5.0);
 AD779X adc2(3.3);
@@ -39,83 +39,66 @@ void spiSetup()
     SPI.endTransaction();
     delay(100);
 
-    motorDriver1.begin();
-    motorDriver2.begin();
+    motorDevice1.begin();
+    motorDevice2.begin();
     delay(100);
+}
+
+// устанавливаем значения для записи по Modbus
+void spiWriteDiscrete()
+{
+    motorDevice1.writeBit(DRV89xx_OP_CTRL_2, 7, pumpCommand);
+
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_1, 1, collector.valves[2].isCommand());
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_1, 3, collector.valves[1].isCommand());
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_1, 7, collector.valveAdjustable.isCommandClose());
+
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_2, 1, collector.valves[3].isCommand());
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_2, 3, collector.valveAdjustable.isCommandOpen());
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_2, 5, singleDos.valveAdjustable.isCommandOpen());
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_2, 7, collector.valves[0].isCommand());
+
+    motorDevice2.writeBit(DRV89xx_OP_CTRL_3, 1, singleDos.valveAdjustable.isCommandClose());
+
+    motorDevice1.writeRegisters();
+    motorDevice2.writeRegisters();
+}
+
+uint16_t readIntRaw(float mV, uint16_t offset_uA)
+{
+    float mA = mV / 120.0;
+    float uA = mA * 1000.0;
+
+    return (uint16_t)round(uA) - offset_uA;
+}
+
+void spiReadAnalog()
+{
+    uint16_t value;
+
+    SPI.beginTransaction(adc2.get_spi_settings());
+    if (adc2.update())
+    {
+        value = readIntRaw(adc2.readmV(0), 0);
+        collector.valveAdjustable.getPositionSensor()->setIntRaw(value);
+        collector.valveAdjustable.updatePosition();
+
+        value = readIntRaw(adc2.readmV(2), 0);
+        singleDos.valveAdjustable.getPositionSensor()->setIntRaw(value);
+        singleDos.valveAdjustable.updatePosition();
+    }
+    SPI.endTransaction();
 }
 
 void spiPoll()
 {
     digitalWrite(chipSelectAdc1, HIGH);
     digitalWrite(chipSelectAdc2, HIGH);
-    SPI.beginTransaction(motorDriver1.get_spi_settings());
 
-    for (int i = 1; i < 8; i += 2)
-    {
-        motorDriver1.writeRegister(0x08, 1 << i);
-        delay(20);
-        motorDriver1.writeRegister(0x08, 0 << i);
-        delay(20);
-    }
-
-    for (int i = 1; i < 8; i += 2)
-    {
-        motorDriver1.writeRegister(0x09, 1 << i);
-        delay(20);
-        motorDriver1.writeRegister(0x09, 0);
-        delay(20);
-    }
-
-    for (int i = 1; i < 4; i += 2)
-    {
-        motorDriver1.writeRegister(0x0A, 1 << i);
-        delay(20);
-        motorDriver1.writeRegister(0x0A, 0);
-        delay(20);
-    }
-
-    for (int i = 1; i < 8; i += 2)
-    {
-        motorDriver2.writeRegister(0x08, 1 << i);
-        delay(20);
-        motorDriver2.writeRegister(0x08, 0);
-        delay(20);
-    }
-
-    for (int i = 1; i < 8; i += 2)
-    {
-        motorDriver2.writeRegister(0x09, 1 << i);
-        delay(20);
-        motorDriver2.writeRegister(0x09, 0);
-        delay(20);
-    }
-
-    for (int i = 1; i < 4; i += 2)
-    {
-        motorDriver2.writeRegister(0x0A, 1 << i);
-        delay(20);
-        motorDriver2.writeRegister(0x0A, 0);
-        delay(20);
-    }
-    /**/
-    SPI.endTransaction();
+    spiWriteDiscrete();
 
     digitalWrite(chipSelectDrv1, HIGH);
     digitalWrite(chipSelectDrv2, HIGH);
-    // digitalWrite(chipSelectAdc1, LOW);
-    // digitalWrite(chipSelectAdc2, LOW);
-    SPI.beginTransaction(adc2.get_spi_settings());
-    if (adc2.update())
-    { // if new values available
-        for (int i = 2; i < 3; i++)
-        { // print RAW and mV values
-            Serial.print("CH");
-            Serial.print(i);
-            Serial.print(" - RAW: ");
-            Serial.print(adc2.readRaw(i), HEX);
-            Serial.print("\tmV: ");
-            Serial.println(adc2.readmV(i), HEX);
-        }
-    }
-    SPI.endTransaction();
+
+    spiReadAnalog();
 }

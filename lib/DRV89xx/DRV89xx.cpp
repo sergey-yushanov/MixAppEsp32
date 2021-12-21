@@ -37,12 +37,6 @@ void DRV89xx::begin()
     writeConfig();
 }
 
-// void DRV89xx::configMotor(byte motor_id, byte hb1, byte hb2, byte pwm_channel, byte reverse_delay)
-// {
-//     config_changed_ = true;
-//     _motor[motor_id] = DRV89xxMotor(hb1, hb2, pwm_channel, reverse_delay);
-// }
-
 byte DRV89xx::writeRegister(byte address, byte value)
 {
     digitalWrite(_cs_pin, LOW);
@@ -110,28 +104,6 @@ void DRV89xx::writeConfig()
     }
     SPI.endTransaction();
 }
-
-// void DRV89xx::updateConfig()
-// {
-//     if (!config_changed_)
-//         return; // ignore duplicate writes
-//     config_changed_ = false;
-//     // Serial.println("Writing config update");
-
-//     readErrorStatus(false, true);
-
-//     byte i;
-//     for (i = 0; i < DRV89xx_MAX_MOTORS; i++)
-//     {
-//         _motor[i].applyConfig(_config_cache);
-//     }
-//     // SPI.beginTransaction(_spi_settings);
-//     for (i = DRV89xx_UPDATE_START; i <= DRV89xx_UPDATE_END; i++)
-//     {
-//         DRV89xx::writeRegister(i, _config_cache[i]);
-//     }
-//     // SPI.endTransaction();
-// }
 
 SPISettings DRV89xx::get_spi_settings()
 {

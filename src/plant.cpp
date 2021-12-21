@@ -1,9 +1,5 @@
 #include "plant.h"
 
-// #define ADC_PIN_34 34
-// #define ADC_PIN_35 35
-// #define voltage_divider_offset 2.174 // Should be a value of 2.000, but ADC input impedance loads the voltage divider, requiring a correction
-
 Collector collector;
 SingleDos singleDos;
 Flowmeter m1;
@@ -62,7 +58,7 @@ void IRAM_ATTR m1Pulse()
 
 void m1Setup()
 {
-    m1.setPin(18);
+    m1.setPin(4);
     m1.setPulsesPerLiter(50); //(100.0); // 50.0
     m1.risingStartMicros = micros();
     m1.risingIntervalMicros = 800;
@@ -81,7 +77,7 @@ void IRAM_ATTR g1Pulse()
 
 void g1Setup()
 {
-    collector.flowmeter.setPin(19);
+    collector.flowmeter.setPin(2);
     collector.flowmeter.setPulsesPerLiter(106.777); //(106.777);
     collector.flowmeter.risingStartMicros = micros();
     collector.flowmeter.risingIntervalMicros = 3700;
@@ -100,7 +96,7 @@ void IRAM_ATTR g2Pulse()
 
 void g2Setup()
 {
-    singleDos.flowmeter.setPin(21);
+    singleDos.flowmeter.setPin(0);
     singleDos.flowmeter.setPulsesPerLiter(106.585); //(106.777);
     singleDos.flowmeter.risingStartMicros = micros();
     singleDos.flowmeter.risingIntervalMicros = 3700;

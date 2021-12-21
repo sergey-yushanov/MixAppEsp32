@@ -26,10 +26,10 @@ public:
     AnalogSensor();
 
     float getRawLowLimit();
-    void setRawLowLimit(float rawLowLimit = 0.0);
+    void setRawLowLimit(float rawLowLimit = 4000.0);
 
     float getRawHighLimit();
-    void setRawHighLimit(float rawHighLimit = 59000.0); //65536.0);
+    void setRawHighLimit(float rawHighLimit = 20000.0); // 65536.0);
 
     float getValueLowLimit();
     void setValueLowLimit(float valueLowLimit = 0.0);
