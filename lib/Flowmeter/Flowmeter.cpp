@@ -73,6 +73,8 @@ void Flowmeter::pulseCounter()
         flowPulseCounter_++;
         volumePulseCounter_++;
         risingStartMicros = micros();
+
+        // Serial.println(volumePulseCounter_);
     }
 }
 
