@@ -49,7 +49,7 @@ struct Collector
     bool dosingVolume2_;
 
     float volume1_ = 15.0;
-    float volume2_ = 2.5;
+    float volume2_ = 3.5;
 
     float setpoint1_ = 50.0;
     float setpoint2_ = 25.0;
@@ -81,7 +81,7 @@ struct Collector
     bool loopUsing_;
 
     // loop parameters
-    float ratioVolume0_ = 1.0;
+    float ratioVolume0_ = 1.2;
     float ratioVolume1_ = 1.56;
     float ratioVolume2_ = 2.2;
     float dosedVolumeWithRatio_;
@@ -95,7 +95,7 @@ struct Collector
 
     void fill();
     void resetFill();
-    void dose(); //int valveNum);
+    void dose(); // int valveNum);
     void resetDose();
     void wash();
     void resetWash();

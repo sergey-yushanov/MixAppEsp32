@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "clock_pulses.h"
 #include "plant.h"
-#include "mb_master.h"
+// #include "mb_master.h"
+#include "spi_master.h"
 #include "access_point.h"
 #include "save_data.h"
 
@@ -16,7 +18,8 @@ void setup()
     delay(1000);
 
     clockSetup();
-    mbSetup();
+    // mbSetup();
+    spiSetup();
     plantSetup();
 
     delay(3000);
@@ -31,6 +34,7 @@ void loop()
     // long loop_start = micros();
 
     // mbPoll();
+    spiPoll();
     plantLoop();
 
     // разрешение считать импульсы
@@ -38,7 +42,7 @@ void loop()
 
     if (clk._10ms)
     {
-        mbPoll();
+        // mbPoll();
         // plantLoop();
         // Serial.println("clock");
         // опрос устройств Modbus
