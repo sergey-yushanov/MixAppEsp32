@@ -57,7 +57,7 @@ void Collector::resetFill()
 }
 
 // дозирование препарата через заданный клапан
-void Collector::dose() //int valveNum)
+void Collector::dose() // int valveNum)
 {
     // стартуем дозирование
     if (dosingStart_ && !dosing_ && !dosingFinishing_ && !dosingDoneDelay_ && !dosingDone_)
@@ -340,7 +340,7 @@ void Collector::loop()
 
     // выполняем дозирование
     fill();
-    dose(); //valveNums[order] - 1);
+    dose(); // valveNums[order] - 1);
     wash();
 
     if (fillingDone_)
@@ -370,7 +370,9 @@ void Collector::loop()
     if (dosingDone_)
     {
         resetDose();
-        washingStart_ = true;
+        // убираем промежуточную промывку, выставляем сразу Done
+        // washingStart_ = true;
+        washingDone_ = true;
         // order++;
     }
 }
