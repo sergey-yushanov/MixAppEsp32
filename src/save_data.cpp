@@ -4,6 +4,7 @@ Preferences preferences;
 
 const char *preferences_common = "common";
 const char *preferences_collector_0 = "collector_0";
+const char *preferences_collector_1 = "collector_1";
 
 void valveAdjustableRead(ValveAdjustable *valveAdjustable)
 {
@@ -59,7 +60,7 @@ void valveAdjustableWrite(ValveAdjustable *valveAdjustable)
 
 void flowmeterWrite(Flowmeter *flowmeter)
 {
-    preferences.getFloat("pulsesPerLiter", flowmeter->getPulsesPerLiter());
+    preferences.putFloat("pulsesPerLiter", flowmeter->getPulsesPerLiter());
 }
 
 void dataSave(const char *key, ValveAdjustable *valveAdjustable)
@@ -81,12 +82,18 @@ void dataSetup()
     // common settings
     preferences.begin(preferences_common, false);
     valveAdjustableRead(&valveAdjustable);
-    flowmeterRead(&m1, 50.0);
+    flowmeterRead(&m1, banjoDefaultPulsesPerLiter);
     preferences.end();
 
     // dispenser collector settings
     preferences.begin(preferences_collector_0, false);
     valveAdjustableRead(&collector.valveAdjustable);
-    flowmeterRead(&collector.flowmeter, 106.777);
+    flowmeterRead(&collector.flowmeter, darkontDefaultPulsesPerLiter);
+    preferences.end();
+
+    // dispenser collector settings
+    preferences.begin(preferences_collector_1, false);
+    valveAdjustableRead(&collector.valveAdjustable);
+    flowmeterRead(&collector.flowmeter, darkontDefaultPulsesPerLiter);
     preferences.end();
 }

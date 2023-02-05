@@ -13,12 +13,11 @@
 #include "clock_pulses.h"
 #include <ProcessControl.h>
 
-// #include <SimpleKalmanFilter.h>
-
-extern Collector collector;
+static const int nCollectors = 2;
+extern Collector collectors[nCollectors];
 extern Flowmeter m1;
 extern ValveAdjustable valveAdjustable;
-extern SingleDos singleDos;
+// extern SingleDos singleDos;
 
 extern float carrierRequiredVolume;
 extern float carrierDosedVolume;
@@ -45,11 +44,16 @@ extern float ratioVolumeMicro;
 extern float valveSetpoint;
 extern float carrierReserve;
 
+// flow meters
+extern float banjoDefaultPulsesPerLiter;
+extern float darkontDefaultPulsesPerLiter;
+
 // void m1Setup();
 void IRAM_ATTR m1Pulse();
 
 // void g1Setup();
 void IRAM_ATTR g1Pulse();
+void IRAM_ATTR g2Pulse();
 
 void incTimeouts();
 void incTimers();

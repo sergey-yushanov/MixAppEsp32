@@ -47,12 +47,15 @@ struct Collector
     // микродозация
     bool dosingVolume1_;
     bool dosingVolume2_;
+    bool dosingVolume3_;
 
     float volume1_ = 15.0;
     float volume2_ = 3.5;
+    float volume3_ = 2.5;
 
     float setpoint1_ = 50.0;
     float setpoint2_ = 25.0;
+    float setpoint3_ = 20.0;
 
     // прикрываем клапан для точной дозации
     bool dosingAccuracy_;
@@ -84,6 +87,7 @@ struct Collector
     float ratioVolume0_ = 1.2;
     float ratioVolume1_ = 1.56;
     float ratioVolume2_ = 2.2;
+    float ratioVolume3_ = 2.4;
     float dosedVolumeWithRatio_;
 
     void closeAll();
@@ -114,16 +118,19 @@ struct Collector
     void setRatioVolume0(float ratioVolume);
     void setRatioVolume1(float ratioVolume);
     void setRatioVolume2(float ratioVolume);
+    void setRatioVolume3(float ratioVolume);
 
     // void setRatioVolume(float ratioVolume);
     // void setRatioVolumeMicro(float ratioVolumeMicro);
 
     void setVolume1(float volume);
     void setVolume2(float volume);
+    void setVolume3(float volume);
     // void setMicroVolume(float microVolume);
 
     void setSetpoint1(float setpoint);
     void setSetpoint2(float setpoint);
+    void setSetpoint3(float setpoint);
     // void setMicroSetpoint(float microSetpoint);
 
     float getDosedVolume();

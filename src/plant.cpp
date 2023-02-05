@@ -1,7 +1,7 @@
 #include "plant.h"
 
-Collector collector;
-SingleDos singleDos;
+Collector collectors[nCollectors];
+// SingleDos singleDos;
 Flowmeter m1;
 ValveAdjustable valveAdjustable;
 
@@ -12,7 +12,6 @@ float carrierDosedVolume;
 
 bool ack;
 bool showSettings;
-
 bool pumpCommand;
 // const int pumpPin = 5;
 
@@ -40,13 +39,14 @@ bool loopStart_;
 bool loopValveOk_;
 bool loopPump_;
 bool loopCollector_;
-bool loopSingleDos_;
+// bool loopSingleDos_;
 bool loopRunning_;
 bool loopDone_;
 bool loopWashing_;
 
-// SimpleKalmanFilter kalman34(2, 2, 0.01);
-// SimpleKalmanFilter kalman35(2, 2, 0.01);
+// flow meters
+float banjoDefaultPulsesPerLiter = 50.0;
+float darkontDefaultPulsesPerLiter = 106.777;
 
 // common flowmeter
 void IRAM_ATTR m1Pulse()
@@ -59,7 +59,7 @@ void IRAM_ATTR m1Pulse()
 void m1Setup()
 {
     m1.setPin(4);
-    m1.setPulsesPerLiter(50); //(100.0); // 50.0
+    // m1.setPulsesPerLiter(m1PulsesPerLiter); //(100.0); // 50.0
     m1.risingStartMicros = micros();
     m1.risingIntervalMicros = 800;
     m1.risingReady = true;
@@ -70,40 +70,59 @@ void m1Setup()
 // dispenser collector flowmeter
 void IRAM_ATTR g1Pulse()
 {
-    portENTER_CRITICAL_ISR(&collector.flowmeter.flowMux);
-    collector.flowmeter.pulseCounter();
-    portEXIT_CRITICAL_ISR(&collector.flowmeter.flowMux);
+    portENTER_CRITICAL_ISR(&collectors[0].flowmeter.flowMux);
+    collectors[0].flowmeter.pulseCounter();
+    portEXIT_CRITICAL_ISR(&collectors[0].flowmeter.flowMux);
 }
 
 void g1Setup()
 {
-    collector.flowmeter.setPin(2);
-    collector.flowmeter.setPulsesPerLiter(106.777); //(106.777);
-    collector.flowmeter.risingStartMicros = micros();
-    collector.flowmeter.risingIntervalMicros = 3700;
-    collector.flowmeter.risingReady = true;
-    pinMode(collector.flowmeter.getPin(), INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(collector.flowmeter.getPin()), g1Pulse, RISING);
+    collectors[0].flowmeter.setPin(2);
+    // collector.flowmeter.setPulsesPerLiter(g1PulsesPerLiter); //(106.777);
+    collectors[0].flowmeter.risingStartMicros = micros();
+    collectors[0].flowmeter.risingIntervalMicros = 3700;
+    collectors[0].flowmeter.risingReady = true;
+    pinMode(collectors[0].flowmeter.getPin(), INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(collectors[0].flowmeter.getPin()), g1Pulse, RISING);
 }
 
-// dispenser single flowmeter
+// dispenser collector flowmeter
 void IRAM_ATTR g2Pulse()
 {
-    portENTER_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
-    singleDos.flowmeter.pulseCounter();
-    portEXIT_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
+    portENTER_CRITICAL_ISR(&collectors[1].flowmeter.flowMux);
+    collectors[1].flowmeter.pulseCounter();
+    portEXIT_CRITICAL_ISR(&collectors[1].flowmeter.flowMux);
 }
 
 void g2Setup()
 {
-    singleDos.flowmeter.setPin(0);
-    singleDos.flowmeter.setPulsesPerLiter(106.585); //(106.777);
-    singleDos.flowmeter.risingStartMicros = micros();
-    singleDos.flowmeter.risingIntervalMicros = 3700;
-    singleDos.flowmeter.risingReady = true;
-    pinMode(singleDos.flowmeter.getPin(), INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(singleDos.flowmeter.getPin()), g2Pulse, RISING);
+    collectors[1].flowmeter.setPin(0);
+    // collector.flowmeter.setPulsesPerLiter(g1PulsesPerLiter); //(106.777);
+    collectors[1].flowmeter.risingStartMicros = micros();
+    collectors[1].flowmeter.risingIntervalMicros = 3700;
+    collectors[1].flowmeter.risingReady = true;
+    pinMode(collectors[1].flowmeter.getPin(), INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(collectors[1].flowmeter.getPin()), g2Pulse, RISING);
 }
+
+// dispenser single flowmeter
+// void IRAM_ATTR g2Pulse()
+// {
+//     portENTER_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
+//     singleDos.flowmeter.pulseCounter();
+//     portEXIT_CRITICAL_ISR(&singleDos.flowmeter.flowMux);
+// }
+
+// void g2Setup()
+// {
+//     singleDos.flowmeter.setPin(0);
+//     // singleDos.flowmeter.setPulsesPerLiter(g2PulsesPerLiter); //(106.777);
+//     singleDos.flowmeter.risingStartMicros = micros();
+//     singleDos.flowmeter.risingIntervalMicros = 3700;
+//     singleDos.flowmeter.risingReady = true;
+//     pinMode(singleDos.flowmeter.getPin(), INPUT_PULLUP);
+//     attachInterrupt(digitalPinToInterrupt(singleDos.flowmeter.getPin()), g2Pulse, RISING);
+// }
 
 // timeouts
 void incTimeouts()
@@ -116,20 +135,26 @@ void incTimeouts()
 void incTimers()
 {
     pumpStartDelay_.inc100msTimer();
-    collector.incTimers();
-    singleDos.incTimers();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        collectors[i].incTimers();
+    }
+    // singleDos.incTimers();
 }
 
 // reset faults for all equipment
 void resetFaults()
 {
     valveAdjustable.resetFaulty();
-    collector.valveAdjustable.resetFaulty();
-    singleDos.valveAdjustable.resetFaulty();
-    for (int i = 0; i < collector.nValves_; i++)
+    for (int i = 0; i < nCollectors; i++)
     {
-        collector.valves[i].resetFaulty();
+        collectors[i].valveAdjustable.resetFaulty();
+        for (int j = 0; j < collectors[i].nValves_; j++)
+        {
+            collectors[i].valves[j].resetFaulty();
+        }
     }
+    // singleDos.valveAdjustable.resetFaulty();
 }
 
 void plantSetup()
@@ -156,11 +181,14 @@ void plantSetup()
     valveAdjustable.setCostClose(8.0);
     valveAdjustable.setCostOpen(8.0);
 
-    for (int i = 0; i < collector.nValves_ - 1; i++)
+    for (int i = 0; i < nCollectors; i++)
     {
-        collector.valveNums[i] = 0;
+        for (int j = 0; j < collectors[i].nValves_ - 1; j++)
+        {
+            collectors[i].valveNums[j] = 0;
+        }
+        collectors[i].order = 0;
     }
-    collector.order = 0;
 }
 
 void plantLoop()
@@ -204,8 +232,11 @@ void plantLoop()
 
 void flowLoop()
 {
-    collector.flowmeter.computeFlow();
-    singleDos.flowmeter.computeFlow();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        collectors[i].flowmeter.computeFlow();
+    }
+    // singleDos.flowmeter.computeFlow();
     m1.computeFlow();
 }
 
@@ -223,25 +254,28 @@ void flowReady()
         }
     }
 
-    if (!digitalRead(collector.flowmeter.getPin()))
+    for (int i = 0; i < nCollectors; i++)
     {
-        collector.flowmeter.risingLowCount++;
-        if (collector.flowmeter.risingLowCount > 4)
+        if (!digitalRead(collectors[i].flowmeter.getPin()))
         {
-            collector.flowmeter.risingLowCount = 0;
-            collector.flowmeter.risingReady = true;
+            collectors[i].flowmeter.risingLowCount++;
+            if (collectors[i].flowmeter.risingLowCount > 4)
+            {
+                collectors[i].flowmeter.risingLowCount = 0;
+                collectors[i].flowmeter.risingReady = true;
+            }
         }
     }
 
-    if (!digitalRead(singleDos.flowmeter.getPin()))
-    {
-        singleDos.flowmeter.risingLowCount++;
-        if (singleDos.flowmeter.risingLowCount > 4)
-        {
-            singleDos.flowmeter.risingLowCount = 0;
-            singleDos.flowmeter.risingReady = true;
-        }
-    }
+    // if (!digitalRead(singleDos.flowmeter.getPin()))
+    // {
+    //     singleDos.flowmeter.risingLowCount++;
+    //     if (singleDos.flowmeter.risingLowCount > 4)
+    //     {
+    //         singleDos.flowmeter.risingLowCount = 0;
+    //         singleDos.flowmeter.risingReady = true;
+    //     }
+    // }
 }
 
 void commonLoop()
@@ -259,8 +293,11 @@ void commonLoop()
 
 void mixLoop()
 {
-    collector.loop();
-    singleDos.loop();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        collectors[i].loop();
+    }
+    // singleDos.loop();
     commonLoop();
 
     pumpStartDelay_.on100msTimer(loopValveOk_, 30);
@@ -306,25 +343,23 @@ void mixLoop()
     }
 
     // 3.1 start collector
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopCollector_ && collector.loopUsing_)
+    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopCollector_)
     {
-        collector.loopStart();
-        loopCollector_ = true;
-        Serial.println("Loop collector Start!");
+        loopCollectorStart();
     }
 
     // 3.2 start single dos
-    if (loopRunning_ && loopValveOk_ && loopPump_ && !loopSingleDos_ && singleDos.loopUsing_)
-    {
-        singleDos.loopStart();
-        loopSingleDos_ = true;
-        Serial.println("Loop single dos Start!");
-    }
+    // if (loopRunning_ && loopValveOk_ && loopPump_ && !loopSingleDos_ && singleDos.loopUsing_)
+    // {
+    //     singleDos.loopStart();
+    //     loopSingleDos_ = true;
+    //     Serial.println("Loop single dos Start!");
+    // }
 
     // 4. need washing
     if (loopRunning_ && loopValveOk_ && loopPump_ && !loopDone_ && !loopWashing_)
     {
-        if (collector.loopUsing_ && (abs(carrierDosedPercent) < carrierReserve))
+        if (abs(carrierDosedPercent) < carrierReserve)
         {
             Serial.println("abs(carrierDosedPercent) < carrierReserve");
             loopWashing_ = true;
@@ -344,8 +379,8 @@ void mixLoop()
     // 6. loop done
     if (loopDone_)
     {
-        if (collector.loopUsing_)
-            loopCollectorWashingStop();
+        // if (collector.loopUsing_)
+        loopCollectorWashingStop();
         // if (collector.valveAdjustable.isClosed())
         // {
         Serial.println("Loop Done!");
@@ -360,7 +395,7 @@ void loopStart()
     loopValveOk_ = false;
     loopPump_ = false;
     loopCollector_ = false;
-    loopSingleDos_ = false;
+    // loopSingleDos_ = false;
     loopRunning_ = true;
     loopDone_ = false;
 
@@ -373,22 +408,52 @@ void loopStart()
 
 void loopDevicesStop()
 {
-    collector.loopStop();
-    singleDos.loopStop();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        collectors[i].loopStop();
+    }
+    // singleDos.loopStop();
+}
+
+void loopCollectorStart()
+{
+    for (int i = 0; i < nCollectors; i++)
+    {
+        if (collectors[i].loopUsing_)
+        {
+            collectors[i].loopStart();
+            loopCollector_ = true;
+            Serial.print("Loop collector #");
+            Serial.print(i);
+            Serial.println(" Start");
+        }
+    }
 }
 
 void loopCollectorWashingStart()
 {
-    collector.loopStop();
-    collector.washingCarrierReserve_ = true;
-    collector.washingStart_ = true;
+    for (int i = 0; i < nCollectors; i++)
+    {
+        if (collectors[i].loopUsing_)
+        {
+            collectors[i].loopStop();
+            collectors[i].washingCarrierReserve_ = true;
+            collectors[i].washingStart_ = true;
+        }
+    }
 }
 
 void loopCollectorWashingStop()
 {
-    collector.washingCarrierReserve_ = false;
-    collector.resetWash();
-    collector.closeAll();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        if (collectors[i].loopUsing_)
+        {
+            collectors[i].washingCarrierReserve_ = false;
+            collectors[i].resetWash();
+            collectors[i].closeAll();
+        }
+    }
 }
 
 void loopStop()
@@ -403,7 +468,7 @@ void loopStop()
     loopValveOk_ = false;
     loopPump_ = false;
     loopCollector_ = false;
-    loopSingleDos_ = false;
+    // loopSingleDos_ = false;
     loopRunning_ = false;
     loopDone_ = false;
 
@@ -412,7 +477,10 @@ void loopStop()
 
 void loopPause()
 {
-    collector.loopPause();
+    for (int i = 0; i < nCollectors; i++)
+    {
+        collectors[i].loopPause();
+    }
 }
 
 void pumpStart()

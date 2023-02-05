@@ -13,7 +13,9 @@ void setup()
 {
     Serial.begin(115200);
 
-    // dataSetup();
+    dataSetup();
+    delay(1000);
+
     webSetup();
     delay(1000);
 

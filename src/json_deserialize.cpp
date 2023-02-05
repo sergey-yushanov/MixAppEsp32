@@ -125,7 +125,9 @@ void commonJSON(DynamicJsonDocument jsonReceived)
     if (jsonReceived.containsKey("flowmeter"))
     {
         flowmeterJSON(jsonReceived["flowmeter"], &m1);
-        // dataSave(preferences_common, &m1);
+        Serial.print("m1: ");
+        Serial.println(m1.getPulsesPerLiter());
+        dataSave(preferences_common, &m1);
     }
 
     if (jsonReceived.containsKey("loop"))
@@ -147,19 +149,25 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("ratioVolume0"))
     {
         collector->setRatioVolume0(jsonReceived["ratioVolume0"]);
-        singleDos.setRatioVolume0(jsonReceived["ratioVolume0"]);
+        // singleDos.setRatioVolume0(jsonReceived["ratioVolume0"]);
     }
 
     if (jsonReceived.containsKey("ratioVolume1"))
     {
         collector->setRatioVolume1(jsonReceived["ratioVolume1"]);
-        singleDos.setRatioVolume1(jsonReceived["ratioVolume1"]);
+        // singleDos.setRatioVolume1(jsonReceived["ratioVolume1"]);
     }
 
     if (jsonReceived.containsKey("ratioVolume2"))
     {
         collector->setRatioVolume2(jsonReceived["ratioVolume2"]);
-        singleDos.setRatioVolume2(jsonReceived["ratioVolume2"]);
+        // singleDos.setRatioVolume2(jsonReceived["ratioVolume2"]);
+    }
+
+    if (jsonReceived.containsKey("ratioVolume3"))
+    {
+        collector->setRatioVolume3(jsonReceived["ratioVolume3"]);
+        // singleDos.setRatioVolume3(jsonReceived["ratioVolume3"]);
     }
 
     // if (jsonReceived.containsKey("ratioVolume"))
@@ -177,13 +185,19 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("volume1"))
     {
         collector->setVolume1(jsonReceived["volume1"]);
-        singleDos.setVolume1(jsonReceived["volume1"]);
+        // singleDos.setVolume1(jsonReceived["volume1"]);
     }
 
     if (jsonReceived.containsKey("volume2"))
     {
         collector->setVolume2(jsonReceived["volume2"]);
-        singleDos.setVolume2(jsonReceived["volume2"]);
+        // singleDos.setVolume2(jsonReceived["volume2"]);
+    }
+
+    if (jsonReceived.containsKey("volume3"))
+    {
+        collector->setVolume3(jsonReceived["volume3"]);
+        // singleDos.setVolume3(jsonReceived["volume3"]);
     }
 
     // if (jsonReceived.containsKey("microVolume"))
@@ -194,13 +208,19 @@ void collectorLoopJSON(DynamicJsonDocument jsonReceived, Collector *collector)
     if (jsonReceived.containsKey("setpoint1"))
     {
         collector->setSetpoint1(jsonReceived["setpoint1"]);
-        singleDos.setSetpoint1(jsonReceived["setpoint1"]);
+        // singleDos.setSetpoint1(jsonReceived["setpoint1"]);
     }
 
     if (jsonReceived.containsKey("setpoint2"))
     {
         collector->setSetpoint2(jsonReceived["setpoint2"]);
-        singleDos.setSetpoint2(jsonReceived["setpoint2"]);
+        // singleDos.setSetpoint2(jsonReceived["setpoint2"]);
+    }
+
+    if (jsonReceived.containsKey("setpoint3"))
+    {
+        collector->setSetpoint3(jsonReceived["setpoint3"]);
+        // singleDos.setSetpoint3(jsonReceived["setpoint3"]);
     }
 
     // if (jsonReceived.containsKey("microSetpoint"))
@@ -402,19 +422,19 @@ void messageContainsKeys(DynamicJsonDocument jsonReceived)
         }
     }
 
-    if (jsonReceived.containsKey("singles"))
-    {
-        for (int i = 0; i < jsonReceived["singles"].size(); i++)
-        {
-            if (jsonReceived["singles"][i].containsKey("number"))
-            {
-                int singleDosNum = jsonReceived["singles"][i]["number"];
-                singleDosNum--;
-                if (singleDosNum == 0)
-                    singleDosJSON(jsonReceived["singles"][i], &singleDos);
-            }
-        }
-    }
+    // if (jsonReceived.containsKey("singles"))
+    // {
+    //     for (int i = 0; i < jsonReceived["singles"].size(); i++)
+    //     {
+    //         if (jsonReceived["singles"][i].containsKey("number"))
+    //         {
+    //             int singleDosNum = jsonReceived["singles"][i]["number"];
+    //             singleDosNum--;
+    //             if (singleDosNum == 0)
+    //                 singleDosJSON(jsonReceived["singles"][i], &singleDos);
+    //         }
+    //     }
+    // }
 }
 
 void jsonDeserialize(uint8_t *data)

@@ -78,7 +78,9 @@ void Collector::dose() // int valveNum)
         Serial.print("Dosing required volume: ");
         Serial.println(requiredVolumes[order]);
 
-        dosingVolume2_ = requiredVolumes[order] <= volume2_;
+        dosingVolume3_ = requiredVolumes[order] <= volume3_;
+        // dosingVolume2_ = requiredVolumes[order] <= volume2_;
+        dosingVolume2_ = (requiredVolumes[order] > volume3_) && (requiredVolumes[order] <= volume2_);
         // dosingVolume1_ = !dosingVolume2_ && (requiredVolumes[order] <= volume1_);
         dosingVolume1_ = (requiredVolumes[order] > volume2_) && (requiredVolumes[order] <= volume1_);
     }
@@ -99,6 +101,8 @@ void Collector::dose() // int valveNum)
                 valveAdjustable.setSetpoint(setpoint1_);
             if (dosingVolume2_)
                 valveAdjustable.setSetpoint(setpoint2_);
+            if (dosingVolume3_)
+                valveAdjustable.setSetpoint(setpoint3_);
 
             dosingNullify_ = false;
         }
@@ -174,6 +178,8 @@ void Collector::dose() // int valveNum)
         dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume1_;
     if (dosingVolume2_)
         dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume2_;
+    if (dosingVolume3_)
+        dosedVolumeWithRatio_ = dosedVolumes[order] * ratioVolume3_;
 }
 
 void Collector::resetDose()
@@ -403,6 +409,11 @@ void Collector::setRatioVolume2(float ratioVolume)
     ratioVolume2_ = ratioVolume;
 }
 
+void Collector::setRatioVolume3(float ratioVolume)
+{
+    ratioVolume3_ = ratioVolume;
+}
+
 // void Collector::setRatioVolumeMicro(float ratioVolumeMicro)
 // {
 //     ratioVolumeMicro_ = ratioVolumeMicro;
@@ -418,6 +429,11 @@ void Collector::setVolume2(float volume)
     volume2_ = volume;
 }
 
+void Collector::setVolume3(float volume)
+{
+    volume3_ = volume;
+}
+
 // void Collector::setMicroVolume(float microVolume)
 // {
 //     microVolume_ = microVolume;
@@ -431,6 +447,11 @@ void Collector::setSetpoint1(float setpoint)
 void Collector::setSetpoint2(float setpoint)
 {
     setpoint2_ = setpoint;
+}
+
+void Collector::setSetpoint3(float setpoint)
+{
+    setpoint3_ = setpoint;
 }
 
 // void Collector::setMicroSetpoint(float microSetpoint)
